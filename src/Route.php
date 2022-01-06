@@ -1,0 +1,67 @@
+<?php
+
+namespace ToyWpRouting;
+
+use Invoker\InvokerInterface;
+
+class Route
+{
+    protected $handler;
+    protected $isActiveCallback;
+    protected $methods;
+    protected $prefix = '';
+    protected $route;
+
+    public function __construct(array $methods, string $route, $handler)
+    {
+        $this->methods = $methods;
+        $this->route = $route;
+        $this->handler = $handler;
+    }
+
+    public function getHandler()
+    {
+        return $this->handler;
+    }
+
+    public function getIsActiveCallback()
+    {
+        return $this->isActiveCallback;
+    }
+
+    public function getMethods(): array
+    {
+        return $this->methods;
+    }
+
+    public function getPrefix(): string
+    {
+        return $this->prefix;
+    }
+
+    public function getRoute(): string
+    {
+        return $this->route;
+    }
+
+    public function setPrefix(string $prefix)
+    {
+        $this->prefix = $prefix;
+    }
+
+    public function unless($when)
+    {
+        $this->isActiveCallback = function (?InvokerInterface $invoker = null) use ($when) {
+            if (null !== $invoker) {
+                return ! $invoker->call($when);
+            }
+
+            return ! $when();
+        };
+    }
+
+    public function when($when)
+    {
+        $this->isActiveCallback = $when;
+    }
+}
