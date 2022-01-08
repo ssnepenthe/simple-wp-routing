@@ -22,7 +22,7 @@ if (defined('WP_CLI') && WP_CLI) {
   WP_CLI::add_command('pfx clear-rewrites', function() use ($routing) {
     $container = $routing->getContainer();
 
-    unlink("{$routing->getCacheDir()}/{$routing->getCacheFile()}");
+    unlink("{$container->getCacheDir()}/{$container->getCacheFile()}");
   });
 
 }
@@ -33,7 +33,7 @@ add_action('toy_wp_routing.init', function(ToyWpRouting\RouteCollection $routes)
   // Route syntax comes from nikic/fast-route.
   $routes->get('api/users/{id}', function($id) {
     // This function is automatically invoked from the 'request' filter when this route is matched.
-    // That is, on a GET request to a path that matches the regex '^users/([^/]+)$'.
+    // That is, on a GET request to a path that matches the regex '^api/users/([^/]+)$'.
   });
 
   // Optionally add a callback to enable/disable a given route.
