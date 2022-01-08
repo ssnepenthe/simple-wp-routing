@@ -8,12 +8,10 @@ use RuntimeException;
 class RewriteCollection
 {
     protected $locked = false;
-
     protected $queryVariables = [];
     protected $rewriteRules = [];
-
     protected $rewrites = [];
-    protected $rewritesByHashAndMethod = [];
+    protected $rewritesByRegexHashAndMethod = [];
 
     public function add(RewriteInterface $rewrite)
     {
@@ -22,19 +20,22 @@ class RewriteCollection
         }
 
         $this->rewrites[] = $rewrite;
-        $this->rewriteRules[$rewrite->getRegex()] = $rewrite->getQuery();
+        $this->rewriteRules = array_merge($this->rewriteRules, $rewrite->getRules());
+        $this->queryVariables = array_merge(
+            $this->queryVariables,
+            $rewrite->getPrefixedToUnprefixedQueryVariablesMap()
+        );
 
-        foreach ($rewrite->getPrefixedToUnprefixedQueryVariablesMap() as $prefixed => $unprefixed) {
-            $this->queryVariables[$prefixed] = $unprefixed;
-        }
+        foreach ($rewrite->getRules() as $regex => $_) {
+            $regexHash = md5($regex);
 
-        $this->addHashAndMethodLookup($rewrite);
-    }
+            if (! array_key_exists($regexHash, $this->rewritesByRegexHashAndMethod)) {
+                $this->rewritesByRegexHashAndMethod[$regexHash] = [];
+            }
 
-    public function addMany(array $rewrites)
-    {
-        foreach ($rewrites as $rewrite) {
-            $this->add($rewrite);
+            foreach ($rewrite->getMethods() as $method) {
+                $this->rewritesByRegexHashAndMethod[$regexHash][$method] = $rewrite;
+            }
         }
     }
 
@@ -57,25 +58,9 @@ class RewriteCollection
         return $collection;
     }
 
-    public function getRewritesByRegexHash(string $regexHash): array
-    {
-        if (! array_key_exists($regexHash, $this->rewritesByHashAndMethod)) {
-            return [];
-        }
-
-        return $this->rewritesByHashAndMethod[$regexHash];
-    }
-
     public function lock()
     {
         $this->locked = true;
-    }
-
-    public function merge(RewriteCollection $rewriteCollection)
-    {
-        foreach ($rewriteCollection->getRewrites() as $rewrite) {
-            $this->add($rewrite);
-        }
     }
 
     public function getPrefixedToUnprefixedQueryVariablesMap()
@@ -86,6 +71,15 @@ class RewriteCollection
     public function getQueryVariables()
     {
         return array_keys($this->queryVariables);
+    }
+
+    public function getRewritesByRegexHash(string $regexHash): array
+    {
+        if (! array_key_exists($regexHash, $this->rewritesByRegexHashAndMethod)) {
+            return [];
+        }
+
+        return $this->rewritesByRegexHashAndMethod[$regexHash];
     }
 
     public function getRewrites()
@@ -101,17 +95,5 @@ class RewriteCollection
     public function isLocked()
     {
         return $this->locked;
-    }
-
-    private function addHashAndMethodLookup(RewriteInterface $rewrite)
-    {
-        $hash = md5($rewrite->getRegex());
-        $method = $rewrite->getMethod();
-
-        if (! array_key_exists($hash, $this->rewritesByHashAndMethod)) {
-            $this->rewritesByHashAndMethod[$hash] = [];
-        }
-
-        $this->rewritesByHashAndMethod[$hash][strtoupper($method)] = $rewrite;
     }
 }

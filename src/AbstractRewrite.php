@@ -25,16 +25,9 @@ abstract class AbstractRewrite implements RewriteInterface
         }
 
         if (! is_callable($this->isActiveCallback)) {
-            throw new InvalidArgumentException(
-                "Invalid isActiveCallback for rewrite {$this->getMethod()}:{$this->getRegex()}"
-            );
+            throw new InvalidArgumentException("Invalid isActiveCallback");
         }
 
         return (bool) ($this->isActiveCallback)();
-    }
-
-    public function setIsActiveCallback($isActiveCallback)
-    {
-        $this->isActiveCallback = $isActiveCallback;
     }
 }

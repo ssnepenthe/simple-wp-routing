@@ -17,7 +17,7 @@ class RewriteCollectionTest extends TestCase
 	public function testAdd()
 	{
 		$rewriteCollection = new RewriteCollection();
-		$rewrite = new Rewrite('GET', '/someregex/', ['var' => 'value'], 'somehandler');
+		$rewrite = new Rewrite(['GET'], ['/someregex/' => ['var' => 'value']], 'somehandler');
 
 		$rewriteCollection->add($rewrite);
 
@@ -32,19 +32,20 @@ class RewriteCollectionTest extends TestCase
 		$rewriteCollection->lock();
 
 		$rewriteCollection->add(
-			new Rewrite('GET', '/someregex/', ['var' => 'value'], 'somehandler')
+			new Rewrite(['GET'], ['/someregex/' => ['var' => 'value']], 'somehandler')
 		);
 	}
 
 	public function testAddDuplicateRewrites()
 	{
 		$rewriteCollection = new RewriteCollection();
-		$rewrite = new Rewrite('GET', '/someregex/', ['var' => 'value'], 'somehandler');
+		$rewrite = new Rewrite(['GET'], ['/someregex/' => ['var' => 'value']], 'somehandler');
 
 		$rewriteCollection->add($rewrite);
 		$rewriteCollection->add($rewrite);
 
 		// All rewrites are added.
+		// @todo Should this still be the case?
 		$this->assertCount(2, $rewriteCollection->getRewrites());
 
 		// But rewrite rules and query variables are unique.
@@ -53,33 +54,56 @@ class RewriteCollectionTest extends TestCase
 		$this->assertCount(1, $rewriteCollection->getQueryVariables());
 	}
 
-	public function testAddMany()
-	{
-		$rewriteCollection = new RewriteCollection();
-		$one = new Rewrite('GET', '/first/', ['first' => 'first'], 'somehandler');
-		$two = new Rewrite('GET', '/second/', ['second' => 'second'], 'somehandler');
+	// public function testAddMany()
+	// {
+	// 	$rewriteCollection = new RewriteCollection();
+	// 	$one = new Rewrite('GET', '/first/', ['first' => 'first'], 'somehandler');
+	// 	$two = new Rewrite('GET', '/second/', ['second' => 'second'], 'somehandler');
 
-		$rewriteCollection->addMany([$one, $two]);
+	// 	$rewriteCollection->addMany([$one, $two]);
 
-		$this->assertSame([$one, $two], $rewriteCollection->getRewrites());
-	}
+	// 	$this->assertSame([$one, $two], $rewriteCollection->getRewrites());
+	// }
 
 	public function testFilterActiveRewrites()
 	{
 		$rewriteCollection = new RewriteCollection();
 
-		$one = new Rewrite('GET', '/first/', ['first' => 'first'], 'somehandler');
-		$one->setIsActiveCallback(function() { return true; });
+		$one = new Rewrite(
+			['GET'],
+			['/first/' => ['first' => 'first']],
+			'somehandler',
+			'',
+			function() { return true; }
+		);
 
-		$two = new Rewrite('GET', '/second/', ['second' => 'second'], 'somehandler');
-		$two->setIsActiveCallback(function() { return false; });
+		$two = new Rewrite(
+			['GET'],
+			['/second/' => ['second' => 'second']],
+			'somehandler',
+			'',
+			function() { return false; }
+		);
 
-		$three = new Rewrite('GET', '/third/', ['third' => 'third'], 'somehandler');
-		$three->setIsActiveCallback(function() { return true; });
+		$three = new Rewrite(
+			['GET'],
+			['/third/' => ['third' => 'third']],
+			'somehandler',
+			'',
+			function() { return true; }
+		);
 
-		$four = new Rewrite('GET', '/fourth/', ['fourth' => 'fourth'], 'somehandler');
+		$four = new Rewrite(
+			['GET'],
+			['/fourth/' => ['fourth' => 'fourth']],
+			'somehandler'
+		);
 
-		$rewriteCollection->addMany([$one, $two, $three, $four]);
+		$rewriteCollection->add($one);
+		$rewriteCollection->add($two);
+		$rewriteCollection->add($three);
+		$rewriteCollection->add($four);
+
 		$active = $rewriteCollection->filterActiveRewrites();
 
 		// Returns a new collection instance.
@@ -93,7 +117,7 @@ class RewriteCollectionTest extends TestCase
 	public function testFilterActiveRewritesWhenLocked()
 	{
 		$rewriteCollection = new RewriteCollection();
-		$one = new Rewrite('GET', '/first/', ['first' => 'first'], 'somehandler');
+		$one = new Rewrite(['GET'], ['/first/' => ['first' => 'first']], 'somehandler');
 
 		$rewriteCollection->add($one);
 
@@ -121,60 +145,46 @@ class RewriteCollectionTest extends TestCase
 		$rewriteCollection = new RewriteCollection();
 
 		// Provides container values as params to active callback
-		$one = new Rewrite('GET', '/first/', ['first' => 'first'], 'somehandler');
-		$one->setIsActiveCallback(function($truthy) use (&$runCount) {
-			$runCount++;
-			return $truthy;
-		});
+		$one = new Rewrite(
+			['GET'],
+			['/first/' => ['first' => 'first']],
+			'somehandler',
+			'',
+			function($truthy) use (&$runCount) {
+				$runCount++;
+				return $truthy;
+			}
+		);
 
-		$two = new Rewrite('GET', '/second/', ['second' => 'second'], 'somehandler');
-		$two->setIsActiveCallback(function($falsy) use (&$runCount) {
-			$runCount++;
-			return $falsy;
-		});
+		$two = new Rewrite(
+			['GET'],
+			['/second/' => ['second' => 'second']],
+			'somehandler',
+			'',
+			function($falsy) use (&$runCount) {
+				$runCount++;
+				return $falsy;
+			}
+		);
 
 		// Can resolve active callback from container.
-		$three = new Rewrite('GET', '/third/', ['third' => 'third'], 'somehandler');
-		$three->setIsActiveCallback('callback');
+		$three = new Rewrite(
+			['GET'],
+			['/third/' => ['third' => 'third']],
+			'somehandler',
+			'',
+			'callback'
+		);
 
-		$rewriteCollection->addMany([$one, $two, $three]);
+		$rewriteCollection->add($one);
+		$rewriteCollection->add($two);
+		$rewriteCollection->add($three);
 
 		$this->assertSame(
 			[$one, $three],
 			$rewriteCollection->filterActiveRewrites($invoker)->getRewrites()
 		);
 		$this->assertSame(3, $runCount);
-	}
-
-	public function testGetRewritesByRegexHash()
-	{
-		$rewriteCollection = new RewriteCollection();
-
-		$hash = md5('/someregex/');
-		$one = new Rewrite('GET', '/someregex/', ['var' => 'value'], 'somehandler');
-		// Same regex, different method.
-		$two = new Rewrite('POST', '/someregex/', ['var' => 'value'], 'somehandler');
-		// Different regex, same method.
-		$three = new Rewrite('GET', '/anotherregex/', ['variable' => 'value'], 'somehandler');
-
-		$rewriteCollection->addMany([$one, $two, $three]);
-
-		$this->assertSame(
-			['GET' => $one, 'POST' => $two],
-			$rewriteCollection->getRewritesByRegexHash($hash)
-		);
-	}
-
-	public function testGetRewritesByRegexHashNotFound()
-	{
-		$rewriteCollection = new RewriteCollection();
-
-		$hash = md5('/anotherregex/');
-		$one = new Rewrite('GET', '/someregex/', ['var' => 'value'], 'somehandler');
-
-		$rewriteCollection->add($one);
-
-		$this->assertSame([], $rewriteCollection->getRewritesByRegexHash($hash));
 	}
 
 	public function testLock()
@@ -188,60 +198,114 @@ class RewriteCollectionTest extends TestCase
 		$this->assertTrue($rewriteCollection->isLocked());
 	}
 
-	public function testMerge()
+	public function testGetRewritesByRegexHash()
 	{
-		$rewriteCollectionOne = new RewriteCollection();
-		$rewriteCollectionTwo = new RewriteCollection();
+		$rewriteCollection = new RewriteCollection();
 
-		$one = new Rewrite('GET', '/first/',['first' => 'first'], 'somehandler');
-		$two = new Rewrite('POST', '/second/',['second' => 'second'], 'somehandler');
-		$three = new Rewrite('POST', '/third/',['third' => 'third'], 'somehandler');
+		$hash = md5('/someregex/');
+		// Multiple methods, single rule.
+		$one = new Rewrite(['GET', 'POST'], ['/someregex/' => ['var' => 'value']], 'somehandler');
+		// Same regex, different method.
+		$two = new Rewrite(['PUT'], ['/someregex/' => ['var' => 'value']], 'somehandler');
+		// Single method, multiple rules - one regex is the same as previous.
+		$three = new Rewrite(
+			['DELETE'],
+			[
+				'/someregex/' => ['var' => 'value'],
+				'/anotherregex/' => ['anothervar' => 'anothervalue'],
+			],
+			'somehandler'
+		);
+		// Different rule, same method as previous.
+		$four = new Rewrite(['GET'], ['/anotherregex/' => ['variable' => 'value']], 'somehandler');
 
-		$rewriteCollectionOne->addMany([$one, $two]);
-		$rewriteCollectionTwo->add($three);
+		$rewriteCollection->add($one);
+		$rewriteCollection->add($two);
+		$rewriteCollection->add($three);
+		$rewriteCollection->add($four);
 
-		$rewriteCollectionOne->merge($rewriteCollectionTwo);
+		$this->assertSame(
+			['GET' => $one, 'POST' => $one, 'PUT' => $two, 'DELETE' => $three],
+			$rewriteCollection->getRewritesByRegexHash($hash)
+		);
+	}
 
-		$this->assertSame([$one, $two, $three], $rewriteCollectionOne->getRewrites());
+	public function testGetRewritesByRegexHashNotFound()
+	{
+		$rewriteCollection = new RewriteCollection();
+
+		$hash = md5('/anotherregex/');
+		$one = new Rewrite(['GET'], ['/someregex/' => ['var' => 'value']], 'somehandler');
+
+		$rewriteCollection->add($one);
+
+		$this->assertSame([], $rewriteCollection->getRewritesByRegexHash($hash));
 	}
 
 	public function testGetters()
 	{
-		$one = new Rewrite('GET', '/first/',['first' => 'first'], 'somehandler');
-		$two = new Rewrite('POST', '/second/',['second' => 'second'], 'somehandler');
-		$three = new Rewrite('POST', '/third/',['third' => 'third'], 'somehandler');
+		$one = new Rewrite(['GET', 'HEAD'], ['/first/' => ['first' => 'first']], 'somehandler');
+		$two = new Rewrite(['POST'], ['/second/' => ['second' => 'second']], 'somehandler');
+		$three = new Rewrite(
+			['POST'],
+			['/third/' => ['third' => 'third'], '/fourth/' => ['fourth' => 'fourth']],
+			'somehandler'
+		);
 
 		$rewriteCollection = new RewriteCollection();
-		$rewriteCollection->addMany([$one, $two, $three]);
+		$rewriteCollection->add($one);
+		$rewriteCollection->add($two);
+		$rewriteCollection->add($three);
 
 		$this->assertSame(
-			['first' => 'first', 'second' => 'second', 'third' => 'third'],
+			['first' => 'first', 'second' => 'second', 'third' => 'third', 'fourth' => 'fourth'],
 			$rewriteCollection->getPrefixedToUnprefixedQueryVariablesMap()
 		);
-		$this->assertSame(['first', 'second', 'third'], $rewriteCollection->getQueryVariables());
+		$this->assertSame(
+			['first', 'second', 'third', 'fourth'],
+			$rewriteCollection->getQueryVariables()
+		);
 		$this->assertSame([$one, $two, $three], $rewriteCollection->getRewrites());
 		$this->assertSame([
 			'/first/' => 'index.php?first=first',
 			'/second/' => 'index.php?second=second',
 			'/third/' => 'index.php?third=third',
+			'/fourth/' => 'index.php?fourth=fourth',
 		], $rewriteCollection->getRewriteRules());
 	}
 
 	public function testGettersWithPrefixedRewrites()
 	{
-		$one = new Rewrite('GET', '/first/',['first' => 'first'], 'somehandler', 'pfx_');
-		$two = new Rewrite('POST', '/second/',['second' => 'second'], 'somehandler', 'pfx_');
-		$three = new Rewrite('POST', '/third/',['third' => 'third'], 'somehandler', 'pfx_');
+		$one = new Rewrite(
+			['GET', 'HEAD'],
+			['/first/' => ['first' => 'first']],
+			'somehandler',
+			'pfx_'
+		);
+		$two = new Rewrite(['POST'], ['/second/' => ['second' => 'second']], 'somehandler', 'pfx_');
+		$three = new Rewrite(
+			['POST'],
+			['/third/' => ['third' => 'third'], '/fourth/' => ['fourth' => 'fourth']],
+			'somehandler',
+			'pfx_'
+		);
 
 		$rewriteCollection = new RewriteCollection();
-		$rewriteCollection->addMany([$one, $two, $three]);
+		$rewriteCollection->add($one);
+		$rewriteCollection->add($two);
+		$rewriteCollection->add($three);
 
 		$this->assertSame(
-			['pfx_first' => 'first', 'pfx_second' => 'second', 'pfx_third' => 'third'],
+			[
+				'pfx_first' => 'first',
+				'pfx_second' => 'second',
+				'pfx_third' => 'third',
+				'pfx_fourth' => 'fourth',
+			],
 			$rewriteCollection->getPrefixedToUnprefixedQueryVariablesMap()
 		);
 		$this->assertSame(
-			['pfx_first', 'pfx_second', 'pfx_third'],
+			['pfx_first', 'pfx_second', 'pfx_third', 'pfx_fourth'],
 			$rewriteCollection->getQueryVariables()
 		);
 		$this->assertSame([$one, $two, $three], $rewriteCollection->getRewrites());
@@ -249,6 +313,7 @@ class RewriteCollectionTest extends TestCase
 			'/first/' => 'index.php?pfx_first=first',
 			'/second/' => 'index.php?pfx_second=second',
 			'/third/' => 'index.php?pfx_third=third',
+			'/fourth/' => 'index.php?pfx_fourth=fourth',
 		], $rewriteCollection->getRewriteRules());
 	}
 }

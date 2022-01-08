@@ -47,6 +47,8 @@ class Route
     public function setPrefix(string $prefix)
     {
         $this->prefix = $prefix;
+
+        return $this;
     }
 
     public function unless($when)
@@ -58,10 +60,14 @@ class Route
 
             return ! $when();
         };
+
+        return $this;
     }
 
     public function when($when)
     {
         $this->isActiveCallback = $when;
+
+        return $this;
     }
 }

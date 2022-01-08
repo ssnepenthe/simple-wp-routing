@@ -5,26 +5,35 @@ namespace ToyWpRouting;
 class OptimizedRewrite extends AbstractRewrite
 {
     protected $handler;
-    protected $method;
+    protected $methods;
     protected $prefixedToUnprefixedQueryVariablesMap;
-    protected $query;
     protected $queryVariables;
-    protected $regex;
+    protected $rules;
 
     public function __construct(
-        string $method,
-        string $regex,
+        array $methods,
+        array $rules,
         $handler,
         array $prefixedToUnprefixedQueryVariablesMap,
-        string $query,
-        array $queryVariables
+        array $queryVariables,
+        $isActiveCallback = null
     ) {
-        $this->method = $method;
-        $this->regex = $regex;
+        $this->methods = $methods;
+        $this->rules = $rules;
         $this->handler = $handler;
         $this->prefixedToUnprefixedQueryVariablesMap = $prefixedToUnprefixedQueryVariablesMap;
-        $this->query = $query;
         $this->queryVariables = $queryVariables;
+        $this->isActiveCallback = $isActiveCallback;
+    }
+
+    public function getRules(): array
+    {
+        return $this->rules;
+    }
+
+    public function getMethods(): array
+    {
+        return $this->methods;
     }
 
     public function getHandler()
@@ -32,28 +41,13 @@ class OptimizedRewrite extends AbstractRewrite
         return $this->handler;
     }
 
-    public function getMethod(): string
-    {
-        return $this->method;
-    }
-
-    public function getPrefixedToUnprefixedQueryVariablesMap(): array
-    {
-        return $this->prefixedToUnprefixedQueryVariablesMap;
-    }
-
-    public function getQuery(): string
-    {
-        return $this->query;
-    }
-
     public function getQueryVariables(): array
     {
         return $this->queryVariables;
     }
 
-    public function getRegex(): string
+    public function getPrefixedToUnprefixedQueryVariablesMap(): array
     {
-        return $this->regex;
+        return $this->prefixedToUnprefixedQueryVariablesMap;
     }
 }

@@ -15,24 +15,22 @@ class RouteConverterTest extends TestCase
 	{
 		$route = new Route(['GET'], 'someroutestring', 'somehandler');
 
-		$convertedCollection = (new RouteConverter())->convert($route);
-
-		$this->assertInstanceOf(RewriteCollection::class, $convertedCollection);
-
-		$convertedRewrite = $convertedCollection->getRewrites()[0];
+		$rewrite = (new RouteConverter())->convert($route);
 
 		// Redundant due to typing in RewriteCollection...
-		$this->assertInstanceOf(RewriteInterface::class, $convertedRewrite);
+		$this->assertInstanceOf(RewriteInterface::class, $rewrite);
 
-		$this->assertSame('somehandler', $convertedRewrite->getHandler());
-		$this->assertSame('GET', $convertedRewrite->getMethod());
+		$this->assertSame(
+			['^someroutestring$' => 'index.php?matchedRoute=' . md5('^someroutestring$')],
+			$rewrite->getRules()
+		);
+		$this->assertSame(['GET'], $rewrite->getMethods());
+		$this->assertSame('somehandler', $rewrite->getHandler());
+		$this->assertSame(['matchedRoute'], $rewrite->getQueryVariables());
 		$this->assertSame(
 			['matchedRoute' => 'matchedRoute'],
-			$convertedRewrite->getPrefixedToUnprefixedQueryVariablesMap()
+			$rewrite->getPrefixedToUnprefixedQueryVariablesMap()
 		);
-		$this->assertStringStartsWith('index.php?matchedRoute=', $convertedRewrite->getQuery());
-		$this->assertSame(['matchedRoute'], $convertedRewrite->getQueryVariables());
-		$this->assertSame('^someroutestring$', $convertedRewrite->getRegex());
 	}
 
 	public function testConvertWithOptionalRouteSegments()
@@ -40,12 +38,12 @@ class RouteConverterTest extends TestCase
 		// Optional route segments result in multiple rewrites.
 		$route = new Route(['GET'], 'someroute[string]', 'somehandler');
 
-		$convertedCollection = (new RouteConverter())->convert($route);
-		$convertedRewrites = $convertedCollection->getRewrites();
+		$rewrite = (new RouteConverter())->convert($route);
 
-		$this->assertCount(2, $convertedRewrites);
-		$this->assertSame('^someroute$', $convertedRewrites[0]->getRegex());
-		$this->assertSame('^someroutestring$', $convertedRewrites[1]->getRegex());
+		$this->assertSame([
+			'^someroute$' => 'index.php?matchedRoute=' . md5('^someroute$'),
+			'^someroutestring$' => 'index.php?matchedRoute=' . md5('^someroutestring$'),
+		], $rewrite->getRules());
 	}
 
 	public function testConvertWithMultipleMethods()
@@ -53,12 +51,9 @@ class RouteConverterTest extends TestCase
 		// Multiple request methods result in multiple rewrites.
 		$route = new Route(['GET', 'POST'], 'someroutestring', 'somehandler');
 
-		$convertedCollection = (new RouteConverter())->convert($route);
-		$convertedRewrites = $convertedCollection->getRewrites();
+		$rewrite = (new RouteConverter())->convert($route);
 
-		$this->assertCount(2, $convertedRewrites);
-		$this->assertSame('GET', $convertedRewrites[0]->getMethod());
-		$this->assertSame('POST', $convertedRewrites[1]->getMethod());
+		$this->assertSame(['GET', 'POST'], $rewrite->getMethods());
 	}
 
 	public function testConvertWithPrefix()
@@ -67,12 +62,9 @@ class RouteConverterTest extends TestCase
 		$route = new Route(['GET'], 'someroute{string}', 'somehandler');
 		$route->setPrefix('pfx_');
 
-		$convertedCollection = (new RouteConverter())->convert($route);
+		$rewrite = (new RouteConverter())->convert($route);
 
-		$this->assertSame(
-			['pfx_string', 'pfx_matchedRoute'],
-			$convertedCollection->getQueryVariables()
-		);
+		$this->assertSame(['pfx_string', 'pfx_matchedRoute'], $rewrite->getQueryVariables());
 	}
 
 	public function testConvertWithIsActiveCallback()
@@ -81,25 +73,25 @@ class RouteConverterTest extends TestCase
 		$route = new Route(['GET'], 'someroutestring', 'somehandler');
 		$route->when(function() { return false; });
 
-		$convertedCollection = (new RouteConverter())->convert($route);
-		$convertedRewrite = $convertedCollection->getRewrites()[0];
+		$rewrite = (new RouteConverter())->convert($route);
 
-		$this->assertFalse($convertedRewrite->isActive());
+		$this->assertFalse($rewrite->isActive());
 	}
 
-	public function testConvertMany()
+	public function testConvertCollection()
 	{
 		$routeCollection = new RouteCollection();
-		$routeCollection->add(['GET'], 'one', 'somehandler');
+		$routeCollection->get('one', 'somehandler');
 		$routeCollection->post('two[three]', 'somehandler');
 
-		$convertedCollection = (new RouteConverter())->convertMany($routeCollection);
+		$convertedCollection = (new RouteConverter())->convertCollection($routeCollection);
 
-		$convertedRewrites = $convertedCollection->getRewrites();
+		$this->assertInstanceOf(RewriteCollection::class, $convertedCollection);
 
-		$this->assertCount(3, $convertedRewrites);
-		$this->assertSame(['^one$', '^two$', '^twothree$'], array_map(function($rewrite) {
-			return $rewrite->getRegex();
-		}, $convertedRewrites));
+		$this->assertCount(2, $convertedCollection->getRewrites());
+		$this->assertSame(
+			['^one$', '^two$', '^twothree$'],
+			array_keys($convertedCollection->getRewriteRules())
+		);
 	}
 }

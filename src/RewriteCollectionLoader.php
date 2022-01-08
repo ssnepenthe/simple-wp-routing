@@ -23,29 +23,27 @@ class RewriteCollectionLoader
         foreach ($rewrites as $rewriteArray) {
             if (! $this->arrayHasRewriteShape($rewriteArray)) {
                 $requiredKeys = [
-                    'method',
-                    'regex',
+                    'methods',
+                    'rules',
                     'handler',
                     'prefixedToUnprefixedQueryVariablesMap',
-                    'query',
                     'queryVariables',
                     'isActiveCallback',
                 ];
+
                 throw new InvalidArgumentException(
                     'Rewrite array must have all keys: ' . implode(', ', $requiredKeys)
                 );
             }
 
             $rewrite = new OptimizedRewrite(
-                $rewriteArray['method'],
-                $rewriteArray['regex'],
+                $rewriteArray['methods'],
+                $rewriteArray['rules'],
                 $rewriteArray['handler'],
                 $rewriteArray['prefixedToUnprefixedQueryVariablesMap'],
-                $rewriteArray['query'],
-                $rewriteArray['queryVariables']
+                $rewriteArray['queryVariables'],
+                $rewriteArray['isActiveCallback']
             );
-
-            $rewrite->setIsActiveCallback($rewriteArray['isActiveCallback']);
 
             $rewriteCollection->add($rewrite);
         }
@@ -82,7 +80,7 @@ class RewriteCollectionLoader
 
     public function fromRouteCollection(RouteCollection $routeCollection): RewriteCollection
     {
-        $rewriteCollection = $this->getRouteConverter()->convertMany($routeCollection);
+        $rewriteCollection = $this->getRouteConverter()->convertCollection($routeCollection);
 
         $routeCollection->lock();
         $rewriteCollection->lock();
@@ -115,13 +113,12 @@ class RewriteCollectionLoader
     protected function arrayHasRewriteShape($rewriteArray)
     {
         return is_array($rewriteArray)
+            && array_key_exists('methods', $rewriteArray)
+            && array_key_exists('rules', $rewriteArray)
             && array_key_exists('handler', $rewriteArray)
-            && array_key_exists('isActiveCallback', $rewriteArray)
-            && array_key_exists('method', $rewriteArray)
             && array_key_exists('prefixedToUnprefixedQueryVariablesMap', $rewriteArray)
-            && array_key_exists('query', $rewriteArray)
             && array_key_exists('queryVariables', $rewriteArray)
-            && array_key_exists('regex', $rewriteArray);
+            && array_key_exists('isActiveCallback', $rewriteArray);
     }
 
     protected function createRouteConverter(): RouteConverter

@@ -2,6 +2,11 @@
 
 namespace ToyWpRouting;
 
+use ToyWpRouting\FastRouteRouteParser;
+use ToyWpRouting\Route;
+use ToyWpRouting\RouteCollection;
+use ToyWpRouting\RouteParserInterface;
+
 class RouteConverter
 {
     protected $parser;
@@ -11,40 +16,23 @@ class RouteConverter
         $this->parser = $parser ?: new FastRouteRouteParser();
     }
 
-    public function convert(Route $route): RewriteCollection
+    public function convert(Route $route): RewriteInterface
     {
-        $rewriteCollection = new RewriteCollection();
-
-        $rewrites = $this->parser->parse($route->getRoute());
-        $hasIsActiveCallback = null !== $route->getIsActiveCallback();
-
-        foreach ($rewrites as $regex => $queryArray) {
-            foreach ($route->getMethods() as $method) {
-                $rewrite = new Rewrite(
-                    $method,
-                    $regex,
-                    $queryArray,
-                    $route->getHandler(),
-                    $route->getPrefix()
-                );
-
-                if ($hasIsActiveCallback) {
-                    $rewrite->setIsActiveCallback($route->getIsActiveCallback());
-                }
-
-                $rewriteCollection->add($rewrite);
-            }
-        }
-
-        return $rewriteCollection;
+        return new Rewrite(
+            $route->getMethods(),
+            $this->parser->parse($route->getRoute()),
+            $route->getHandler(),
+            $route->getPrefix(),
+            $route->getIsActiveCallback()
+        );
     }
 
-    public function convertMany(RouteCollection $routeCollection): RewriteCollection
+    public function convertCollection(RouteCollection $routeCollection): RewriteCollection
     {
         $rewriteCollection = new RewriteCollection();
 
         foreach ($routeCollection->getRoutes() as $route) {
-            $rewriteCollection->merge($this->convert($route));
+            $rewriteCollection->add($this->convert($route));
         }
 
         return $rewriteCollection;

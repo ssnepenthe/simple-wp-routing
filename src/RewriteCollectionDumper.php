@@ -49,13 +49,12 @@ class RewriteCollectionDumper
     {
         return array_map(function (RewriteInterface $rewrite) {
             return [
+                'methods' => $rewrite->getMethods(),
+                'rules' => $rewrite->getRules(),
                 'handler' => $rewrite->getHandler(),
-                'isActiveCallback' => $rewrite->getIsActiveCallback(),
-                'method' => $rewrite->getMethod(),
                 'prefixedToUnprefixedQueryVariablesMap' => $rewrite->getPrefixedToUnprefixedQueryVariablesMap(),
-                'query' => $rewrite->getQuery(),
                 'queryVariables' => $rewrite->getQueryVariables(),
-                'regex' => $rewrite->getRegex(),
+                'isActiveCallback' => $rewrite->getIsActiveCallback(),
             ];
         }, $this->rewriteCollection->getRewrites());
     }

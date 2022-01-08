@@ -15,15 +15,13 @@ class AbstractRewriteTest extends TestCase
 {
 	public function testIsActive()
 	{
-		$rewrite = $rewrite = new AbstractRewriteTester();
-		$rewrite->setIsActiveCallback(function() {
+		$rewrite = $rewrite = new AbstractRewriteTester(function() {
 			return true;
 		});
 
 		$this->assertTrue($rewrite->isActive());
 
-		$rewrite = new AbstractRewriteTester();
-		$rewrite->setIsActiveCallback(function() {
+		$rewrite = new AbstractRewriteTester(function() {
 			return false;
 		});
 
@@ -40,15 +38,13 @@ class AbstractRewriteTest extends TestCase
 	public function testIsActiveWithNonBooleanReturn()
 	{
 		// Supported, but not recommended.
-		$rewrite = new AbstractRewriteTester();
-		$rewrite->setIsActiveCallback(function() {
+		$rewrite = new AbstractRewriteTester(function() {
 			return 1;
 		});
 
 		$this->assertTrue($rewrite->isActive());
 
-		$rewrite = new AbstractRewriteTester();
-		$rewrite->setIsActiveCallback(function() {
+		$rewrite = new AbstractRewriteTester(function() {
 			return 0;
 		});
 
@@ -59,8 +55,7 @@ class AbstractRewriteTest extends TestCase
 	{
 		$this->expectException(InvalidArgumentException::class);
 
-		$rewrite = new AbstractRewriteTester();
-		$rewrite->setIsActiveCallback(true);
+		$rewrite = new AbstractRewriteTester(true);
 
 		$rewrite->isActive();
 	}
@@ -80,15 +75,13 @@ class AbstractRewriteTest extends TestCase
 		$invoker = new Invoker(new ParameterNameContainerResolver($container), $container);
 
 		// Can resolve callable from container.
-		$rewrite = new AbstractRewriteTester();
-		$rewrite->setIsActiveCallback('callback');
+		$rewrite = new AbstractRewriteTester('callback');
 
 		$this->assertFalse($rewrite->isActive($invoker));
 		$this->assertSame(1, $runCount);
 
 		// Can provide container values as params to callback.
-		$rewrite = new AbstractRewriteTester();
-		$rewrite->setIsActiveCallback(function($truthy) use (&$runCount) {
+		$rewrite = new AbstractRewriteTester(function($truthy) use (&$runCount) {
 			$runCount++;
 
 			return $truthy;
@@ -97,8 +90,7 @@ class AbstractRewriteTest extends TestCase
 		$this->assertTrue($rewrite->isActive($invoker));
 		$this->assertSame(2, $runCount);
 
-		$rewrite = new AbstractRewriteTester();
-		$rewrite->setIsActiveCallback(function($falsy) use (&$runCount) {
+		$rewrite = new AbstractRewriteTester(function($falsy) use (&$runCount) {
 			$runCount++;
 
 			return $falsy;
@@ -118,8 +110,7 @@ class AbstractRewriteTest extends TestCase
 
 		$invoker = new Invoker(new ParameterNameContainerResolver($container), $container);
 
-		$rewrite = new AbstractRewriteTester();
-		$rewrite->setIsActiveCallback(function($truthy) use (&$runCount) {
+		$rewrite = new AbstractRewriteTester(function($truthy) use (&$runCount) {
 			$runCount++;
 
 			return $truthy;
@@ -128,8 +119,7 @@ class AbstractRewriteTest extends TestCase
 		$this->assertTrue($rewrite->isActive($invoker));
 		$this->assertSame(1, $runCount);
 
-		$rewrite = new AbstractRewriteTester();
-		$rewrite->setIsActiveCallback(function($falsy) use (&$runCount) {
+		$rewrite = new AbstractRewriteTester(function($falsy) use (&$runCount) {
 			$runCount++;
 
 			return $falsy;
@@ -142,10 +132,10 @@ class AbstractRewriteTest extends TestCase
 
 class AbstractRewriteTester extends AbstractRewrite
 {
+	public function __construct($isActiveCallback = null) { $this->isActiveCallback = $isActiveCallback; }
+	public function getRules(): array { return ['someregex' => 'index.php?pfx_var=value']; }
+	public function getMethods(): array { return ['GET']; }
 	public function getHandler() { return 'somehandler'; }
-	public function getMethod(): string { return 'GET'; }
-	public function getPrefixedToUnprefixedQueryVariablesMap(): array { return ['pfx_var' => 'value']; }
-	public function getQuery(): string { return 'index.php?pfx_var=value'; }
 	public function getQueryVariables(): array { return ['pfx_var']; }
-	public function getRegex(): string { return 'someregex'; }
+	public function getPrefixedToUnprefixedQueryVariablesMap(): array { return ['pfx_var' => 'value']; }
 }

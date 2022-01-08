@@ -14,11 +14,17 @@ class RewriteCollectionDumperTest extends TestCase
 	{
 		$rewriteCollection = new RewriteCollection();
 
-		$one = new Rewrite('GET', '/first/', ['first' => 'first'], 'somehandler', 'pfx_');
-		$two = new Rewrite('POST', '/second/', ['second' => 'second'], 'anotherhandler');
-		$two->setIsActiveCallback('isActive');
+		$one = new Rewrite(['GET'], ['/first/' => ['first' => 'first']], 'somehandler', 'pfx_');
+		$two = new Rewrite(
+			['POST'],
+			['/second/' => ['second' => 'second']],
+			'anotherhandler',
+			'',
+			'isActive'
+		);
 
-		$rewriteCollection->addMany([$one, $two]);
+		$rewriteCollection->add($one);
+		$rewriteCollection->add($two);
 
 		$root = vfsStream::setup();
 		$dumper = new RewriteCollectionDumper($rewriteCollection);
@@ -33,11 +39,17 @@ class RewriteCollectionDumperTest extends TestCase
 	{
 		$rewriteCollection = new RewriteCollection();
 
-		$one = new Rewrite('GET', '/first/', ['first' => 'first'], function() {}, 'pfx_');
-		$two = new Rewrite('POST', '/second/', ['second' => 'second'], 'anotherhandler');
-		$two->setIsActiveCallback(function() { return true; });
+		$one = new Rewrite(['GET'], ['/first/' => ['first' => 'first']], function() {}, 'pfx_');
+		$two = new Rewrite(
+			['POST'],
+			['/second/' => ['second' => 'second']],
+			'anotherhandler',
+			'',
+			function() { return true; }
+		);
 
-		$rewriteCollection->addMany([$one, $two]);
+		$rewriteCollection->add($one);
+		$rewriteCollection->add($two);
 
 		$root = vfsStream::setup();
 		(new RewriteCollectionDumper($rewriteCollection))->toFile($root->url());
@@ -58,12 +70,14 @@ class RewriteCollectionDumperTest extends TestCase
 	{
 		$rewriteCollection = new RewriteCollection();
 
-		$one = new Rewrite('GET', '/first/', ['first' => 'first'], 'somehandler');
+		$one = new Rewrite(['GET'], ['/first/' => ['first' => 'first']], 'somehandler');
 
 		$rewriteCollection->add($one);
 
 		$root = vfsStream::setup();
 		$dumper = new RewriteCollectionDumper($rewriteCollection);
+
+		$this->assertFalse($root->hasChild('cache'));
 
 		$dumper->toFile($root->url() . '/cache');
 
@@ -74,30 +88,34 @@ class RewriteCollectionDumperTest extends TestCase
 	{
 		$rewriteCollection = new RewriteCollection();
 
-		$one = new Rewrite('GET', '/first/', ['first' => 'first'], 'somehandler', 'pfx_');
-		$two = new Rewrite('POST', '/second/', ['second' => 'second'], 'anotherhandler');
-		$two->setIsActiveCallback('isActive');
+		$one = new Rewrite(['GET'], ['/first/' => ['first' => 'first']], 'somehandler', 'pfx_');
+		$two = new Rewrite(
+			['POST'],
+			['/second/' => ['second' => 'second']],
+			'anotherhandler',
+			'',
+			'isActive'
+		);
 
-		$rewriteCollection->addMany([$one, $two]);
+		$rewriteCollection->add($one);
+		$rewriteCollection->add($two);
 
 		$this->assertSame([
 			[
+				'methods' => ['GET'],
+				'rules' => ['/first/' => 'index.php?pfx_first=first'],
 				'handler' => 'somehandler',
-				'isActiveCallback' => null,
-				'method' => 'GET',
 				'prefixedToUnprefixedQueryVariablesMap' => ['pfx_first' => 'first'],
-				'query' => 'index.php?pfx_first=first',
 				'queryVariables' => ['pfx_first'],
-				'regex' => '/first/',
+				'isActiveCallback' => null,
 			],
 			[
+				'methods' => ['POST'],
+				'rules' => ['/second/' => 'index.php?second=second'],
 				'handler' => 'anotherhandler',
-				'isActiveCallback' => 'isActive',
-				'method' => 'POST',
 				'prefixedToUnprefixedQueryVariablesMap' => ['second' => 'second'],
-				'query' => 'index.php?second=second',
 				'queryVariables' => ['second'],
-				'regex' => '/second/',
+				'isActiveCallback' => 'isActive',
 			],
 		], (new RewriteCollectionDumper($rewriteCollection))->toArray());
 	}

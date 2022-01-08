@@ -20,36 +20,42 @@ class RewriteCollectionLoaderTest extends TestCase
 		$loader = new RewriteCollectionLoader('irrelevant');
 		$rewriteCollection = $loader->fromArray([
 			[
+				'methods' => ['GET'],
+				'rules' => ['/regexone/' => 'index.php?pfx_one=one'],
 				'handler' => 'handlerone',
-				'isActiveCallback' => null,
-				'method' => 'GET',
 				'prefixedToUnprefixedQueryVariablesMap' => ['pfx_one' => 'one'],
-				'query' => 'index.php?pfx_one=one',
 				'queryVariables' => ['pfx_one'],
-				'regex' => '/regexone/',
+				'isActiveCallback' => null,
 			],
 			[
+				'methods' => ['POST'],
+				'rules' => ['/regextwo/' => 'index.php?pfx_two=two'],
 				'handler' => 'handlertwo',
-				'isActiveCallback' => 'isactivetwo',
-				'method' => 'POST',
 				'prefixedToUnprefixedQueryVariablesMap' => ['pfx_two' => 'two'],
-				'query' => 'index.php?pfx_two=two',
 				'queryVariables' => ['pfx_two'],
-				'regex' => '/regextwo/',
+				'isActiveCallback' => 'isactivetwo',
 			],
 		]);
 
 		$this->assertInstanceOf(RewriteCollection::class, $rewriteCollection);
 		$this->assertCount(2, $rewriteCollection->getRewrites());
+
 		$this->assertNull($rewriteCollection->getRewrites()[0]->getIsActiveCallback());
-		$this->assertSame('GET', $rewriteCollection->getRewrites()[0]->getMethod());
-		$this->assertSame('/regexone/', $rewriteCollection->getRewrites()[0]->getRegex());
+		$this->assertSame(['GET'], $rewriteCollection->getRewrites()[0]->getMethods());
+		$this->assertSame(
+			['/regexone/' => 'index.php?pfx_one=one'],
+			$rewriteCollection->getRewrites()[0]->getRules()
+		);
+
 		$this->assertSame(
 			'isactivetwo',
 			$rewriteCollection->getRewrites()[1]->getIsActiveCallback()
 		);
-		$this->assertSame('POST', $rewriteCollection->getRewrites()[1]->getMethod());
-		$this->assertSame('/regextwo/', $rewriteCollection->getRewrites()[1]->getRegex());
+		$this->assertSame(['POST'], $rewriteCollection->getRewrites()[1]->getMethods());
+		$this->assertSame(
+			['/regextwo/' => 'index.php?pfx_two=two'],
+			$rewriteCollection->getRewrites()[1]->getRules()
+		);
 	}
 
 
@@ -59,13 +65,12 @@ class RewriteCollectionLoaderTest extends TestCase
 		$this->expectException(InvalidArgumentException::class);
 
 		$rewriteArray = [
+			'methods' => ['GET'],
+			'rules' => ['/regexone/' => 'index.php?pfx_one=one'],
 			'handler' => 'handlerone',
-			'isActiveCallback' => null,
-			'method' => 'GET',
 			'prefixedToUnprefixedQueryVariablesMap' => ['pfx_one' => 'one'],
-			'query' => 'index.php?pfx_one=one',
 			'queryVariables' => ['pfx_one'],
-			'regex' => '/regexone/',
+			'isActiveCallback' => null,
 		];
 
 		unset($rewriteArray[$toUnset]);
@@ -79,14 +84,20 @@ class RewriteCollectionLoaderTest extends TestCase
 
 		{
 			$rewriteCollection = new RewriteCollection();
-			$rewrite = new Rewrite('POST', '/second/', ['second' => 'second'], 'secondhandler');
-			$rewrite->setIsActiveCallback('secondisactive');
-			$rewriteCollection->addMany([
-				new Rewrite('GET', '/first/', ['first' => 'first'], 'firsthandler'),
-				$rewrite,
-			]);
+			$rewriteCollection->add(
+				new Rewrite(['GET'], ['/first/' => ['first' => 'first']], 'firsthandler')
+			);
+			$rewriteCollection->add(
+				new Rewrite(
+					['POST'],
+					['/second/' => ['second' => 'second']],
+					'secondhandler',
+					'',
+					'secondisactive'
+				)
+			);
 			(new RewriteCollectionDumper($rewriteCollection))->toFile($root->url());
-			unset($rewriteCollection, $rewrite);
+			unset($rewriteCollection);
 		}
 
 		$loader = new RewriteCollectionLoader($root->url());
@@ -94,15 +105,23 @@ class RewriteCollectionLoaderTest extends TestCase
 
 		$this->assertInstanceOf(RewriteCollection::class, $rewriteCollection);
 		$this->assertCount(2, $rewriteCollection->getRewrites());
+
 		$this->assertNull($rewriteCollection->getRewrites()[0]->getIsActiveCallback());
-		$this->assertSame('GET', $rewriteCollection->getRewrites()[0]->getMethod());
-		$this->assertSame('/first/', $rewriteCollection->getRewrites()[0]->getRegex());
+		$this->assertSame(['GET'], $rewriteCollection->getRewrites()[0]->getMethods());
+		$this->assertSame(
+			['/first/' => 'index.php?first=first'],
+			$rewriteCollection->getRewrites()[0]->getRules()
+		);
+
 		$this->assertSame(
 			'secondisactive',
 			$rewriteCollection->getRewrites()[1]->getIsActiveCallback()
 		);
-		$this->assertSame('POST', $rewriteCollection->getRewrites()[1]->getMethod());
-		$this->assertSame('/second/', $rewriteCollection->getRewrites()[1]->getRegex());
+		$this->assertSame(['POST'], $rewriteCollection->getRewrites()[1]->getMethods());
+		$this->assertSame(
+			['/second/' => 'index.php?second=second'],
+			$rewriteCollection->getRewrites()[1]->getRules()
+		);
 	}
 
 	public function testFromCacheWithSerializedClosures()
@@ -111,11 +130,17 @@ class RewriteCollectionLoaderTest extends TestCase
 
 		{
 			$rewriteCollection = new RewriteCollection();
-			$rewrite = new Rewrite('GET', '/regex/', ['rewrite' => 'rewrite'], function() {});
-			$rewrite->setIsActiveCallback(function() { return true; });
-			$rewriteCollection->add($rewrite);
+			$rewriteCollection->add(
+				new Rewrite(
+					['GET'],
+					['/regex/' => ['rewrite' => 'rewrite']],
+					function() {},
+					'',
+					function() { return true; }
+				)
+			);
 			(new RewriteCollectionDumper($rewriteCollection))->toFile($root->url());
-			unset($rewriteCollection, $rewrite);
+			unset($rewriteCollection);
 		}
 
 		$loader = new RewriteCollectionLoader($root->url());
@@ -138,10 +163,18 @@ class RewriteCollectionLoaderTest extends TestCase
 
 		$this->assertInstanceOf(RewriteCollection::class, $rewriteCollection);
 		$this->assertCount(2, $rewriteCollection->getRewrites());
-		$this->assertSame('GET', $rewriteCollection->getRewrites()[0]->getMethod());
-		$this->assertSame('^one$', $rewriteCollection->getRewrites()[0]->getRegex());
-		$this->assertSame('POST', $rewriteCollection->getRewrites()[1]->getMethod());
-		$this->assertSame('^two$', $rewriteCollection->getRewrites()[1]->getRegex());
+
+		$this->assertSame(['GET'], $rewriteCollection->getRewrites()[0]->getMethods());
+		$this->assertSame(
+			['^one$' => 'index.php?matchedRoute=' . md5('^one$')],
+			$rewriteCollection->getRewrites()[0]->getRules()
+		);
+
+		$this->assertSame(['POST'], $rewriteCollection->getRewrites()[1]->getMethods());
+		$this->assertSame(
+			['^two$' => 'index.php?matchedRoute=' . md5('^two$')],
+			$rewriteCollection->getRewrites()[1]->getRules()
+		);
 	}
 
 	public function testHasCachedRewrites()
@@ -173,12 +206,11 @@ class RewriteCollectionLoaderTest extends TestCase
 
 	public function provideRequiredRewriteArrayKeys()
 	{
+		yield ['methods'];
+		yield ['rules'];
 		yield ['handler'];
-		yield ['isActiveCallback'];
-		yield ['method'];
 		yield ['prefixedToUnprefixedQueryVariablesMap'];
-		yield ['query'];
 		yield ['queryVariables'];
-		yield ['regex'];
+		yield ['isActiveCallback'];
 	}
 }

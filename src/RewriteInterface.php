@@ -6,13 +6,11 @@ use Invoker\InvokerInterface;
 
 interface RewriteInterface
 {
+    public function getRules(): array;
+    public function getMethods(): array;
     public function getHandler();
-    public function getIsActiveCallback();
-    public function getMethod(): string;
-    public function getPrefixedToUnprefixedQueryVariablesMap(): array;
-    public function getQuery(): string;
     public function getQueryVariables(): array;
-    public function getRegex(): string;
+    public function getPrefixedToUnprefixedQueryVariablesMap(): array;
+    public function getIsActiveCallback();
     public function isActive(?InvokerInterface $invoker = null): bool;
-    public function setIsActiveCallback($isActiveCallback);
 }

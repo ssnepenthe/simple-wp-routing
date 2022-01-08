@@ -4,29 +4,53 @@ namespace ToyWpRouting;
 
 class Rewrite extends AbstractRewrite
 {
-    protected $method;
-    protected $regex;
-    protected $queryArray;
     protected $handler;
+    protected $methods;
     protected $prefix;
+    protected $regexToQueryArrayMap;
 
-    protected $prefixedQueryArray;
+    protected $prefixedToUnprefixedQueryVariablesMap = [];
     protected $queryVariables;
-    protected $prefixedToUnprefixedQueryVariablesMap;
-    protected $query;
+    protected $rules = [];
 
     public function __construct(
-        string $method,
-        string $regex,
-        array $queryArray,
+        array $methods,
+        array $regexToQueryArrayMap,
         $handler,
-        string $prefix = ''
+        string $prefix = '',
+        $isActiveCallback = null
     ) {
-        $this->method = $method;
-        $this->regex = $regex;
-        $this->queryArray = $queryArray;
+        $this->methods = array_map('strtoupper', $methods);
+        $this->regexQueryArrayPairs = $regexToQueryArrayMap;
         $this->handler = $handler;
         $this->prefix = $prefix;
+        $this->isActiveCallback = $isActiveCallback;
+
+        foreach ($regexToQueryArrayMap as $regex => $queryArray) {
+            $prefixedQueryArray = [];
+
+            foreach ($queryArray as $variable => $value) {
+                $prefixedVariable = $this->applyPrefix($variable);
+
+                $prefixedQueryArray[$prefixedVariable] = $value;
+
+                $this->prefixedToUnprefixedQueryVariablesMap[$prefixedVariable] = $variable;
+            }
+
+            $this->rules[$regex] = $this->buildQuery($prefixedQueryArray);
+        }
+
+        $this->queryVariables = array_keys($this->prefixedToUnprefixedQueryVariablesMap);
+    }
+
+    public function getRules(): array
+    {
+        return $this->rules;
+    }
+
+    public function getMethods(): array
+    {
+        return $this->methods;
     }
 
     public function getHandler()
@@ -34,44 +58,14 @@ class Rewrite extends AbstractRewrite
         return $this->handler;
     }
 
-    public function getMethod(): string
+    public function getQueryVariables(): array
     {
-        return $this->method;
+        return $this->queryVariables;
     }
 
     public function getPrefixedToUnprefixedQueryVariablesMap(): array
     {
-        if (! is_array($this->prefixedToUnprefixedQueryVariablesMap)) {
-            $this->prefixedToUnprefixedQueryVariablesMap = array_combine(
-                array_keys($this->getPrefixedQueryArray()),
-                array_keys($this->queryArray)
-            );
-        }
-
         return $this->prefixedToUnprefixedQueryVariablesMap;
-    }
-
-    public function getQuery(): string
-    {
-        if (! is_string($this->query)) {
-            $this->query = $this->buildQuery($this->getPrefixedQueryArray());
-        }
-
-        return $this->query;
-    }
-
-    public function getQueryVariables(): array
-    {
-        if (! is_array($this->queryVariables)) {
-            $this->queryVariables = array_keys($this->getPrefixedQueryArray());
-        }
-
-        return $this->queryVariables;
-    }
-
-    public function getRegex(): string
-    {
-        return $this->regex;
     }
 
     protected function applyPrefix(string $value): string
@@ -85,18 +79,5 @@ class Rewrite extends AbstractRewrite
         return 'index.php?' . implode('&', array_map(function ($key, $value) {
             return "{$key}={$value}";
         }, array_keys($queryArray), $queryArray));
-    }
-
-    protected function getPrefixedQueryArray(): array
-    {
-        if (! is_array($this->prefixedQueryArray)) {
-            $this->prefixedQueryArray = [];
-
-            foreach ($this->queryArray as $key => $value) {
-                $this->prefixedQueryArray[$this->applyPrefix($key)] = $value;
-            }
-        }
-
-        return $this->prefixedQueryArray;
     }
 }

@@ -9,77 +9,65 @@ class RewriteTest extends TestCase
 {
 	public function testGetters()
 	{
-		$rewrite = new Rewrite('GET', 'someregex', ['var' => 'value'], 'somehandler');
+		$rewrite = new Rewrite(['GET'], ['someregex' => ['var' => 'value']], 'somehandler');
 
+		$this->assertSame(['someregex' => 'index.php?var=value'], $rewrite->getRules());
+		$this->assertSame(['GET'], $rewrite->getMethods());
 		$this->assertSame('somehandler', $rewrite->getHandler());
-		$this->assertSame('GET', $rewrite->getMethod());
-		$this->assertSame(['var' => 'var'], $rewrite->getPrefixedToUnprefixedQueryVariablesMap());
-		$this->assertSame('index.php?var=value', $rewrite->getQuery());
 		$this->assertSame(['var'], $rewrite->getQueryVariables());
-		$this->assertSame('someregex', $rewrite->getRegex());
+		$this->assertSame(['var' => 'var'], $rewrite->getPrefixedToUnprefixedQueryVariablesMap());
+		$this->assertNull($rewrite->getIsActiveCallback());
 	}
 
-	public function testGettersWithPrefix()
+	public function testWithPrefix()
 	{
-		$rewrite = new Rewrite('GET', 'someregex', ['var' => 'value'], 'somehandler', 'pfx_');
+		$rewrite = new Rewrite(['GET'], ['someregex' => ['var' => 'value']], 'somehandler', 'pfx_');
 
-		$this->assertSame('somehandler', $rewrite->getHandler());
-		$this->assertSame('GET', $rewrite->getMethod());
-		$this->assertSame(['pfx_var' => 'var'], $rewrite->getPrefixedToUnprefixedQueryVariablesMap());
-		$this->assertSame('index.php?pfx_var=value', $rewrite->getQuery());
+		$this->assertSame(['someregex' => 'index.php?pfx_var=value'], $rewrite->getRules());
 		$this->assertSame(['pfx_var'], $rewrite->getQueryVariables());
-		$this->assertSame('someregex', $rewrite->getRegex());
+		$this->assertSame(['pfx_var' => 'var'], $rewrite->getPrefixedToUnprefixedQueryVariablesMap());
 	}
 
-	// public function testOptimize()
-	// {
-	// 	$optimized = (new Rewrite('GET', 'someregex', ['var' => 'value'], 'somehandler'))
-	// 		->optimize();
+	public function testWithIsActiveCallback()
+	{
+		$rewrite = new Rewrite(
+			['GET'],
+			['someregex' => ['var' => 'value']],
+			'somehandler',
+			'',
+			'someisactivecallback'
+		);
 
-	// 	$this->assertInstanceOf(OptimizedRewrite::class, $optimized);
+		$this->assertSame('someisactivecallback', $rewrite->getIsActiveCallback());
+	}
 
-	// 	$this->assertSame('somehandler', $optimized->getHandler());
-	// 	$this->assertSame('GET', $optimized->getMethod());
-	// 	$this->assertSame(['var' => 'var'], $optimized->getPrefixedToUnprefixedQueryVariablesMap());
-	// 	$this->assertSame('index.php?var=value', $optimized->getQuery());
-	// 	$this->assertSame(['var'], $optimized->getQueryVariables());
-	// 	$this->assertSame('someregex', $optimized->getRegex());
-	// }
+	public function testMethodsAreUppercased()
+	{
+		$rewrite = new Rewrite(['get'], ['someregex' => ['var' => 'value']], 'somehandler');
 
-	// public function testOptimizeWithPrefix()
-	// {
-	// 	$optimized = (new Rewrite('GET', 'someregex', ['var' => 'value'], 'somehandler', 'pfx_'))
-	// 		->optimize();
+		$this->assertSame(['GET'], $rewrite->getMethods());
+	}
 
-	// 	$this->assertInstanceOf(OptimizedRewrite::class, $optimized);
+	public function testMultipleMethodsAndRules()
+	{
+		$rewrite = new Rewrite(
+			['GET', 'HEAD', 'POST'],
+			[
+				'someregex' => ['var' => 'value'],
+				'anotherregex' => ['anothervar' => 'anothervalue'],
+			],
+			'somehandler'
+		);
 
-	// 	$this->assertSame('somehandler', $optimized->getHandler());
-	// 	$this->assertSame('GET', $optimized->getMethod());
-	// 	$this->assertSame(
-	// 		['pfx_var' => 'var'],
-	// 		$optimized->getPrefixedToUnprefixedQueryVariablesMap()
-	// 	);
-	// 	$this->assertSame('index.php?pfx_var=value', $optimized->getQuery());
-	// 	$this->assertSame(['pfx_var'], $optimized->getQueryVariables());
-	// 	$this->assertSame('someregex', $optimized->getRegex());
-	// }
-
-	// public function testOptimizeWithIsActiveCallback()
-	// {
-	// 	$optimized = (new Rewrite('GET', 'someregex', ['var' => 'value'], 'somehandler'))->optimize();
-
-	// 	$this->assertTrue($optimized->isActive());
-
-	// 	$rewrite = new Rewrite('GET', 'someregex', ['var' => 'value'], 'somehandler');
-	// 	$rewrite->setIsActiveCallback(function() { return true; });
-	// 	$optimized = $rewrite->optimize();
-
-	// 	$this->assertTrue($optimized->isActive());
-
-	// 	$rewrite = new Rewrite('GET', 'someregex', ['var' => 'value'], 'somehandler');
-	// 	$rewrite->setIsActiveCallback(function() { return true; });
-	// 	$optimized = $rewrite->optimize();
-
-	// 	$this->assertTrue($optimized->isActive());
-	// }
+		$this->assertSame([
+			'someregex' => 'index.php?var=value',
+			'anotherregex' => 'index.php?anothervar=anothervalue'
+		], $rewrite->getRules());
+		$this->assertSame(['GET', 'HEAD', 'POST'], $rewrite->getMethods());
+		$this->assertSame(['var', 'anothervar'], $rewrite->getQueryVariables());
+		$this->assertSame([
+			'var' => 'var',
+			'anothervar' => 'anothervar',
+		], $rewrite->getPrefixedToUnprefixedQueryVariablesMap());
+	}
 }
