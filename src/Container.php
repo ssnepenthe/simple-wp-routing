@@ -15,8 +15,7 @@ class Container
     protected $prefix;
     protected $requestContext;
     protected $rewriteCollection;
-    protected $rewriteCollectionDumper;
-    protected $rewriteCollectionLoader;
+	protected $rewriteCollectionCache;
     protected $routeCollection;
     protected $routeConverter;
 
@@ -29,6 +28,11 @@ class Container
 
         return $this->activeRewriteCollection;
     }
+
+	public function cacheDirIsSet(): bool
+	{
+		return is_string($this->cacheDir);
+	}
 
     public function getCacheDir(): string
     {
@@ -113,58 +117,38 @@ class Container
     public function getRewriteCollection(): RewriteCollection
     {
         if (! $this->rewriteCollection instanceof RewriteCollection) {
-            $loader = $this->getRewriteCollectionLoader();
+			if ($this->cacheDirIsSet() && $this->getRewriteCollectionCache()->exists()) {
+				$this->rewriteCollection = $this->getRewriteCollectionCache()->get();
+			} else {
+				$this->rewriteCollection = $this->getRouteConverter()->convertCollection(
+					$this->getRouteCollection()
+				);
 
-            if ($loader->hasCachedRewrites()) {
-                $this->rewriteCollection = $loader->fromCache();
-            } else {
-                $loader->setRouteConverter($this->getRouteConverter());
-
-                $this->rewriteCollection = $loader->fromRouteCollection(
-                    $this->getRouteCollection()
-                );
-            }
+				$this->getRouteCollection()->lock();
+				$this->rewriteCollection->lock();
+			}
         }
 
         return $this->rewriteCollection;
     }
 
-    public function getRewriteCollectionDumper(): RewriteCollectionDumper
-    {
-        if (! $this->rewriteCollectionDumper instanceof RewriteCollectionDumper) {
-            $this->rewriteCollectionDumper = new RewriteCollectionDumper(
-                $this->getRewriteCollection()
-            );
-        }
+	public function resetRewriteCollection()
+	{
+		$this->rewriteCollection = null;
+	}
 
-        return $this->rewriteCollectionDumper;
-    }
+	// @todo Interface
+	public function getRewriteCollectionCache(): RewriteCollectionCache
+	{
+		if (! $this->rewriteCollectionCache instanceof RewriteCollectionCache) {
+			$this->rewriteCollectionCache = new RewriteCollectionCache(
+				$this->getCacheDir(),
+				$this->getCacheFile()
+			);
+		}
 
-    public function setRewriteCollectionDumper(RewriteCollectionDumper $rewriteCollectionDumper)
-    {
-        $this->rewriteCollectionDumper = $rewriteCollectionDumper;
-
-        return $this;
-    }
-
-    public function getRewriteCollectionLoader(): RewriteCollectionLoader
-    {
-        if (! $this->rewriteCollectionLoader instanceof RewriteCollectionLoader) {
-            $this->rewriteCollectionLoader = new RewriteCollectionLoader(
-                $this->getCacheDir(),
-                $this->getCacheFile()
-            );
-        }
-
-        return $this->rewriteCollectionLoader;
-    }
-
-    public function setRewriteCollectionLoader(RewriteCollectionLoader $rewriteCollectionLoader)
-    {
-        $this->rewriteCollectionLoader = $rewriteCollectionLoader;
-
-        return $this;
-    }
+		return $this->rewriteCollectionCache;
+	}
 
     public function getRouteCollection(): RouteCollection
     {

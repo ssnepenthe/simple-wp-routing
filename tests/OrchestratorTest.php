@@ -40,7 +40,7 @@ class OrchestratorTest extends TestCase
 			->once()
 			->with(Mockery::type(RouteCollection::class));
 
-		$orchestrator = new Orchestrator('irrelevant');
+		$orchestrator = new Orchestrator();
 		$orchestrator->onInit();
 	}
 
@@ -48,7 +48,8 @@ class OrchestratorTest extends TestCase
 	{
 		$root = vfsStream::setup();
 
-		$orchestrator = new Orchestrator($root->url());
+		$orchestrator = new Orchestrator();
+		$orchestrator->getContainer()->setCacheDir($root->url());
 		$orchestrator->cacheRewrites();
 
 		$orchestrator->onInit();
@@ -58,7 +59,7 @@ class OrchestratorTest extends TestCase
 
 	public function testOnOptionRewriteRulesAndOnRewriteRulesArray()
 	{
-		$orchestrator = new Orchestrator('irrelevant');
+		$orchestrator = new Orchestrator();
 
 		$routes = $orchestrator->getContainer()->getRouteCollection();
 		$routes->get('three', 'threehandler');
@@ -79,7 +80,7 @@ class OrchestratorTest extends TestCase
 
 	public function testOnOptionRewriteRulesAndOnRewriteRulesArrayWithDisabledRoutes()
 	{
-		$orchestrator = new Orchestrator('irrelevant');
+		$orchestrator = new Orchestrator();
 
 		$routes = $orchestrator->getContainer()->getRouteCollection();
 		$routes->get('three', 'threehandler');
@@ -100,7 +101,7 @@ class OrchestratorTest extends TestCase
 
 	public function testOnOptionRewriteRulesAndOnRewriteRulesArrayWithInvalidExistingRules()
 	{
-		$orchestrator = new Orchestrator('irrelevant');
+		$orchestrator = new Orchestrator();
 
 		$routes = $orchestrator->getContainer()->getRouteCollection();
 		$routes->get('one', 'onehandler');
@@ -116,7 +117,7 @@ class OrchestratorTest extends TestCase
 
 	public function testOnPreUpdateOptionRewriteRules()
 	{
-		$orchestrator = new Orchestrator('irrelevant');
+		$orchestrator = new Orchestrator();
 
 		$routes = $orchestrator->getContainer()->getRouteCollection();
 		$routes->get('three', 'threehandler');
@@ -131,7 +132,7 @@ class OrchestratorTest extends TestCase
 
 	public function testOnPreUpdateOptionRewriteRulesWithInvalidExistingRules()
 	{
-		$orchestrator = new Orchestrator('irrelevant');
+		$orchestrator = new Orchestrator();
 
 		$routes = $orchestrator->getContainer()->getRouteCollection();
 		$routes->get('three', 'threehandler');
@@ -145,7 +146,7 @@ class OrchestratorTest extends TestCase
 
 	public function testOnQueryVars()
 	{
-		$orchestrator = new Orchestrator('irrelevant');
+		$orchestrator = new Orchestrator();
 
 		$routes = $orchestrator->getContainer()->getRouteCollection();
 		$routes->get('three', 'threehandler');
@@ -157,7 +158,7 @@ class OrchestratorTest extends TestCase
 
 	public function testOnQueryVarsWithInvalidExistingVars()
 	{
-		$orchestrator = new Orchestrator('irrelevant');
+		$orchestrator = new Orchestrator();
 
 		$routes = $orchestrator->getContainer()->getRouteCollection();
 		$routes->get('three', 'threehandler');
@@ -169,7 +170,7 @@ class OrchestratorTest extends TestCase
 
 	public function testOnRequest()
 	{
-		$orchestrator = new Orchestrator('irrelevant');
+		$orchestrator = new Orchestrator();
 		$orchestrator->getContainer()->getRouteCollection()->get('users/{id}', function() {
 			throw new RuntimeException('This should not happen');
 		});
@@ -189,7 +190,7 @@ class OrchestratorTest extends TestCase
 
 	public function testOnRequestMatchedRewriteButInvalidMethod()
 	{
-		$orchestrator = new Orchestrator('irrelevant');
+		$orchestrator = new Orchestrator();
 		$container = $orchestrator->getContainer();
 		$container->getRouteCollection()->get('users/{id}', function() {
 			throw new RuntimeException('This should not happen');
@@ -211,7 +212,7 @@ class OrchestratorTest extends TestCase
 	{
 		$count = 0;
 
-		$orchestrator = new Orchestrator('irrelevant');
+		$orchestrator = new Orchestrator();
 		$container = $orchestrator->getContainer();
 		$container->getRouteCollection()->get('users/{id}', function() use (&$count) {
 			$count++;
@@ -227,7 +228,7 @@ class OrchestratorTest extends TestCase
 	{
 		$foundId = $foundFormat = null;
 
-		$orchestrator = new Orchestrator('irrelevant');
+		$orchestrator = new Orchestrator();
 		$container = $orchestrator->getContainer();
 		$container->getRouteCollection()->get(
 			'users/{id}/{format}',
@@ -257,7 +258,7 @@ class OrchestratorTest extends TestCase
 				$this->count++;
 			}
 		};
-		$orchestrator = new Orchestrator('irrelevant');
+		$orchestrator = new Orchestrator();
 		$container = $orchestrator->getContainer();
 		$container->getRouteCollection()->get('users/{id}', function() use ($responder) {
 			return $responder;
@@ -273,7 +274,8 @@ class OrchestratorTest extends TestCase
 	{
 		$root = vfsStream::setup();
 
-		$orchestrator = new Orchestrator($root->url());
+		$orchestrator = new Orchestrator();
+		$orchestrator->getContainer()->setCacheDir($root->url());
 		$orchestrator->cacheRewrites();
 
 		$this->assertTrue($root->hasChild('rewrite-cache.php'));
@@ -283,10 +285,26 @@ class OrchestratorTest extends TestCase
 	{
 		$root = vfsStream::setup();
 
-		$orchestrator = new Orchestrator($root->url());
+		$orchestrator = new Orchestrator();
+		$orchestrator->getContainer()->setCacheDir($root->url());
 		$orchestrator->getContainer()->setCacheFile('custom-name.php');
 		$orchestrator->cacheRewrites();
 
 		$this->assertTrue($root->hasChild('custom-name.php'));
+	}
+
+	public function testCacheRewritesWhenCacheAlreadyExists()
+	{
+		$this->expectException(RuntimeException::class);
+
+		$root = vfsStream::setup();
+
+		$orchestrator = new Orchestrator();
+		$orchestrator->getContainer()->setCacheDir($root->url());
+		$orchestrator->getContainer()->setCacheFile('cache.php');
+
+		touch($root->url() . '/cache.php');
+
+		$orchestrator->cacheRewrites();
 	}
 }

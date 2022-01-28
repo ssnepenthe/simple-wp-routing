@@ -2,14 +2,15 @@
 
 namespace ToyWpRouting;
 
+use RuntimeException;
+
 class Orchestrator
 {
     protected $container;
 
-    public function __construct(string $cacheDir)
+    public function __construct()
     {
         $this->container = new Container();
-        $this->container->setCacheDir($cacheDir);
     }
 
     public function getContainer()
@@ -32,9 +33,9 @@ class Orchestrator
 
     public function onInit()
     {
-        if (! $this->container->getRewriteCollectionLoader()->hasCachedRewrites()) {
-            do_action('toy_wp_routing.init', $this->container->getRouteCollection());
-        }
+		if (! $this->rewriteCacheIsConfigured() || ! $this->rewritesAreCached()) {
+			do_action('toy_wp_routing.init', $this->container->getRouteCollection());
+		}
     }
 
     public function onOptionRewriteRules($rules)
@@ -61,6 +62,7 @@ class Orchestrator
             return $vars;
         }
 
+		// @todo only active rewrites?
         return array_merge($this->container->getRewriteCollection()->getQueryVariables(), $vars);
     }
 
@@ -82,10 +84,13 @@ class Orchestrator
 
     public function cacheRewrites()
     {
-        $this->container->getRewriteCollectionDumper()->toFile(
-            $this->container->getCacheDir(),
-            $this->container->getCacheFile()
-        );
+		if ($this->container->getRewriteCollectionCache()->exists()) {
+			throw new RuntimeException('@todo');
+		}
+
+		$this->container->getRewriteCollectionCache()->put(
+			$this->container->getRewriteCollection()
+		);
     }
 
     protected function mergeActiveRewriteRules($rules)
@@ -150,6 +155,16 @@ class Orchestrator
             $responder->respond();
         }
     }
+
+	protected function rewriteCacheIsConfigured(): bool
+	{
+		return $this->container->cacheDirIsSet();
+	}
+
+	protected function rewritesAreCached(): bool
+	{
+		return $this->container->getRewriteCollectionCache()->exists();
+	}
 
     protected function shouldModifyRules($rules): bool
     {
