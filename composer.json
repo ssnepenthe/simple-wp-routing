@@ -12,7 +12,7 @@
     "opis/closure": "^3.6",
     "php-di/php-di": "^6.3",
     "phpunit/phpunit": "^9.5",
-    "symfony/var-dumper": "^6.0"
+    "symfony/var-dumper": "^5.0"
   },
   "suggest": {
     "opis/closure": "Required to dump rewrites to a file when using closures for handlers"
