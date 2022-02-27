@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use ToyWpRouting\Rewrite;
 use ToyWpRouting\RewriteCollection;
+use ToyWpRouting\RewriteInterface;
 
 use function DI\value;
 
@@ -54,137 +55,41 @@ class RewriteCollectionTest extends TestCase
 		$this->assertCount(1, $rewriteCollection->getQueryVariables());
 	}
 
-	// public function testAddMany()
-	// {
-	// 	$rewriteCollection = new RewriteCollection();
-	// 	$one = new Rewrite('GET', '/first/', ['first' => 'first'], 'somehandler');
-	// 	$two = new Rewrite('GET', '/second/', ['second' => 'second'], 'somehandler');
-
-	// 	$rewriteCollection->addMany([$one, $two]);
-
-	// 	$this->assertSame([$one, $two], $rewriteCollection->getRewrites());
-	// }
-
-	public function testFilterActiveRewrites()
+	public function testFilter()
 	{
 		$rewriteCollection = new RewriteCollection();
 
-		$one = new Rewrite(
-			['GET'],
-			['/first/' => ['first' => 'first']],
-			'somehandler',
-			'',
-			function() { return true; }
-		);
-
-		$two = new Rewrite(
-			['GET'],
-			['/second/' => ['second' => 'second']],
-			'somehandler',
-			'',
-			function() { return false; }
-		);
-
-		$three = new Rewrite(
-			['GET'],
-			['/third/' => ['third' => 'third']],
-			'somehandler',
-			'',
-			function() { return true; }
-		);
-
-		$four = new Rewrite(
-			['GET'],
-			['/fourth/' => ['fourth' => 'fourth']],
-			'somehandler'
-		);
+		$one = new Rewrite(['GET'], ['/first/' => ['first' => 'first']], 'somehandler');
+		$two = new Rewrite(['POST'], ['/second/' => ['second' => 'second']], 'somehandler');
+		$three = new Rewrite(['GET'], ['/third/' => ['third' => 'third']], 'somehandler');
 
 		$rewriteCollection->add($one);
 		$rewriteCollection->add($two);
 		$rewriteCollection->add($three);
-		$rewriteCollection->add($four);
 
-		$active = $rewriteCollection->filterActiveRewrites();
+		$filtered = $rewriteCollection->filter(function(RewriteInterface $rewrite) {
+			return ['GET'] === $rewrite->getMethods();
+		});
 
-		// Returns a new collection instance.
-		$this->assertInstanceOf(RewriteCollection::class, $active);
-		$this->assertNotSame($rewriteCollection, $active);
+		$this->assertInstanceOf(RewriteCollection::class, $filtered);
+		$this->assertNotSame($rewriteCollection, $filtered);
 
-		// Populated with only rewrites that are considered active.
-		$this->assertSame([$one, $three, $four], $active->getRewrites());
+		$this->assertSame([$one, $three], $filtered->getRewrites());
 	}
 
-	public function testFilterActiveRewritesWhenLocked()
+	public function testFilterWhenLocked()
 	{
 		$rewriteCollection = new RewriteCollection();
-		$one = new Rewrite(['GET'], ['/first/' => ['first' => 'first']], 'somehandler');
 
-		$rewriteCollection->add($one);
+		$rewriteCollection->add(
+			new Rewrite(['GET'], ['/first/' => ['first' => 'first']], 'somehandler')
+		);
 
-		$this->assertFalse($rewriteCollection->filterActiveRewrites()->isLocked());
+		$this->assertFalse($rewriteCollection->filter(function() { return true; })->isLocked());
 
 		$rewriteCollection->lock();
 
-		$this->assertTrue($rewriteCollection->filterActiveRewrites()->isLocked());
-	}
-
-	public function testFilterActiveRewritesWithInvoker()
-	{
-		$runCount = 0;
-
-		$container = new Container();
-		$container->set('truthy', value(true));
-		$container->set('falsy', value(false));
-		$container->set('callback', value(function() use (&$runCount) {
-			$runCount++;
-			return true;
-		}));
-
-		$invoker = new Invoker(new ParameterNameContainerResolver($container), $container);
-
-		$rewriteCollection = new RewriteCollection();
-
-		// Provides container values as params to active callback
-		$one = new Rewrite(
-			['GET'],
-			['/first/' => ['first' => 'first']],
-			'somehandler',
-			'',
-			function($truthy) use (&$runCount) {
-				$runCount++;
-				return $truthy;
-			}
-		);
-
-		$two = new Rewrite(
-			['GET'],
-			['/second/' => ['second' => 'second']],
-			'somehandler',
-			'',
-			function($falsy) use (&$runCount) {
-				$runCount++;
-				return $falsy;
-			}
-		);
-
-		// Can resolve active callback from container.
-		$three = new Rewrite(
-			['GET'],
-			['/third/' => ['third' => 'third']],
-			'somehandler',
-			'',
-			'callback'
-		);
-
-		$rewriteCollection->add($one);
-		$rewriteCollection->add($two);
-		$rewriteCollection->add($three);
-
-		$this->assertSame(
-			[$one, $three],
-			$rewriteCollection->filterActiveRewrites($invoker)->getRewrites()
-		);
-		$this->assertSame(3, $runCount);
+		$this->assertTrue($rewriteCollection->filter(function() { return true; })->isLocked());
 	}
 
 	public function testLock()

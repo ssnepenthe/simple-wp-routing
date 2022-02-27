@@ -11,6 +11,7 @@ class Container
     protected $activeRewriteCollection;
     protected $cacheDir;
     protected $cacheFile;
+	protected $invocationStrategy;
     protected $invoker;
     protected $prefix;
     protected $requestContext;
@@ -23,7 +24,7 @@ class Container
     {
         if (! $this->activeRewriteCollection instanceof RewriteCollection) {
             $this->activeRewriteCollection = $this->getRewriteCollection()
-                ->filterActiveRewrites($this->getInvoker());
+				->filter([$this->getInvocationStrategy(), 'invokeIsActiveCallback']);
         }
 
         return $this->activeRewriteCollection;
@@ -69,6 +70,10 @@ class Container
     public function getInvoker(): InvokerInterface
     {
         if (! $this->invoker instanceof InvokerInterface) {
+			if (! class_exists(Invoker::class)) {
+				throw new RuntimeException('@todo');
+			}
+
             $this->invoker = new Invoker();
         }
 
@@ -181,4 +186,22 @@ class Container
 
         return $this;
     }
+
+	public function getInvocationStrategy(): InvocationStrategyInterface
+	{
+		if (! $this->invocationStrategy instanceof InvocationStrategyInterface) {
+			$this->invocationStrategy = class_exists(Invoker::class)
+				? new InvokerBackedInvocationStrategy($this->getInvoker())
+				: new DefaultInvocationStrategy();
+		}
+
+		return $this->invocationStrategy;
+	}
+
+	public function setInvocationStrategy(InvocationStrategyInterface $invocationStrategy)
+	{
+		$this->invocationStrategy = $invocationStrategy;
+
+		return $this;
+	}
 }

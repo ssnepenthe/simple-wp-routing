@@ -101,21 +101,6 @@ class Orchestrator
         );
     }
 
-    protected function resolveRewriteParameters(RewriteInterface $rewrite, array $queryVars)
-    {
-        $resolved = [];
-
-        // @todo also in snake case?
-        // @todo Test with optional params.
-        foreach ($rewrite->getPrefixedToUnprefixedQueryVariablesMap() as $prefixed => $unprefixed) {
-            if (array_key_exists($prefixed, $queryVars)) {
-                $resolved[$unprefixed] = $queryVars[$prefixed];
-            }
-        }
-
-        return $resolved;
-    }
-
     protected function respondToMatchedRouteHash($queryVars)
     {
         // @todo Make this more testable...
@@ -143,12 +128,10 @@ class Orchestrator
         if (! array_key_exists($method, $candidates)) {
             $responder = new MethodNotAllowedResponder(array_keys($candidates));
         } else {
-            $matchedRewrite = $candidates[$method];
-
-            $responder = $this->container->getInvoker()->call(
-                $matchedRewrite->getHandler(),
-                $this->resolveRewriteParameters($matchedRewrite, $queryVars)
-            );
+			$responder = $this->container
+				->getInvocationStrategy()
+				->withAdditionalContext(compact('queryVars'))
+				->invokeHandler($candidates[$method]);
         }
 
         if ($responder instanceof ResponderInterface) {

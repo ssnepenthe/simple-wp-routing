@@ -2,7 +2,6 @@
 
 namespace ToyWpRouting;
 
-use Invoker\InvokerInterface;
 use RuntimeException;
 
 class RewriteCollection
@@ -39,24 +38,22 @@ class RewriteCollection
         }
     }
 
-    public function filterActiveRewrites(?InvokerInterface $invoker = null)
-    {
-        $collection = new self();
+	public function filter(callable $filterFunction)
+	{
+		$collection = new self();
 
-        foreach ($this->rewrites as $rewrite) {
-            if (! $rewrite->isActive($invoker)) {
-                continue;
-            }
+		foreach ($this->rewrites as $rewrite) {
+			if ($filterFunction($rewrite)) {
+				$collection->add($rewrite);
+			}
+		}
 
-            $collection->add($rewrite);
-        }
+		if ($this->locked) {
+			$collection->lock();
+		}
 
-        if ($this->locked) {
-            $collection->lock();
-        }
-
-        return $collection;
-    }
+		return $collection;
+	}
 
     public function lock()
     {

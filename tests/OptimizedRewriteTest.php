@@ -14,7 +14,8 @@ class OptimizedRewriteTest extends TestCase
 			['someregex' => 'index.php?pfx_var=value'],
 			'somehandler',
 			['pfx_var' => 'var'],
-			['pfx_var']
+			['pfx_var'],
+			'isActiveCallback'
 		);
 
 		$this->assertSame(['someregex' => 'index.php?pfx_var=value'], $rewrite->getRules());
@@ -25,5 +26,6 @@ class OptimizedRewriteTest extends TestCase
 			['pfx_var' => 'var'],
 			$rewrite->getPrefixedToUnprefixedQueryVariablesMap()
 		);
+		$this->assertSame('isActiveCallback', $rewrite->getIsActiveCallback());
 	}
 }

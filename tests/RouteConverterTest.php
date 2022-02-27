@@ -75,7 +75,7 @@ class RouteConverterTest extends TestCase
 
 		$rewrite = (new RouteConverter())->convert($route);
 
-		$this->assertFalse($rewrite->isActive());
+		$this->assertFalse($rewrite->getIsActiveCallback()());
 	}
 
 	public function testConvertCollection()

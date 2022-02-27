@@ -2,8 +2,6 @@
 
 namespace ToyWpRouting;
 
-use Invoker\InvokerInterface;
-
 class Route
 {
     protected $handler;
@@ -47,19 +45,6 @@ class Route
     public function setPrefix(string $prefix)
     {
         $this->prefix = $prefix;
-
-        return $this;
-    }
-
-    public function unless($when)
-    {
-        $this->isActiveCallback = function (?InvokerInterface $invoker = null) use ($when) {
-            if (null !== $invoker) {
-                return ! $invoker->call($when);
-            }
-
-            return ! $when();
-        };
 
         return $this;
     }

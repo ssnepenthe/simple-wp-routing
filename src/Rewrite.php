@@ -2,9 +2,10 @@
 
 namespace ToyWpRouting;
 
-class Rewrite extends AbstractRewrite
+class Rewrite implements RewriteInterface
 {
     protected $handler;
+	protected $isActiveCallback;
     protected $methods;
     protected $prefix;
     protected $regexToQueryArrayMap;
@@ -42,6 +43,11 @@ class Rewrite extends AbstractRewrite
 
         $this->queryVariables = array_keys($this->prefixedToUnprefixedQueryVariablesMap);
     }
+
+	public function getIsActiveCallback()
+	{
+		return $this->isActiveCallback;
+	}
 
     public function getRules(): array
     {
