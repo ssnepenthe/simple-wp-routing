@@ -33,9 +33,9 @@ class Orchestrator
 
     public function onInit()
     {
-		if (! $this->rewriteCacheIsConfigured() || ! $this->rewritesAreCached()) {
-			do_action('toy_wp_routing.init', $this->container->getRouteCollection());
-		}
+        if (! $this->rewriteCacheIsConfigured() || ! $this->rewritesAreCached()) {
+            do_action('toy_wp_routing.init', $this->container->getRouteCollection());
+        }
     }
 
     public function onOptionRewriteRules($rules)
@@ -62,7 +62,7 @@ class Orchestrator
             return $vars;
         }
 
-		// @todo only active rewrites?
+        // @todo only active rewrites?
         return array_merge($this->container->getRewriteCollection()->getQueryVariables(), $vars);
     }
 
@@ -84,13 +84,13 @@ class Orchestrator
 
     public function cacheRewrites()
     {
-		if ($this->container->getRewriteCollectionCache()->exists()) {
-			throw new RuntimeException('@todo');
-		}
+        if ($this->container->getRewriteCollectionCache()->exists()) {
+            throw new RuntimeException('@todo');
+        }
 
-		$this->container->getRewriteCollectionCache()->put(
-			$this->container->getRewriteCollection()
-		);
+        $this->container->getRewriteCollectionCache()->put(
+            $this->container->getRewriteCollection()
+        );
     }
 
     protected function mergeActiveRewriteRules($rules)
@@ -128,10 +128,10 @@ class Orchestrator
         if (! array_key_exists($method, $candidates)) {
             $responder = new MethodNotAllowedResponder(array_keys($candidates));
         } else {
-			$responder = $this->container
-				->getInvocationStrategy()
-				->withAdditionalContext(compact('queryVars'))
-				->invokeHandler($candidates[$method]);
+            $responder = $this->container
+                ->getInvocationStrategy()
+                ->withAdditionalContext(compact('queryVars'))
+                ->invokeHandler($candidates[$method]);
         }
 
         if ($responder instanceof ResponderInterface) {
@@ -139,15 +139,15 @@ class Orchestrator
         }
     }
 
-	protected function rewriteCacheIsConfigured(): bool
-	{
-		return $this->container->cacheDirIsSet();
-	}
+    protected function rewriteCacheIsConfigured(): bool
+    {
+        return $this->container->cacheDirIsSet();
+    }
 
-	protected function rewritesAreCached(): bool
-	{
-		return $this->container->getRewriteCollectionCache()->exists();
-	}
+    protected function rewritesAreCached(): bool
+    {
+        return $this->container->getRewriteCollectionCache()->exists();
+    }
 
     protected function shouldModifyRules($rules): bool
     {

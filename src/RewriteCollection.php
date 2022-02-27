@@ -38,22 +38,22 @@ class RewriteCollection
         }
     }
 
-	public function filter(callable $filterFunction)
-	{
-		$collection = new self();
+    public function filter(callable $filterFunction)
+    {
+        $collection = new self();
 
-		foreach ($this->rewrites as $rewrite) {
-			if ($filterFunction($rewrite)) {
-				$collection->add($rewrite);
-			}
-		}
+        foreach ($this->rewrites as $rewrite) {
+            if ($filterFunction($rewrite)) {
+                $collection->add($rewrite);
+            }
+        }
 
-		if ($this->locked) {
-			$collection->lock();
-		}
+        if ($this->locked) {
+            $collection->lock();
+        }
 
-		return $collection;
-	}
+        return $collection;
+    }
 
     public function lock()
     {

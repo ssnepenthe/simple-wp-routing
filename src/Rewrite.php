@@ -5,7 +5,7 @@ namespace ToyWpRouting;
 class Rewrite implements RewriteInterface
 {
     protected $handler;
-	protected $isActiveCallback;
+    protected $isActiveCallback;
     protected $methods;
     protected $prefix;
     protected $regexToQueryArrayMap;
@@ -44,10 +44,10 @@ class Rewrite implements RewriteInterface
         $this->queryVariables = array_keys($this->prefixedToUnprefixedQueryVariablesMap);
     }
 
-	public function getIsActiveCallback()
-	{
-		return $this->isActiveCallback;
-	}
+    public function getIsActiveCallback()
+    {
+        return $this->isActiveCallback;
+    }
 
     public function getRules(): array
     {

@@ -12,27 +12,33 @@ use function DI\value;
 
 class RouteTest extends TestCase
 {
-	public function testSetPrefix()
-	{
-		$route = new Route(['GET'], 'someroutestring', function() {});
+    public function testSetPrefix()
+    {
+        $route = new Route(['GET'], 'someroutestring', function () {
+        });
 
-		$this->assertSame('', $route->getPrefix());
+        $this->assertSame('', $route->getPrefix());
 
-		$route->setPrefix('pfx_');
+        $route->setPrefix('pfx_');
 
-		$this->assertSame('pfx_', $route->getPrefix());
-	}
+        $this->assertSame('pfx_', $route->getPrefix());
+    }
 
-	public function testWhen()
-	{
-		$route = new Route(['GET'], 'someroutestring', function() {});
+    public function testWhen()
+    {
+        $route = new Route(['GET'], 'someroutestring', function () {
+        });
 
-		$route->when(function() { return true; });
+        $route->when(function () {
+            return true;
+        });
 
-		$this->assertTrue(($route->getIsActiveCallback())());
+        $this->assertTrue(($route->getIsActiveCallback())());
 
-		$route->when(function() { return false; });
+        $route->when(function () {
+            return false;
+        });
 
-		$this->assertFalse(($route->getIsActiveCallback())());
-	}
+        $this->assertFalse(($route->getIsActiveCallback())());
+    }
 }

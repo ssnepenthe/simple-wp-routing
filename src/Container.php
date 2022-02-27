@@ -11,12 +11,12 @@ class Container
     protected $activeRewriteCollection;
     protected $cacheDir;
     protected $cacheFile;
-	protected $invocationStrategy;
+    protected $invocationStrategy;
     protected $invoker;
     protected $prefix;
     protected $requestContext;
     protected $rewriteCollection;
-	protected $rewriteCollectionCache;
+    protected $rewriteCollectionCache;
     protected $routeCollection;
     protected $routeConverter;
 
@@ -24,16 +24,16 @@ class Container
     {
         if (! $this->activeRewriteCollection instanceof RewriteCollection) {
             $this->activeRewriteCollection = $this->getRewriteCollection()
-				->filter([$this->getInvocationStrategy(), 'invokeIsActiveCallback']);
+                ->filter([$this->getInvocationStrategy(), 'invokeIsActiveCallback']);
         }
 
         return $this->activeRewriteCollection;
     }
 
-	public function cacheDirIsSet(): bool
-	{
-		return is_string($this->cacheDir);
-	}
+    public function cacheDirIsSet(): bool
+    {
+        return is_string($this->cacheDir);
+    }
 
     public function getCacheDir(): string
     {
@@ -70,9 +70,9 @@ class Container
     public function getInvoker(): InvokerInterface
     {
         if (! $this->invoker instanceof InvokerInterface) {
-			if (! class_exists(Invoker::class)) {
-				throw new RuntimeException('@todo');
-			}
+            if (! class_exists(Invoker::class)) {
+                throw new RuntimeException('@todo');
+            }
 
             $this->invoker = new Invoker();
         }
@@ -122,38 +122,38 @@ class Container
     public function getRewriteCollection(): RewriteCollection
     {
         if (! $this->rewriteCollection instanceof RewriteCollection) {
-			if ($this->cacheDirIsSet() && $this->getRewriteCollectionCache()->exists()) {
-				$this->rewriteCollection = $this->getRewriteCollectionCache()->get();
-			} else {
-				$this->rewriteCollection = $this->getRouteConverter()->convertCollection(
-					$this->getRouteCollection()
-				);
+            if ($this->cacheDirIsSet() && $this->getRewriteCollectionCache()->exists()) {
+                $this->rewriteCollection = $this->getRewriteCollectionCache()->get();
+            } else {
+                $this->rewriteCollection = $this->getRouteConverter()->convertCollection(
+                    $this->getRouteCollection()
+                );
 
-				$this->getRouteCollection()->lock();
-				$this->rewriteCollection->lock();
-			}
+                $this->getRouteCollection()->lock();
+                $this->rewriteCollection->lock();
+            }
         }
 
         return $this->rewriteCollection;
     }
 
-	public function resetRewriteCollection()
-	{
-		$this->rewriteCollection = null;
-	}
+    public function resetRewriteCollection()
+    {
+        $this->rewriteCollection = null;
+    }
 
-	// @todo Interface
-	public function getRewriteCollectionCache(): RewriteCollectionCache
-	{
-		if (! $this->rewriteCollectionCache instanceof RewriteCollectionCache) {
-			$this->rewriteCollectionCache = new RewriteCollectionCache(
-				$this->getCacheDir(),
-				$this->getCacheFile()
-			);
-		}
+    // @todo Interface
+    public function getRewriteCollectionCache(): RewriteCollectionCache
+    {
+        if (! $this->rewriteCollectionCache instanceof RewriteCollectionCache) {
+            $this->rewriteCollectionCache = new RewriteCollectionCache(
+                $this->getCacheDir(),
+                $this->getCacheFile()
+            );
+        }
 
-		return $this->rewriteCollectionCache;
-	}
+        return $this->rewriteCollectionCache;
+    }
 
     public function getRouteCollection(): RouteCollection
     {
@@ -187,21 +187,21 @@ class Container
         return $this;
     }
 
-	public function getInvocationStrategy(): InvocationStrategyInterface
-	{
-		if (! $this->invocationStrategy instanceof InvocationStrategyInterface) {
-			$this->invocationStrategy = class_exists(Invoker::class)
-				? new InvokerBackedInvocationStrategy($this->getInvoker())
-				: new DefaultInvocationStrategy();
-		}
+    public function getInvocationStrategy(): InvocationStrategyInterface
+    {
+        if (! $this->invocationStrategy instanceof InvocationStrategyInterface) {
+            $this->invocationStrategy = class_exists(Invoker::class)
+                ? new InvokerBackedInvocationStrategy($this->getInvoker())
+                : new DefaultInvocationStrategy();
+        }
 
-		return $this->invocationStrategy;
-	}
+        return $this->invocationStrategy;
+    }
 
-	public function setInvocationStrategy(InvocationStrategyInterface $invocationStrategy)
-	{
-		$this->invocationStrategy = $invocationStrategy;
+    public function setInvocationStrategy(InvocationStrategyInterface $invocationStrategy)
+    {
+        $this->invocationStrategy = $invocationStrategy;
 
-		return $this;
-	}
+        return $this;
+    }
 }

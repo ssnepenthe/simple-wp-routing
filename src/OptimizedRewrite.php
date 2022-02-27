@@ -5,7 +5,7 @@ namespace ToyWpRouting;
 class OptimizedRewrite implements RewriteInterface
 {
     protected $handler;
-	protected $isActiveCallback;
+    protected $isActiveCallback;
     protected $methods;
     protected $prefixedToUnprefixedQueryVariablesMap;
     protected $queryVariables;
@@ -27,10 +27,10 @@ class OptimizedRewrite implements RewriteInterface
         $this->isActiveCallback = $isActiveCallback;
     }
 
-	public function getIsActiveCallback()
-	{
-		return $this->isActiveCallback;
-	}
+    public function getIsActiveCallback()
+    {
+        return $this->isActiveCallback;
+    }
 
     public function getRules(): array
     {
