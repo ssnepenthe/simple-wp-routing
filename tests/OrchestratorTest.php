@@ -1,17 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ToyWpRouting\Tests;
 
-use ToyWpRouting\Orchestrator;
-use ToyWpRouting\RequestContext;
-use ToyWpRouting\ResponderInterface;
-use ToyWpRouting\RouteCollection;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use ToyWpRouting\MethodNotAllowedResponder;
+use ToyWpRouting\Orchestrator;
+use ToyWpRouting\RequestContext;
+use ToyWpRouting\ResponderInterface;
+use ToyWpRouting\RouteCollection;
 
 use function Brain\Monkey\Actions\expectDone;
 use function Brain\Monkey\setUp;
@@ -32,6 +34,44 @@ class OrchestratorTest extends TestCase
     {
         tearDown();
         parent::tearDown();
+    }
+
+    public function testCacheRewrites()
+    {
+        $root = vfsStream::setup();
+
+        $orchestrator = new Orchestrator();
+        $orchestrator->getContainer()->setCacheDir($root->url());
+        $orchestrator->cacheRewrites();
+
+        $this->assertTrue($root->hasChild('rewrite-cache.php'));
+    }
+
+    public function testCacheRewritesWhenCacheAlreadyExists()
+    {
+        $this->expectException(RuntimeException::class);
+
+        $root = vfsStream::setup();
+
+        $orchestrator = new Orchestrator();
+        $orchestrator->getContainer()->setCacheDir($root->url());
+        $orchestrator->getContainer()->setCacheFile('cache.php');
+
+        touch($root->url() . '/cache.php');
+
+        $orchestrator->cacheRewrites();
+    }
+
+    public function testCacheRewritesWithCustomFilename()
+    {
+        $root = vfsStream::setup();
+
+        $orchestrator = new Orchestrator();
+        $orchestrator->getContainer()->setCacheDir($root->url());
+        $orchestrator->getContainer()->setCacheFile('custom-name.php');
+        $orchestrator->cacheRewrites();
+
+        $this->assertTrue($root->hasChild('custom-name.php'));
     }
 
     public function testOnInit()
@@ -192,6 +232,22 @@ class OrchestratorTest extends TestCase
         $orchestrator->onRequest(['matchedRoute' => 'doesntmatter']);
     }
 
+    public function testOnRequestMatchedRewrite()
+    {
+        $count = 0;
+
+        $orchestrator = new Orchestrator();
+        $container = $orchestrator->getContainer();
+        $container->getRouteCollection()->get('users/{id}', function () use (&$count) {
+            $count++;
+        });
+        $container->setRequestContext(new RequestContext('GET', []));
+
+        $orchestrator->onRequest(['matchedRoute' => md5('^users/([^/]+)$')]);
+
+        $this->assertSame(1, $count);
+    }
+
     public function testOnRequestMatchedRewriteButInvalidMethod()
     {
         $orchestrator = new Orchestrator();
@@ -212,20 +268,25 @@ class OrchestratorTest extends TestCase
         $this->assertNotFalse(has_filter('wp_headers', "{$fqcn}->onWpHeaders()"));
     }
 
-    public function testOnRequestMatchedRewrite()
+    public function testOnRequestMatchedRewriteWithResponderReturnedFromHandler()
     {
-        $count = 0;
-
+        $responder = new class () implements ResponderInterface {
+            public $count = 0;
+            public function respond()
+            {
+                $this->count++;
+            }
+        };
         $orchestrator = new Orchestrator();
         $container = $orchestrator->getContainer();
-        $container->getRouteCollection()->get('users/{id}', function () use (&$count) {
-            $count++;
+        $container->getRouteCollection()->get('users/{id}', function () use ($responder) {
+            return $responder;
         });
         $container->setRequestContext(new RequestContext('GET', []));
 
         $orchestrator->onRequest(['matchedRoute' => md5('^users/([^/]+)$')]);
 
-        $this->assertSame(1, $count);
+        $this->assertSame(1, $responder->count);
     }
 
     public function testOnRequestMatchedRewriteWithVariables()
@@ -251,64 +312,5 @@ class OrchestratorTest extends TestCase
 
         $this->assertSame('123', $foundId);
         $this->assertSame('json', $foundFormat);
-    }
-
-    public function testOnRequestMatchedRewriteWithResponderReturnedFromHandler()
-    {
-        $responder = new class () implements ResponderInterface {
-            public $count = 0;
-            public function respond()
-            {
-                $this->count++;
-            }
-        };
-        $orchestrator = new Orchestrator();
-        $container = $orchestrator->getContainer();
-        $container->getRouteCollection()->get('users/{id}', function () use ($responder) {
-            return $responder;
-        });
-        $container->setRequestContext(new RequestContext('GET', []));
-
-        $orchestrator->onRequest(['matchedRoute' => md5('^users/([^/]+)$')]);
-
-        $this->assertSame(1, $responder->count);
-    }
-
-    public function testCacheRewrites()
-    {
-        $root = vfsStream::setup();
-
-        $orchestrator = new Orchestrator();
-        $orchestrator->getContainer()->setCacheDir($root->url());
-        $orchestrator->cacheRewrites();
-
-        $this->assertTrue($root->hasChild('rewrite-cache.php'));
-    }
-
-    public function testCacheRewritesWithCustomFilename()
-    {
-        $root = vfsStream::setup();
-
-        $orchestrator = new Orchestrator();
-        $orchestrator->getContainer()->setCacheDir($root->url());
-        $orchestrator->getContainer()->setCacheFile('custom-name.php');
-        $orchestrator->cacheRewrites();
-
-        $this->assertTrue($root->hasChild('custom-name.php'));
-    }
-
-    public function testCacheRewritesWhenCacheAlreadyExists()
-    {
-        $this->expectException(RuntimeException::class);
-
-        $root = vfsStream::setup();
-
-        $orchestrator = new Orchestrator();
-        $orchestrator->getContainer()->setCacheDir($root->url());
-        $orchestrator->getContainer()->setCacheFile('cache.php');
-
-        touch($root->url() . '/cache.php');
-
-        $orchestrator->cacheRewrites();
     }
 }

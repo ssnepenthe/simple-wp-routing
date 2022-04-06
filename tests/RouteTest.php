@@ -1,14 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ToyWpRouting\Tests;
 
-use DI\Container;
-use Invoker\Invoker;
-use Invoker\ParameterResolver\Container\ParameterNameContainerResolver;
 use PHPUnit\Framework\TestCase;
 use ToyWpRouting\Route;
-
-use function DI\value;
 
 class RouteTest extends TestCase
 {

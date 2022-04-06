@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ToyWpRouting\Tests;
 
 use Closure;
@@ -44,6 +46,17 @@ class RouteCollectionTest extends TestCase
         $this->assertSame('pfx_', $collection->getRoutes()[0]->getPrefix());
     }
 
+    public function testIsLocked()
+    {
+        $collection = new RouteCollection();
+
+        $this->assertFalse($collection->isLocked());
+
+        $collection->lock();
+
+        $this->assertTrue($collection->isLocked());
+    }
+
     public function testShorthandMethods()
     {
         $collection = new RouteCollection();
@@ -83,16 +96,5 @@ class RouteCollectionTest extends TestCase
         $collection->put('someroutestring', function () {
         });
         $this->assertSame(['PUT'], $collection->getRoutes()[0]->getMethods());
-    }
-
-    public function testIsLocked()
-    {
-        $collection = new RouteCollection();
-
-        $this->assertFalse($collection->isLocked());
-
-        $collection->lock();
-
-        $this->assertTrue($collection->isLocked());
     }
 }

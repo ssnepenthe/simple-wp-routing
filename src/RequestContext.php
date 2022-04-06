@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ToyWpRouting;
 
 use RuntimeException;
@@ -16,6 +18,28 @@ class RequestContext
         foreach ($headers as $key => $value) {
             $this->setHeader($key, $value);
         }
+    }
+
+    public static function extractHeaders(array $server)
+    {
+        $headers = [];
+
+        foreach ($server as $key => $value) {
+            $upper = strtoupper($key);
+
+            if (0 === strpos($upper, 'HTTP_')) {
+                $headers[substr($key, 5)] = $value;
+            } elseif (in_array($upper, ['CONTENT_TYPE', 'CONTENT_LENGTH', 'CONTENT_MD5'], true)) {
+                $headers[$key] = $value;
+            }
+        }
+
+        return $headers;
+    }
+
+    public static function fromGlobals()
+    {
+        return new self($_SERVER['REQUEST_METHOD'], self::extractHeaders($_SERVER));
     }
 
     public function getHeader($key, $default = null)
@@ -71,28 +95,6 @@ class RequestContext
     public function getMethod()
     {
         return $this->method;
-    }
-
-    public static function extractHeaders(array $server)
-    {
-        $headers = [];
-
-        foreach ($server as $key => $value) {
-            $upper = strtoupper($key);
-
-            if (0 === strpos($upper, 'HTTP_')) {
-                $headers[substr($key, 5)] = $value;
-            } elseif (in_array($upper, ['CONTENT_TYPE', 'CONTENT_LENGTH', 'CONTENT_MD5'], true)) {
-                $headers[$key] = $value;
-            }
-        }
-
-        return $headers;
-    }
-
-    public static function fromGlobals()
-    {
-        return new self($_SERVER['REQUEST_METHOD'], self::extractHeaders($_SERVER));
     }
 
     protected function setHeader(string $key, string $value)

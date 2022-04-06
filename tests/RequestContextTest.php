@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ToyWpRouting\Tests;
 
 use PHPUnit\Framework\TestCase;
@@ -8,6 +10,34 @@ use ToyWpRouting\RequestContext;
 
 class RequestContextTest extends TestCase
 {
+    public function testExtractHeaders()
+    {
+        $server = [
+            // Non-header values discarded.
+            'SOME_VARIABLE' => 'some-value',
+
+            // HTTP_ prefix stripped.
+            'HTTP_APPLE' => 'banana',
+            'HTTP_ZEBRA' => 'yak',
+
+            // Untouched.
+            'CONTENT_TYPE' => 'text/html',
+            'CONTENT_LENGTH' => '0',
+            'CONTENT_MD5' => 'abcdef',
+
+            // Casing unmodified.
+            'Http_Casing' => 'Looks_Weird',
+        ];
+
+        $this->assertSame([
+            'APPLE' => 'banana',
+            'ZEBRA' => 'yak',
+            'CONTENT_TYPE' => 'text/html',
+            'CONTENT_LENGTH' => '0',
+            'CONTENT_MD5' => 'abcdef',
+            'Casing' => 'Looks_Weird',
+        ], RequestContext::extractHeaders($server));
+    }
     public function testGetHeader()
     {
         $request = new RequestContext('GET', ['Apples' => 'Bananas']);
@@ -93,34 +123,5 @@ class RequestContextTest extends TestCase
         $request = new RequestContext('get', []);
 
         $this->assertSame('GET', $request->getMethod());
-    }
-
-    public function testExtractHeaders()
-    {
-        $server = [
-            // Non-header values discarded.
-            'SOME_VARIABLE' => 'some-value',
-
-            // HTTP_ prefix stripped.
-            'HTTP_APPLE' => 'banana',
-            'HTTP_ZEBRA' => 'yak',
-
-            // Untouched.
-            'CONTENT_TYPE' => 'text/html',
-            'CONTENT_LENGTH' => '0',
-            'CONTENT_MD5' => 'abcdef',
-
-            // Casing unmodified.
-            'Http_Casing' => 'Looks_Weird',
-        ];
-
-        $this->assertSame([
-            'APPLE' => 'banana',
-            'ZEBRA' => 'yak',
-            'CONTENT_TYPE' => 'text/html',
-            'CONTENT_LENGTH' => '0',
-            'CONTENT_MD5' => 'abcdef',
-            'Casing' => 'Looks_Weird',
-        ], RequestContext::extractHeaders($server));
     }
 }

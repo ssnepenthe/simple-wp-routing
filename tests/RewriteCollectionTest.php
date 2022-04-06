@@ -1,17 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ToyWpRouting\Tests;
 
-use DI\Container;
-use Invoker\Invoker;
-use Invoker\ParameterResolver\Container\ParameterNameContainerResolver;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use ToyWpRouting\Rewrite;
 use ToyWpRouting\RewriteCollection;
 use ToyWpRouting\RewriteInterface;
-
-use function DI\value;
 
 class RewriteCollectionTest extends TestCase
 {
@@ -23,18 +20,6 @@ class RewriteCollectionTest extends TestCase
         $rewriteCollection->add($rewrite);
 
         $this->assertSame([$rewrite], $rewriteCollection->getRewrites());
-    }
-
-    public function testAddWhenLocked()
-    {
-        $this->expectException(RuntimeException::class);
-
-        $rewriteCollection = new RewriteCollection();
-        $rewriteCollection->lock();
-
-        $rewriteCollection->add(
-            new Rewrite(['GET'], ['/someregex/' => ['var' => 'value']], 'somehandler')
-        );
     }
 
     public function testAddDuplicateRewrites()
@@ -53,6 +38,18 @@ class RewriteCollectionTest extends TestCase
         $this->assertCount(1, $rewriteCollection->getRewriteRules());
         $this->assertCount(1, $rewriteCollection->getPrefixedToUnprefixedQueryVariablesMap());
         $this->assertCount(1, $rewriteCollection->getQueryVariables());
+    }
+
+    public function testAddWhenLocked()
+    {
+        $this->expectException(RuntimeException::class);
+
+        $rewriteCollection = new RewriteCollection();
+        $rewriteCollection->lock();
+
+        $rewriteCollection->add(
+            new Rewrite(['GET'], ['/someregex/' => ['var' => 'value']], 'somehandler')
+        );
     }
 
     public function testFilter()
@@ -94,17 +91,6 @@ class RewriteCollectionTest extends TestCase
         $this->assertTrue($rewriteCollection->filter(function () {
             return true;
         })->isLocked());
-    }
-
-    public function testLock()
-    {
-        $rewriteCollection = new RewriteCollection();
-
-        $this->assertFalse($rewriteCollection->isLocked());
-
-        $rewriteCollection->lock();
-
-        $this->assertTrue($rewriteCollection->isLocked());
     }
 
     public function testGetRewritesByRegexHash()
@@ -224,5 +210,16 @@ class RewriteCollectionTest extends TestCase
             '/third/' => 'index.php?pfx_third=third',
             '/fourth/' => 'index.php?pfx_fourth=fourth',
         ], $rewriteCollection->getRewriteRules());
+    }
+
+    public function testLock()
+    {
+        $rewriteCollection = new RewriteCollection();
+
+        $this->assertFalse($rewriteCollection->isLocked());
+
+        $rewriteCollection->lock();
+
+        $this->assertTrue($rewriteCollection->isLocked());
     }
 }

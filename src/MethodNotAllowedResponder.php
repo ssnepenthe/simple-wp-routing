@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ToyWpRouting;
 
 class MethodNotAllowedResponder implements ResponderInterface
@@ -9,15 +11,6 @@ class MethodNotAllowedResponder implements ResponderInterface
     public function __construct(array $allowedMethods)
     {
         $this->allowedMethods = $allowedMethods;
-    }
-
-    public function respond()
-    {
-        add_filter('body_class', [$this, 'onBodyClass']);
-        add_filter('document_title_parts', [$this, 'onDocumentTitleParts']);
-        add_action('parse_query', [$this, 'onParseQuery']);
-        add_filter('template_include', [$this, 'onTemplateInclude']);
-        add_filter('wp_headers', [$this, 'onWpHeaders']);
     }
 
     public function onBodyClass($classes)
@@ -72,5 +65,14 @@ class MethodNotAllowedResponder implements ResponderInterface
         }
 
         return $headers;
+    }
+
+    public function respond()
+    {
+        add_filter('body_class', [$this, 'onBodyClass']);
+        add_filter('document_title_parts', [$this, 'onDocumentTitleParts']);
+        add_action('parse_query', [$this, 'onParseQuery']);
+        add_filter('template_include', [$this, 'onTemplateInclude']);
+        add_filter('wp_headers', [$this, 'onWpHeaders']);
     }
 }

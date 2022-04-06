@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ToyWpRouting\Tests;
 
 use PHPUnit\Framework\TestCase;
@@ -17,28 +19,6 @@ class RewriteTest extends TestCase
         $this->assertSame(['var'], $rewrite->getQueryVariables());
         $this->assertSame(['var' => 'var'], $rewrite->getPrefixedToUnprefixedQueryVariablesMap());
         $this->assertNull($rewrite->getIsActiveCallback());
-    }
-
-    public function testWithPrefix()
-    {
-        $rewrite = new Rewrite(['GET'], ['someregex' => ['var' => 'value']], 'somehandler', 'pfx_');
-
-        $this->assertSame(['someregex' => 'index.php?pfx_var=value'], $rewrite->getRules());
-        $this->assertSame(['pfx_var'], $rewrite->getQueryVariables());
-        $this->assertSame(['pfx_var' => 'var'], $rewrite->getPrefixedToUnprefixedQueryVariablesMap());
-    }
-
-    public function testWithIsActiveCallback()
-    {
-        $rewrite = new Rewrite(
-            ['GET'],
-            ['someregex' => ['var' => 'value']],
-            'somehandler',
-            '',
-            'someisactivecallback'
-        );
-
-        $this->assertSame('someisactivecallback', $rewrite->getIsActiveCallback());
     }
 
     public function testMethodsAreUppercased()
@@ -69,5 +49,27 @@ class RewriteTest extends TestCase
             'var' => 'var',
             'anothervar' => 'anothervar',
         ], $rewrite->getPrefixedToUnprefixedQueryVariablesMap());
+    }
+
+    public function testWithIsActiveCallback()
+    {
+        $rewrite = new Rewrite(
+            ['GET'],
+            ['someregex' => ['var' => 'value']],
+            'somehandler',
+            '',
+            'someisactivecallback'
+        );
+
+        $this->assertSame('someisactivecallback', $rewrite->getIsActiveCallback());
+    }
+
+    public function testWithPrefix()
+    {
+        $rewrite = new Rewrite(['GET'], ['someregex' => ['var' => 'value']], 'somehandler', 'pfx_');
+
+        $this->assertSame(['someregex' => 'index.php?pfx_var=value'], $rewrite->getRules());
+        $this->assertSame(['pfx_var'], $rewrite->getQueryVariables());
+        $this->assertSame(['pfx_var' => 'var'], $rewrite->getPrefixedToUnprefixedQueryVariablesMap());
     }
 }

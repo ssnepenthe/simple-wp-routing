@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ToyWpRouting\Tests;
 
 use FastRoute\BadRouteException;
@@ -11,24 +13,6 @@ use ToyWpRouting\FastRouteRouteParser;
  */
 class FastRouteRouteParserTest extends TestCase
 {
-    /** @dataProvider provideTestParse */
-    public function testParse($input, $output)
-    {
-        $parser = new FastRouteRouteParser();
-
-        $this->assertSame($output, $parser->parse($input));
-    }
-
-    /** @dataProvider provideTestParseError */
-    public function testParseError($input, $exceptionMessage)
-    {
-        $this->expectException(BadRouteException::class);
-        $this->expectExceptionMessage($exceptionMessage);
-
-        $parser = new FastRouteRouteParser();
-        $parser->parse($input);
-    }
-
     public function provideTestParse()
     {
         return [
@@ -190,5 +174,22 @@ class FastRouteRouteParserTest extends TestCase
                 'Optional segments can only occur at the end of a route',
             ],
         ];
+    }
+    /** @dataProvider provideTestParse */
+    public function testParse($input, $output)
+    {
+        $parser = new FastRouteRouteParser();
+
+        $this->assertSame($output, $parser->parse($input));
+    }
+
+    /** @dataProvider provideTestParseError */
+    public function testParseError($input, $exceptionMessage)
+    {
+        $this->expectException(BadRouteException::class);
+        $this->expectExceptionMessage($exceptionMessage);
+
+        $parser = new FastRouteRouteParser();
+        $parser->parse($input);
     }
 }

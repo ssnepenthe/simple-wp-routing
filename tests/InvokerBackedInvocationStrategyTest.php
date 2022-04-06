@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ToyWpRouting\Tests;
 
 use Invoker\Invoker;
@@ -57,32 +59,6 @@ class InvokerBackedInvocationStrategyTest extends TestCase
         $this->assertSame('returnvalue', $returnValue);
     }
 
-    public function testInvokeHandlerWithPrefixedAdditionalParameters()
-    {
-        $invocationCount = 0;
-        $invocationParam = [];
-
-        $strategy = new InvokerBackedInvocationStrategy(new Invoker());
-        $strategy->withAdditionalContext(['queryVars' => ['pfx_one' => 'testvalue']]);
-        $rewrite = new Rewrite(
-            ['GET'],
-            ['^one$' => ['one' => '$matches[1]']],
-            function ($one) use (&$invocationCount, &$invocationParam) {
-                $invocationCount++;
-                $invocationParam = $one;
-
-                return 'returnvalue';
-            },
-            'pfx_'
-        );
-
-        $returnValue  = $strategy->invokeHandler($rewrite);
-
-        $this->assertSame(1, $invocationCount);
-        $this->assertSame('testvalue', $invocationParam);
-        $this->assertSame('returnvalue', $returnValue);
-    }
-
     public function testInvokeHandlerWithContainerBackedInvoker()
     {
         $container = new class () implements ContainerInterface {
@@ -115,6 +91,32 @@ class InvokerBackedInvocationStrategyTest extends TestCase
         $returnValue = $strategy->invokeHandler($rewrite);
 
         $this->assertSame(1, $container->invocationCount);
+        $this->assertSame('returnvalue', $returnValue);
+    }
+
+    public function testInvokeHandlerWithPrefixedAdditionalParameters()
+    {
+        $invocationCount = 0;
+        $invocationParam = [];
+
+        $strategy = new InvokerBackedInvocationStrategy(new Invoker());
+        $strategy->withAdditionalContext(['queryVars' => ['pfx_one' => 'testvalue']]);
+        $rewrite = new Rewrite(
+            ['GET'],
+            ['^one$' => ['one' => '$matches[1]']],
+            function ($one) use (&$invocationCount, &$invocationParam) {
+                $invocationCount++;
+                $invocationParam = $one;
+
+                return 'returnvalue';
+            },
+            'pfx_'
+        );
+
+        $returnValue  = $strategy->invokeHandler($rewrite);
+
+        $this->assertSame(1, $invocationCount);
+        $this->assertSame('testvalue', $invocationParam);
         $this->assertSame('returnvalue', $returnValue);
     }
 
@@ -151,6 +153,42 @@ class InvokerBackedInvocationStrategyTest extends TestCase
         $this->assertTrue($strategy->invokeIsActiveCallback($one));
         $this->assertFalse($strategy->invokeIsActiveCallback($two));
         $this->assertSame(2, $invocationCount);
+    }
+
+    public function testInvokeIsActiveCallbackWithContainerBackedInvoker()
+    {
+        $container = new class () implements ContainerInterface {
+            public $invocationCount = 0;
+
+            public function get($name)
+            {
+                if ('testisactivecallback' === $name) {
+                    return function () {
+                        $this->invocationCount++;
+
+                        return false;
+                    };
+                }
+            }
+
+            public function has($name)
+            {
+                return 'testisactivecallback' === $name;
+            }
+        };
+
+        $strategy = new InvokerBackedInvocationStrategy(new Invoker(null, $container));
+        $rewrite = new Rewrite(
+            ['GET'],
+            ['^one$' => ['one' => '$matches[1]']],
+            function () {
+            },
+            '',
+            'testisactivecallback'
+        );
+
+        $this->assertFalse($strategy->invokeIsActiveCallback($rewrite));
+        $this->assertSame(1, $container->invocationCount);
     }
 
     public function testInvokeIsActiveCallbackWithNoCallbackSet()
@@ -197,41 +235,5 @@ class InvokerBackedInvocationStrategyTest extends TestCase
         $this->assertTrue($strategy->invokeIsActiveCallback($one));
         $this->assertFalse($strategy->invokeIsActiveCallback($two));
         $this->assertSame(2, $invocationCount);
-    }
-
-    public function testInvokeIsActiveCallbackWithContainerBackedInvoker()
-    {
-        $container = new class () implements ContainerInterface {
-            public $invocationCount = 0;
-
-            public function get($name)
-            {
-                if ('testisactivecallback' === $name) {
-                    return function () {
-                        $this->invocationCount++;
-
-                        return false;
-                    };
-                }
-            }
-
-            public function has($name)
-            {
-                return 'testisactivecallback' === $name;
-            }
-        };
-
-        $strategy = new InvokerBackedInvocationStrategy(new Invoker(null, $container));
-        $rewrite = new Rewrite(
-            ['GET'],
-            ['^one$' => ['one' => '$matches[1]']],
-            function () {
-            },
-            '',
-            'testisactivecallback'
-        );
-
-        $this->assertFalse($strategy->invokeIsActiveCallback($rewrite));
-        $this->assertSame(1, $container->invocationCount);
     }
 }

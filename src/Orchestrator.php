@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ToyWpRouting;
 
 use RuntimeException;
@@ -11,6 +13,17 @@ class Orchestrator
     public function __construct()
     {
         $this->container = new Container();
+    }
+
+    public function cacheRewrites()
+    {
+        if ($this->container->getRewriteCollectionCache()->exists()) {
+            throw new RuntimeException('@todo');
+        }
+
+        $this->container->getRewriteCollectionCache()->put(
+            $this->container->getRewriteCollection()
+        );
     }
 
     public function getContainer()
@@ -80,17 +93,6 @@ class Orchestrator
         }
 
         return $this->mergeActiveRewriteRules($rules);
-    }
-
-    public function cacheRewrites()
-    {
-        if ($this->container->getRewriteCollectionCache()->exists()) {
-            throw new RuntimeException('@todo');
-        }
-
-        $this->container->getRewriteCollectionCache()->put(
-            $this->container->getRewriteCollection()
-        );
     }
 
     protected function mergeActiveRewriteRules($rules)

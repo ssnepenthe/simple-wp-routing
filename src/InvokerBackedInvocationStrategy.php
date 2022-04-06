@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ToyWpRouting;
 
 use Invoker\InvokerInterface;
 
 class InvokerBackedInvocationStrategy implements InvocationStrategyInterface
 {
-    protected $invoker;
     protected $context = [];
+    protected $invoker;
 
     public function __construct(InvokerInterface $invoker)
     {

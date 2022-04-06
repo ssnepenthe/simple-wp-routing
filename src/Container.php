@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ToyWpRouting;
 
 use Invoker\Invoker;
@@ -20,6 +22,11 @@ class Container
     protected $routeCollection;
     protected $routeConverter;
 
+    public function cacheDirIsSet(): bool
+    {
+        return is_string($this->cacheDir);
+    }
+
     public function getActiveRewriteCollection(): RewriteCollection
     {
         if (! $this->activeRewriteCollection instanceof RewriteCollection) {
@@ -28,11 +35,6 @@ class Container
         }
 
         return $this->activeRewriteCollection;
-    }
-
-    public function cacheDirIsSet(): bool
-    {
-        return is_string($this->cacheDir);
     }
 
     public function getCacheDir(): string
@@ -44,13 +46,6 @@ class Container
         return $this->cacheDir;
     }
 
-    public function setCacheDir(string $cacheDir)
-    {
-        $this->cacheDir = $cacheDir;
-
-        return $this;
-    }
-
     public function getCacheFile(): string
     {
         if (! is_string($this->cacheFile)) {
@@ -60,11 +55,15 @@ class Container
         return $this->cacheFile;
     }
 
-    public function setCacheFile(string $cacheFile)
+    public function getInvocationStrategy(): InvocationStrategyInterface
     {
-        $this->cacheFile = $cacheFile;
+        if (! $this->invocationStrategy instanceof InvocationStrategyInterface) {
+            $this->invocationStrategy = class_exists(Invoker::class)
+                ? new InvokerBackedInvocationStrategy($this->getInvoker())
+                : new DefaultInvocationStrategy();
+        }
 
-        return $this;
+        return $this->invocationStrategy;
     }
 
     public function getInvoker(): InvokerInterface
@@ -80,13 +79,6 @@ class Container
         return $this->invoker;
     }
 
-    public function setInvoker(InvokerInterface $invoker)
-    {
-        $this->invoker = $invoker;
-
-        return $this;
-    }
-
     public function getPrefix(): string
     {
         if (! is_string($this->prefix)) {
@@ -96,13 +88,6 @@ class Container
         return $this->prefix;
     }
 
-    public function setPrefix(string $prefix)
-    {
-        $this->prefix = $prefix;
-
-        return $this;
-    }
-
     public function getRequestContext(): RequestContext
     {
         if (! $this->requestContext instanceof RequestContext) {
@@ -110,13 +95,6 @@ class Container
         }
 
         return $this->requestContext;
-    }
-
-    public function setRequestContext(RequestContext $requestContext)
-    {
-        $this->requestContext = $requestContext;
-
-        return $this;
     }
 
     public function getRewriteCollection(): RewriteCollection
@@ -135,11 +113,6 @@ class Container
         }
 
         return $this->rewriteCollection;
-    }
-
-    public function resetRewriteCollection()
-    {
-        $this->rewriteCollection = null;
     }
 
     // @todo Interface
@@ -164,13 +137,6 @@ class Container
         return $this->routeCollection;
     }
 
-    public function setRouteCollection(RouteCollection $routeCollection)
-    {
-        $this->routeCollection = $routeCollection;
-
-        return $this;
-    }
-
     public function getRouteConverter(): RouteConverter
     {
         if (! $this->routeConverter instanceof RouteConverter) {
@@ -180,27 +146,63 @@ class Container
         return $this->routeConverter;
     }
 
-    public function setRouteConverter(RouteConverter $routeConverter)
+    public function resetRewriteCollection()
     {
-        $this->routeConverter = $routeConverter;
+        $this->rewriteCollection = null;
+    }
+
+    public function setCacheDir(string $cacheDir)
+    {
+        $this->cacheDir = $cacheDir;
 
         return $this;
     }
 
-    public function getInvocationStrategy(): InvocationStrategyInterface
+    public function setCacheFile(string $cacheFile)
     {
-        if (! $this->invocationStrategy instanceof InvocationStrategyInterface) {
-            $this->invocationStrategy = class_exists(Invoker::class)
-                ? new InvokerBackedInvocationStrategy($this->getInvoker())
-                : new DefaultInvocationStrategy();
-        }
+        $this->cacheFile = $cacheFile;
 
-        return $this->invocationStrategy;
+        return $this;
     }
 
     public function setInvocationStrategy(InvocationStrategyInterface $invocationStrategy)
     {
         $this->invocationStrategy = $invocationStrategy;
+
+        return $this;
+    }
+
+    public function setInvoker(InvokerInterface $invoker)
+    {
+        $this->invoker = $invoker;
+
+        return $this;
+    }
+
+    public function setPrefix(string $prefix)
+    {
+        $this->prefix = $prefix;
+
+        return $this;
+    }
+
+    public function setRequestContext(RequestContext $requestContext)
+    {
+        $this->requestContext = $requestContext;
+
+        return $this;
+    }
+
+    public function setRouteCollection(RouteCollection $routeCollection)
+    {
+        $this->routeCollection = $routeCollection;
+
+        return $this;
+    }
+
+    public function setRouteConverter(RouteConverter $routeConverter)
+    {
+        $this->routeConverter = $routeConverter;
 
         return $this;
     }

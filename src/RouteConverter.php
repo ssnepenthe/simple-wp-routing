@@ -1,11 +1,8 @@
 <?php
 
-namespace ToyWpRouting;
+declare(strict_types=1);
 
-use ToyWpRouting\FastRouteRouteParser;
-use ToyWpRouting\Route;
-use ToyWpRouting\RouteCollection;
-use ToyWpRouting\RouteParserInterface;
+namespace ToyWpRouting;
 
 class RouteConverter
 {

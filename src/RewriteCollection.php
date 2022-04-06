@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ToyWpRouting;
 
 use RuntimeException;
@@ -55,11 +57,6 @@ class RewriteCollection
         return $collection;
     }
 
-    public function lock()
-    {
-        $this->locked = true;
-    }
-
     public function getPrefixedToUnprefixedQueryVariablesMap()
     {
         return $this->queryVariables;
@@ -68,6 +65,16 @@ class RewriteCollection
     public function getQueryVariables()
     {
         return array_keys($this->queryVariables);
+    }
+
+    public function getRewriteRules()
+    {
+        return $this->rewriteRules;
+    }
+
+    public function getRewrites()
+    {
+        return $this->rewrites;
     }
 
     public function getRewritesByRegexHash(string $regexHash): array
@@ -79,18 +86,13 @@ class RewriteCollection
         return $this->rewritesByRegexHashAndMethod[$regexHash];
     }
 
-    public function getRewrites()
-    {
-        return $this->rewrites;
-    }
-
-    public function getRewriteRules()
-    {
-        return $this->rewriteRules;
-    }
-
     public function isLocked()
     {
         return $this->locked;
+    }
+
+    public function lock()
+    {
+        $this->locked = true;
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ToyWpRouting;
 
 class OptimizedRewrite implements RewriteInterface
@@ -27,14 +29,14 @@ class OptimizedRewrite implements RewriteInterface
         $this->isActiveCallback = $isActiveCallback;
     }
 
+    public function getHandler()
+    {
+        return $this->handler;
+    }
+
     public function getIsActiveCallback()
     {
         return $this->isActiveCallback;
-    }
-
-    public function getRules(): array
-    {
-        return $this->rules;
     }
 
     public function getMethods(): array
@@ -42,9 +44,9 @@ class OptimizedRewrite implements RewriteInterface
         return $this->methods;
     }
 
-    public function getHandler()
+    public function getPrefixedToUnprefixedQueryVariablesMap(): array
     {
-        return $this->handler;
+        return $this->prefixedToUnprefixedQueryVariablesMap;
     }
 
     public function getQueryVariables(): array
@@ -52,8 +54,8 @@ class OptimizedRewrite implements RewriteInterface
         return $this->queryVariables;
     }
 
-    public function getPrefixedToUnprefixedQueryVariablesMap(): array
+    public function getRules(): array
     {
-        return $this->prefixedToUnprefixedQueryVariablesMap;
+        return $this->rules;
     }
 }

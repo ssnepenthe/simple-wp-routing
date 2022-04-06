@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ToyWpRouting\Tests;
 
 use Mockery;
@@ -25,20 +27,6 @@ class MethodNotAllowedResponderTest extends TestCase
     {
         tearDown();
         parent::tearDown();
-    }
-
-    public function testRespond()
-    {
-        $responder = new MethodNotAllowedResponder(['GET', 'POST']);
-        $responder->respond();
-
-        $fqcn = MethodNotAllowedResponder::class;
-
-        $this->assertNotFalse(has_filter('body_class', "{$fqcn}->onBodyClass()"));
-        $this->assertNotFalse(has_filter('document_title_parts', "{$fqcn}->onDocumentTitleParts()"));
-        $this->assertNotFalse(has_action('parse_query', "{$fqcn}->onParseQuery()"));
-        $this->assertNotFalse(has_filter('template_include', "{$fqcn}->onTemplateInclude()"));
-        $this->assertNotFalse(has_filter('wp_headers', "{$fqcn}->onWpHeaders()"));
     }
 
     public function testOnBodyClass()
@@ -144,5 +132,19 @@ class MethodNotAllowedResponderTest extends TestCase
         $responder = new MethodNotAllowedResponder(['get', 'post']);
 
         $this->assertSame(['Allow' => 'GET, POST'], $responder->onWpHeaders(['Allow' => 'PUT']));
+    }
+
+    public function testRespond()
+    {
+        $responder = new MethodNotAllowedResponder(['GET', 'POST']);
+        $responder->respond();
+
+        $fqcn = MethodNotAllowedResponder::class;
+
+        $this->assertNotFalse(has_filter('body_class', "{$fqcn}->onBodyClass()"));
+        $this->assertNotFalse(has_filter('document_title_parts', "{$fqcn}->onDocumentTitleParts()"));
+        $this->assertNotFalse(has_action('parse_query', "{$fqcn}->onParseQuery()"));
+        $this->assertNotFalse(has_filter('template_include', "{$fqcn}->onTemplateInclude()"));
+        $this->assertNotFalse(has_filter('wp_headers', "{$fqcn}->onWpHeaders()"));
     }
 }

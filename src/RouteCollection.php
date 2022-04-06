@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ToyWpRouting;
 
 use RuntimeException;
@@ -51,6 +53,21 @@ class RouteCollection
         return $this->add(['GET', 'HEAD'], $route, $handler);
     }
 
+    public function getPrefix(): string
+    {
+        return $this->prefix;
+    }
+
+    public function getRoutes(): array
+    {
+        return $this->routes;
+    }
+
+    public function isLocked(): bool
+    {
+        return $this->locked;
+    }
+
     public function lock()
     {
         $this->locked = true;
@@ -76,20 +93,5 @@ class RouteCollection
     public function put(string $route, $handler)
     {
         return $this->add(['PUT'], $route, $handler);
-    }
-
-    public function getPrefix(): string
-    {
-        return $this->prefix;
-    }
-
-    public function getRoutes(): array
-    {
-        return $this->routes;
-    }
-
-    public function isLocked(): bool
-    {
-        return $this->locked;
     }
 }

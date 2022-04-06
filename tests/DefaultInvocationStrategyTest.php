@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ToyWpRouting\Tests;
 
 use InvalidArgumentException;
@@ -127,23 +129,6 @@ class DefaultInvocationStrategyTest extends TestCase
         $this->assertTrue($isActive);
     }
 
-    public function testInvokeIsActiveCallbackWithNonCallableCallback()
-    {
-        $this->expectException(InvalidArgumentException::class);
-
-        $strategy = new DefaultInvocationStrategy();
-        $rewrite = new Rewrite(
-            ['GET'],
-            ['^one$' => ['one' => 'one']],
-            function () {
-            },
-            '',
-            'noncallablevalue'
-        );
-
-        $strategy->invokeIsActiveCallback($rewrite);
-    }
-
     public function testInvokeIsActiveCallbackWithNonBooleanReturnValue()
     {
         $invocationCount = 0;
@@ -177,5 +162,22 @@ class DefaultInvocationStrategyTest extends TestCase
         $this->assertTrue($strategy->invokeIsActiveCallback($one));
         $this->assertFalse($strategy->invokeIsActiveCallback($two));
         $this->assertSame(2, $invocationCount);
+    }
+
+    public function testInvokeIsActiveCallbackWithNonCallableCallback()
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $strategy = new DefaultInvocationStrategy();
+        $rewrite = new Rewrite(
+            ['GET'],
+            ['^one$' => ['one' => 'one']],
+            function () {
+            },
+            '',
+            'noncallablevalue'
+        );
+
+        $strategy->invokeIsActiveCallback($rewrite);
     }
 }
