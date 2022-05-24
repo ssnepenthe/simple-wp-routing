@@ -9,40 +9,19 @@ class Rewrite implements RewriteInterface
     protected $handler;
     protected $isActiveCallback;
     protected $methods;
-    protected $prefix;
-    protected $prefixedToUnprefixedQueryVariablesMap = [];
     protected $queryVariables;
-    protected $regexToQueryArrayMap;
-    protected $rules = [];
+    protected $rewriteRules;
+    protected $rules;
 
-    public function __construct(
-        array $methods,
-        array $regexToQueryArrayMap,
-        $handler,
-        string $prefix = '',
-        $isActiveCallback = null
-    ) {
-        $this->methods = array_map('strtoupper', $methods);
-        $this->regexQueryArrayPairs = $regexToQueryArrayMap;
+    public function __construct(array $methods, array $rules, $handler)
+    {
+        // @todo Create setters for methods and rules instead?
+        // @todo assert methods and rules are not empty?
+        $this->methods = array_map(fn (string $method) => strtoupper($method), $methods);
+        $this->rules = (fn (RewriteRuleInterface ...$rules) => $rules)(...$rules);
         $this->handler = $handler;
-        $this->prefix = $prefix;
-        $this->isActiveCallback = $isActiveCallback;
 
-        foreach ($regexToQueryArrayMap as $regex => $queryArray) {
-            $prefixedQueryArray = [];
-
-            foreach ($queryArray as $variable => $value) {
-                $prefixedVariable = $this->applyPrefix($variable);
-
-                $prefixedQueryArray[$prefixedVariable] = $value;
-
-                $this->prefixedToUnprefixedQueryVariablesMap[$prefixedVariable] = $variable;
-            }
-
-            $this->rules[$regex] = $this->buildQuery($prefixedQueryArray);
-        }
-
-        $this->queryVariables = array_keys($this->prefixedToUnprefixedQueryVariablesMap);
+        $this->computeAdditionalState();
     }
 
     public function getHandler()
@@ -62,12 +41,17 @@ class Rewrite implements RewriteInterface
 
     public function getPrefixedToUnprefixedQueryVariablesMap(): array
     {
-        return $this->prefixedToUnprefixedQueryVariablesMap;
+        return $this->queryVariables;
     }
 
     public function getQueryVariables(): array
     {
-        return $this->queryVariables;
+        return array_keys($this->queryVariables);
+    }
+
+    public function getRewriteRules(): array
+    {
+        return $this->rewriteRules;
     }
 
     public function getRules(): array
@@ -75,16 +59,31 @@ class Rewrite implements RewriteInterface
         return $this->rules;
     }
 
-    protected function applyPrefix(string $value): string
+    public function setIsActiveCallback($isActiveCallback): self
     {
-        // @todo verify $value doesn't already start with $this->prefix?
-        return "{$this->prefix}{$value}";
+        $this->isActiveCallback = $isActiveCallback;
+
+        return $this;
     }
 
-    protected function buildQuery(array $queryArray): string
+    protected function computeAdditionalState(): void
     {
-        return 'index.php?' . implode('&', array_map(function ($key, $value) {
-            return "{$key}={$value}";
-        }, array_keys($queryArray), $queryArray));
+        foreach ($this->rules as $rule) {
+            // @todo Eliminate rewrite rules at this level? Handled by rewrite collection.
+            $this->rewriteRules[$rule->getRegex()] = $rule->getQuery();
+
+            $prefixedQueryVariables = array_keys($rule->getPrefixedQueryArray());
+            $queryVariables = array_keys($rule->getQueryArray());
+
+            $count = count($queryVariables);
+
+            // @todo ???
+            // assert(count($queryVariables) === count($prefixedQueryVariables));
+
+            // @todo array_combine()??
+            for ($i = 0; $i < $count; $i++) {
+                $this->queryVariables[$prefixedQueryVariables[$i]] = $queryVariables[$i];
+            }
+        }
     }
 }

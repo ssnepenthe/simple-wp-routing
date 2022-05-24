@@ -49,10 +49,19 @@ class RewriteCollectionCache
                 )->getClosure();
             }
 
+            $rules = array_map(fn ($rule) => new OptimizedRewriteRule(
+                $rule['hash'],
+                $rule['prefixedQueryArray'],
+                $rule['query'],
+                $rule['queryArray'],
+                $rule['regex']
+            ), $rewriteArray['rules']);
+
             $rewriteCollection->add(
                 new OptimizedRewrite(
                     $rewriteArray['methods'],
-                    $rewriteArray['rules'],
+                    $rewriteArray['rewriteRules'],
+                    $rules,
                     $rewriteArray['handler'],
                     $rewriteArray['prefixedToUnprefixedQueryVariablesMap'],
                     $rewriteArray['queryVariables'],
@@ -91,15 +100,24 @@ class RewriteCollectionCache
 
             $prefixedToUnprefixedQVMap = $rewrite->getPrefixedToUnprefixedQueryVariablesMap();
 
+            $rules = array_map(fn (RewriteRuleInterface $rule) => [
+                'hash' => $rule->getHash(),
+                'prefixedQueryArray' => $rule->getPrefixedQueryArray(),
+                'query' => $rule->getQuery(),
+                'queryArray' => $rule->getQueryArray(),
+                'regex' => $rule->getRegex(),
+            ], $rewrite->getRules());
+
             return [
                 'methods' => $rewrite->getMethods(),
-                'rules' => $rewrite->getRules(),
+                'rewriteRules' => $rewrite->getRewriteRules(),
+                'rules' => $rules,
                 'handler' => $handler,
                 'prefixedToUnprefixedQueryVariablesMap' => $prefixedToUnprefixedQVMap,
                 'queryVariables' => $rewrite->getQueryVariables(),
                 'isActiveCallback' => $isActiveCallback,
             ];
-        }, $rewriteCollection->getRewrites());
+        }, iterator_to_array($rewriteCollection->getRewrites()));
 
         $eol = PHP_EOL;
         $exportedRewrites = var_export($rewrites, true);

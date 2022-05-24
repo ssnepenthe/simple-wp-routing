@@ -62,8 +62,6 @@ class FastRouteRouteParser implements RouteParserInterface
 
         $regex = "^{$regex}$";
 
-        $queryArray['matchedRoute'] = md5($regex);
-
-        return [$regex, $queryArray];
+        return [$regex, Support::buildQuery($queryArray)];
     }
 }

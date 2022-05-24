@@ -11,10 +11,12 @@ class OptimizedRewrite implements RewriteInterface
     protected $methods;
     protected $prefixedToUnprefixedQueryVariablesMap;
     protected $queryVariables;
+    protected $rewriteRules;
     protected $rules;
 
     public function __construct(
         array $methods,
+        array $rewriteRules,
         array $rules,
         $handler,
         array $prefixedToUnprefixedQueryVariablesMap,
@@ -22,6 +24,7 @@ class OptimizedRewrite implements RewriteInterface
         $isActiveCallback = null
     ) {
         $this->methods = $methods;
+        $this->rewriteRules = $rewriteRules;
         $this->rules = $rules;
         $this->handler = $handler;
         $this->prefixedToUnprefixedQueryVariablesMap = $prefixedToUnprefixedQueryVariablesMap;
@@ -52,6 +55,11 @@ class OptimizedRewrite implements RewriteInterface
     public function getQueryVariables(): array
     {
         return $this->queryVariables;
+    }
+
+    public function getRewriteRules(): array
+    {
+        return $this->rewriteRules;
     }
 
     public function getRules(): array

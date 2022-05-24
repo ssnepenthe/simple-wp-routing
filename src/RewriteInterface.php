@@ -11,5 +11,6 @@ interface RewriteInterface
     public function getMethods(): array;
     public function getPrefixedToUnprefixedQueryVariablesMap(): array;
     public function getQueryVariables(): array;
+    public function getRewriteRules(): array;
     public function getRules(): array;
 }

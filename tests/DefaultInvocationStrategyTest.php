@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ToyWpRouting\DefaultInvocationStrategy;
 use ToyWpRouting\Rewrite;
+use ToyWpRouting\RewriteRule;
 
 class DefaultInvocationStrategyTest extends TestCase
 {
@@ -18,7 +19,7 @@ class DefaultInvocationStrategyTest extends TestCase
         $strategy = new DefaultInvocationStrategy();
         $rewrite = new Rewrite(
             ['GET'],
-            ['^one$' => ['one' => 'one']],
+            [new RewriteRule('^one$', 'index.php?one=one')],
             function () use (&$invocationCount) {
                 $invocationCount++;
 
@@ -41,7 +42,7 @@ class DefaultInvocationStrategyTest extends TestCase
         $strategy->withAdditionalContext(['queryVars' => ['one' => 'testvalue']]);
         $rewrite = new Rewrite(
             ['GET'],
-            ['^one$' => ['one' => '$matches[1]']],
+            [new RewriteRule('^one$', 'index.php?one=$matches[1]')],
             function (array $params) use (&$invocationCount, &$invocationParams) {
                 $invocationCount++;
                 $invocationParams = $params;
@@ -66,14 +67,13 @@ class DefaultInvocationStrategyTest extends TestCase
         $strategy->withAdditionalContext(['queryVars' => ['pfx_one' => 'testvalue']]);
         $rewrite = new Rewrite(
             ['GET'],
-            ['^one$' => ['one' => '$matches[1]']],
+            [new RewriteRule('^one$', 'index.php?one=$matches[1]', 'pfx_')],
             function (array $params) use (&$invocationCount, &$invocationParams) {
                 $invocationCount++;
                 $invocationParams = $params;
 
                 return 'returnvalue';
-            },
-            'pfx_'
+            }
         );
 
         $returnValue  = $strategy->invokeHandler($rewrite);
@@ -90,28 +90,24 @@ class DefaultInvocationStrategyTest extends TestCase
         $strategy = new DefaultInvocationStrategy();
         $one = new Rewrite(
             ['GET'],
-            ['^one$' => ['one' => 'one']],
-            function () {
-            },
-            '',
-            function () use (&$invocationCount) {
-                $invocationCount++;
-
-                return true;
-            }
+            [new RewriteRule('^one$', 'index.php?one=one')],
+            'irrelevanthandler'
         );
+        $one->setIsActiveCallback(function () use (&$invocationCount) {
+            $invocationCount++;
+
+            return true;
+        });
         $two = new Rewrite(
             ['GET'],
-            ['^one$' => ['one' => 'one']],
-            function () {
-            },
-            '',
-            function () use (&$invocationCount) {
-                $invocationCount++;
-
-                return false;
-            }
+            [new RewriteRule('^one$', 'index.php?one=one')],
+            'irrelevanthandler'
         );
+        $two->setIsActiveCallback(function () use (&$invocationCount) {
+            $invocationCount++;
+
+            return false;
+        });
 
         $this->assertTrue($strategy->invokeIsActiveCallback($one));
         $this->assertFalse($strategy->invokeIsActiveCallback($two));
@@ -121,8 +117,11 @@ class DefaultInvocationStrategyTest extends TestCase
     public function testInvokeIsActiveCallbackWithNoCallbackSet()
     {
         $strategy = new DefaultInvocationStrategy();
-        $rewrite = new Rewrite(['GET'], ['^one$' => ['one' => 'one']], function () {
-        });
+        $rewrite = new Rewrite(
+            ['GET'],
+            [new RewriteRule('^one$', 'index.php?one=one')],
+            'irrelevanthandler'
+        );
 
         $isActive = $strategy->invokeIsActiveCallback($rewrite);
 
@@ -136,28 +135,24 @@ class DefaultInvocationStrategyTest extends TestCase
         $strategy = new DefaultInvocationStrategy();
         $one = new Rewrite(
             ['GET'],
-            ['^one$' => ['one' => 'one']],
-            function () {
-            },
-            '',
-            function () use (&$invocationCount) {
-                $invocationCount++;
-
-                return 1;
-            }
+            [new RewriteRule('^one$', 'index.php?one=one')],
+            'irrelevanthandler'
         );
+        $one->setIsActiveCallback(function () use (&$invocationCount) {
+            $invocationCount++;
+
+            return 1;
+        });
         $two = new Rewrite(
             ['GET'],
-            ['^one$' => ['one' => 'one']],
-            function () {
-            },
-            '',
-            function () use (&$invocationCount) {
-                $invocationCount++;
-
-                return '';
-            }
+            [new RewriteRule('^one$', 'index.php?one=one')],
+            'irrelevanthandler'
         );
+        $two->setIsActiveCallback(function () use (&$invocationCount) {
+            $invocationCount++;
+
+            return '';
+        });
 
         $this->assertTrue($strategy->invokeIsActiveCallback($one));
         $this->assertFalse($strategy->invokeIsActiveCallback($two));
@@ -171,12 +166,10 @@ class DefaultInvocationStrategyTest extends TestCase
         $strategy = new DefaultInvocationStrategy();
         $rewrite = new Rewrite(
             ['GET'],
-            ['^one$' => ['one' => 'one']],
-            function () {
-            },
-            '',
-            'noncallablevalue'
+            [new RewriteRule('^one$', 'index.php?one=one')],
+            'irrelevanthandler'
         );
+        $rewrite->setIsActiveCallback('noncallablevalue');
 
         $strategy->invokeIsActiveCallback($rewrite);
     }

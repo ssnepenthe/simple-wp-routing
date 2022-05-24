@@ -15,13 +15,27 @@ class RouteConverter
 
     public function convert(Route $route): RewriteInterface
     {
-        return new Rewrite(
+        $rules = $this->parser->parse($route->getRoute());
+
+        $rewrite = new Rewrite(
             $route->getMethods(),
-            $this->parser->parse($route->getRoute()),
-            $route->getHandler(),
-            $route->getPrefix(),
-            $route->getIsActiveCallback()
+            array_map(
+                fn (string $regex, string $query) => new RewriteRule(
+                    $regex,
+                    $query,
+                    $route->getPrefix()
+                ),
+                array_keys($rules),
+                $rules
+            ),
+            $route->getHandler()
         );
+
+        if (null !== $isActiveCallback = $route->getIsActiveCallback()) {
+            $rewrite->setIsActiveCallback($isActiveCallback);
+        }
+
+        return $rewrite;
     }
 
     public function convertCollection(RouteCollection $routeCollection): RewriteCollection

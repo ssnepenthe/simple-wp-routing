@@ -4,150 +4,132 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Tests;
 
-use Mockery;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use ToyWpRouting\DefaultInvocationStrategy;
 use ToyWpRouting\MethodNotAllowedResponder;
 use ToyWpRouting\Orchestrator;
 use ToyWpRouting\RequestContext;
 use ToyWpRouting\ResponderInterface;
-use ToyWpRouting\RouteCollection;
+use ToyWpRouting\RewriteCollection;
 
-use function Brain\Monkey\Actions\expectDone;
 use function Brain\Monkey\setUp;
 use function Brain\Monkey\tearDown;
 
 // @todo Test custom prefix? Test custom invoker?
 class OrchestratorTest extends TestCase
 {
-    use MockeryPHPUnitIntegration;
+    protected $hash;
+    protected $regex;
 
     protected function setUp(): void
     {
         parent::setUp();
         setUp();
+
+        $this->regex = 'someregex';
+        $this->hash = md5($this->regex);
     }
 
     protected function tearDown(): void
     {
         tearDown();
         parent::tearDown();
+
+        $this->regex = null;
+        $this->hash = null;
     }
 
-    public function testCacheRewrites()
+    public function testDefaults()
     {
-        $root = vfsStream::setup();
+        $orchestrator = new Orchestrator(new RewriteCollection());
 
-        $orchestrator = new Orchestrator();
-        $orchestrator->getContainer()->setCacheDir($root->url());
-        $orchestrator->cacheRewrites();
-
-        $this->assertTrue($root->hasChild('rewrite-cache.php'));
+        $this->assertInstanceOf(
+            DefaultInvocationStrategy::class,
+            $orchestrator->getInvocationStrategy()
+        );
     }
 
-    public function testCacheRewritesWhenCacheAlreadyExists()
+    public function testGetActiveRewriteCollection()
     {
-        $this->expectException(RuntimeException::class);
+        $rewrites = new RewriteCollection();
+        $rewrites->get('someregex', 'index.php?var=value', 'somehandler');
+        $rewrites->get(
+            'anotherregex',
+            'index.php?anothervar=anothervalue',
+            'anotherhandler'
+        )->setIsActiveCallback(function () {
+            return false;
+        });
 
-        $root = vfsStream::setup();
+        $orchestrator = new Orchestrator($rewrites);
 
-        $orchestrator = new Orchestrator();
-        $orchestrator->getContainer()->setCacheDir($root->url());
-        $orchestrator->getContainer()->setCacheFile('cache.php');
+        $active = $orchestrator->getActiveRewriteCollection();
+        $activeHash = md5('someregex');
 
-        touch($root->url() . '/cache.php');
+        $this->assertInstanceOf(RewriteCollection::class, $active);
+        $this->assertCount(1, $active->getRewrites());
+        $this->assertSame(
+            ['someregex' => "index.php?var=value&matchedRule={$activeHash}"],
+            $active->getRewrites()->current()->getRewriteRules()
+        );
 
-        $orchestrator->cacheRewrites();
-    }
-
-    public function testCacheRewritesWithCustomFilename()
-    {
-        $root = vfsStream::setup();
-
-        $orchestrator = new Orchestrator();
-        $orchestrator->getContainer()->setCacheDir($root->url());
-        $orchestrator->getContainer()->setCacheFile('custom-name.php');
-        $orchestrator->cacheRewrites();
-
-        $this->assertTrue($root->hasChild('custom-name.php'));
-    }
-
-    public function testOnInit()
-    {
-        expectDone('toy_wp_routing.init')
-            ->once()
-            ->with(Mockery::type(RouteCollection::class));
-
-        $orchestrator = new Orchestrator();
-        $orchestrator->onInit();
-    }
-
-    public function testOnInitWithCachedRewrites()
-    {
-        $root = vfsStream::setup();
-
-        $orchestrator = new Orchestrator();
-        $orchestrator->getContainer()->setCacheDir($root->url());
-        $orchestrator->cacheRewrites();
-
-        $orchestrator->onInit();
-
-        $this->assertSame(0, did_action('toy_wp_routing.init'));
+        // Result is cached.
+        $this->assertSame($active, $orchestrator->getActiveRewriteCollection());
     }
 
     public function testOnOptionRewriteRulesAndOnRewriteRulesArray()
     {
-        $orchestrator = new Orchestrator();
+        $rewrites = new RewriteCollection();
+        $rewrites->get('three', 'index.php?three=value', 'threehandler');
+        $rewrites->get('four', 'index.php?four=value', 'fourhandler');
 
-        $routes = $orchestrator->getContainer()->getRouteCollection();
-        $routes->get('three', 'threehandler');
-        $routes->get('four', 'fourhandler');
+        $orchestrator = new Orchestrator($rewrites);
 
-        $generatedRules = ['^three$' => 'index.php?matchedRoute=' . md5('^three$'), '^four$' => 'index.php?matchedRoute=' . md5('^four$')];
-        $existingRules = ['one' => 'index.php?var=value', 'two' => 'index.php?var=value'];
+        $threeHash = md5('three');
+        $fourHash = md5('four');
 
-        $this->assertSame(
-            array_merge($generatedRules, $existingRules),
-            $orchestrator->onOptionRewriteRules($existingRules)
-        );
-        $this->assertSame(
-            array_merge($generatedRules, $existingRules),
-            $orchestrator->onRewriteRulesArray($existingRules)
-        );
+        $newRules = [
+            'three' => "index.php?three=value&matchedRule={$threeHash}",
+            'four' => "index.php?four=value&matchedRule={$fourHash}",
+        ];
+        $existingRules = ['one' => 'index.php?one=value', 'two' => 'index.php?two=value'];
+
+        $expectedResult = array_merge($newRules, $existingRules);
+
+        $this->assertSame($expectedResult, $orchestrator->onOptionRewriteRules($existingRules));
+        $this->assertSame($expectedResult, $orchestrator->onRewriteRulesArray($existingRules));
     }
 
     public function testOnOptionRewriteRulesAndOnRewriteRulesArrayWithDisabledRoutes()
     {
-        $orchestrator = new Orchestrator();
+        $rewrites = new RewriteCollection();
+        $rewrites->get('three', 'index.php?three=value', 'threehandler');
 
-        $routes = $orchestrator->getContainer()->getRouteCollection();
-        $routes->get('three', 'threehandler');
-        $routes->get('four', 'fourhandler')->when(function () {
-            return false;
-        });
+        $rewrites->get('four', 'index.php?four=value', 'fourhandler')
+            ->setIsActiveCallback(function () {
+                return false;
+            });
 
-        $generatedRules = ['^three$' => 'index.php?matchedRoute=' . md5('^three$')];
-        $existingRules = ['one' => 'index.php?var=value', 'two' => 'index.php?var=value'];
+        $orchestrator = new Orchestrator($rewrites);
 
-        $this->assertSame(
-            array_merge($generatedRules, $existingRules),
-            $orchestrator->onOptionRewriteRules($existingRules)
-        );
-        $this->assertSame(
-            array_merge($generatedRules, $existingRules),
-            $orchestrator->onRewriteRulesArray($existingRules)
-        );
+        $threeHash = md5('three');
+        $newRules = ['three' => "index.php?three=value&matchedRule={$threeHash}"];
+        $existingRules = ['one' => 'index.php?one=value', 'two' => 'index.php?two=value'];
+
+        $expectedResult = array_merge($newRules, $existingRules);
+
+        $this->assertSame($expectedResult, $orchestrator->onOptionRewriteRules($existingRules));
+        $this->assertSame($expectedResult, $orchestrator->onRewriteRulesArray($existingRules));
     }
 
     public function testOnOptionRewriteRulesAndOnRewriteRulesArrayWithInvalidExistingRules()
     {
-        $orchestrator = new Orchestrator();
+        $rewrites = new RewriteCollection();
+        $rewrites->get('one', 'index.php?one=value', 'onehandler');
+        $rewrites->get('two', 'index.php?two=value', 'twohandler');
 
-        $routes = $orchestrator->getContainer()->getRouteCollection();
-        $routes->get('one', 'onehandler');
-        $routes->get('two', 'twohandler');
+        $orchestrator = new Orchestrator($rewrites);
 
         // Not array or empty array input get returned unmodified.
         $this->assertSame(null, $orchestrator->onOptionRewriteRules(null));
@@ -159,29 +141,37 @@ class OrchestratorTest extends TestCase
 
     public function testOnPreUpdateOptionRewriteRules()
     {
-        $orchestrator = new Orchestrator();
-
-        $routes = $orchestrator->getContainer()->getRouteCollection();
-        $routes->get('three', 'threehandler');
+        $rewrites = new RewriteCollection();
+        $rewrites->get('three', 'index.php?three=value', 'threehandler');
         // Rules are removed even when they are not active.
-        $routes->get('four', 'fourhandler')->when(function () {
-            return false;
-        });
+        $rewrites->get('four', 'index.php?four=value', 'fourhandler')
+            ->setIsActiveCallback(function () {
+                return false;
+            });
 
-        $allRules = ['^three$' => 'index.php?matchedRoute=' . md5('^three$'), '^four$' => 'index.php?matchedRoute=' . md5('^four$'), 'one' => 'index.php?var=value', 'two' => 'index.php?var=value'];
-        $existingRules = ['one' => 'index.php?var=value', 'two' => 'index.php?var=value'];
+        $orchestrator = new Orchestrator($rewrites);
+
+        $threeHash = md5('three');
+        $fourHash = md5('four');
+
+        $allRules = [
+            'three' => "index.php?three=value&matchedRule={$threeHash}",
+            'four' => "index.php?four=value&matchedRule={$fourHash}",
+            'one' => 'index.php?one=value',
+            'two' => 'index.php?two=value',
+        ];
+        $existingRules = ['one' => 'index.php?one=value', 'two' => 'index.php?two=value'];
 
         $this->assertSame($existingRules, $orchestrator->onPreUpdateOptionRewriteRules($allRules));
     }
 
     public function testOnPreUpdateOptionRewriteRulesWithInvalidExistingRules()
     {
-        $orchestrator = new Orchestrator();
+        $rewrites = new RewriteCollection();
+        $rewrites->get('three', 'index.php?three=value', 'threehandler');
+        $rewrites->get('four', 'index.php?four=value', 'fourhandler');
 
-        $routes = $orchestrator->getContainer()->getRouteCollection();
-        $routes->get('three', 'threehandler');
-        $routes->get('four', 'fourhandler');
-
+        $orchestrator = new Orchestrator($rewrites);
 
         // Non array or empty array values are returned un-modified.
         $this->assertSame(null, $orchestrator->onPreUpdateOptionRewriteRules(null));
@@ -190,23 +180,26 @@ class OrchestratorTest extends TestCase
 
     public function testOnQueryVars()
     {
-        $orchestrator = new Orchestrator();
+        $rewrites = new RewriteCollection();
+        $rewrites->get('three', 'index.php?three=value', 'threehandler');
+        $rewrites->get('four', 'index.php?four=value', 'fourhandler');
 
-        $routes = $orchestrator->getContainer()->getRouteCollection();
-        $routes->get('three', 'threehandler');
-        $routes->get('four', 'fourhandler');
+        $orchestrator = new Orchestrator($rewrites);
 
-        $this->assertSame(['matchedRoute'], $orchestrator->onQueryVars([]));
-        $this->assertSame(['matchedRoute', 'var'], $orchestrator->onQueryVars(['var']));
+        $this->assertSame(['three', 'matchedRule', 'four'], $orchestrator->onQueryVars([]));
+        $this->assertSame(
+            ['three', 'matchedRule', 'four', 'var'],
+            $orchestrator->onQueryVars(['var'])
+        );
     }
 
     public function testOnQueryVarsWithInvalidExistingVars()
     {
-        $orchestrator = new Orchestrator();
+        $rewrites = new RewriteCollection();
+        $rewrites->get('three', 'index.php?three=value', 'threehandler');
+        $rewrites->get('four', 'index.php?four=value', 'fourhandler');
 
-        $routes = $orchestrator->getContainer()->getRouteCollection();
-        $routes->get('three', 'threehandler');
-        $routes->get('four', 'fourhandler');
+        $orchestrator = new Orchestrator($rewrites);
 
         // Non array values are returned unmodified.
         $this->assertSame(null, $orchestrator->onQueryVars(null));
@@ -214,10 +207,13 @@ class OrchestratorTest extends TestCase
 
     public function testOnRequest()
     {
-        $orchestrator = new Orchestrator();
-        $orchestrator->getContainer()->getRouteCollection()->get('users/{id}', function () {
+        $rewrites = new RewriteCollection();
+        $rewrites->get($this->regex, 'index.php?var=value', function () {
             throw new RuntimeException('This should not happen');
         });
+
+        $orchestrator = new Orchestrator($rewrites);
+
         $input = ['var' => 'value'];
 
         // Input is returned unmodified.
@@ -226,43 +222,45 @@ class OrchestratorTest extends TestCase
         // Nothing happens with invalid input.
         $orchestrator->onRequest(false);
         $orchestrator->onRequest([]);
-        $orchestrator->onRequest(['matchedRoute' => 5]);
+        $orchestrator->onRequest(['matchedRule' => 5]);
 
-        // Nothing happens when matchedRoute isn't a registered rewrite.
-        $orchestrator->onRequest(['matchedRoute' => 'doesntmatter']);
+        // Nothing happens when matchedRule doesn't match a registered rewrite.
+        $orchestrator->onRequest(['matchedRule' => 'badhash']);
     }
 
     public function testOnRequestMatchedRewrite()
     {
         $count = 0;
 
-        $orchestrator = new Orchestrator();
-        $container = $orchestrator->getContainer();
-        $container->getRouteCollection()->get('users/{id}', function () use (&$count) {
+        $rewrites = new RewriteCollection();
+        $rewrites->get($this->regex, 'index.php?var=value', function () use (&$count) {
             $count++;
         });
-        $container->setRequestContext(new RequestContext('GET', []));
 
-        $orchestrator->onRequest(['matchedRoute' => md5('^users/([^/]+)$')]);
+        $orchestrator = new Orchestrator($rewrites, null, new RequestContext('GET', []));
+
+        $orchestrator->onRequest(['matchedRule' => $this->hash]);
 
         $this->assertSame(1, $count);
     }
 
     public function testOnRequestMatchedRewriteButInvalidMethod()
     {
-        $orchestrator = new Orchestrator();
-        $container = $orchestrator->getContainer();
-        $container->getRouteCollection()->get('users/{id}', function () {
+        $rewrites = new RewriteCollection();
+        $rewrites->get($this->regex, 'index.php?var=value', function () {
             throw new RuntimeException('This should not happen');
         });
-        $container->setRequestContext(new RequestContext('POST', []));
 
-        $orchestrator->onRequest(['matchedRoute' => md5('^users/([^/]+)$')]);
+        $orchestrator = new Orchestrator($rewrites, null, new RequestContext('POST', []));
+
+        $orchestrator->onRequest(['matchedRule' => $this->hash]);
 
         $fqcn = MethodNotAllowedResponder::class;
 
         $this->assertNotFalse(has_filter('body_class', "{$fqcn}->onBodyClass()"));
-        $this->assertNotFalse(has_filter('document_title_parts', "{$fqcn}->onDocumentTitleParts()"));
+        $this->assertNotFalse(
+            has_filter('document_title_parts', "{$fqcn}->onDocumentTitleParts()")
+        );
         $this->assertNotFalse(has_action('parse_query', "{$fqcn}->onParseQuery()"));
         $this->assertNotFalse(has_filter('template_include', "{$fqcn}->onTemplateInclude()"));
         $this->assertNotFalse(has_filter('wp_headers', "{$fqcn}->onWpHeaders()"));
@@ -277,35 +275,39 @@ class OrchestratorTest extends TestCase
                 $this->count++;
             }
         };
-        $orchestrator = new Orchestrator();
-        $container = $orchestrator->getContainer();
-        $container->getRouteCollection()->get('users/{id}', function () use ($responder) {
+
+        $rewrites = new RewriteCollection();
+        $rewrites->get($this->regex, 'index.php?var=value', function () use ($responder) {
             return $responder;
         });
-        $container->setRequestContext(new RequestContext('GET', []));
 
-        $orchestrator->onRequest(['matchedRoute' => md5('^users/([^/]+)$')]);
+        $orchestrator = new Orchestrator($rewrites, null, new RequestContext('GET', []));
+
+        $orchestrator->onRequest(['matchedRule' => $this->hash]);
 
         $this->assertSame(1, $responder->count);
     }
 
     public function testOnRequestMatchedRewriteWithVariables()
     {
+        // @todo Test with invoker backed strategy?
         $foundId = $foundFormat = null;
 
-        $orchestrator = new Orchestrator();
-        $container = $orchestrator->getContainer();
-        $container->getRouteCollection()->get(
-            'users/{id}/{format}',
-            function ($id, $format) use (&$foundId, &$foundFormat) {
-                $foundId = $id;
-                $foundFormat = $format;
+        $rewrites = new RewriteCollection();
+
+        $rewrites->get(
+            $this->regex,
+            'index.php?id=123&format=json',
+            function ($vars) use (&$foundId, &$foundFormat) {
+                $foundId = $vars['id'];
+                $foundFormat = $vars['format'];
             }
         );
-        $container->setRequestContext(new RequestContext('GET', []));
+
+        $orchestrator = new Orchestrator($rewrites, null, new RequestContext('GET', []));
 
         $orchestrator->onRequest([
-            'matchedRoute' => md5('^users/([^/]+)/([^/]+)$'),
+            'matchedRule' => $this->hash,
             'id' => '123',
             'format' => 'json',
         ]);

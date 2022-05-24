@@ -4,37 +4,56 @@ declare(strict_types=1);
 
 namespace ToyWpRouting;
 
-use RuntimeException;
-
 class Orchestrator
 {
-    protected $container;
+    protected $activeRewriteCollection;
+    protected $invocationStrategy;
+    protected $requestContext;
+    protected $rewriteCollection;
 
-    public function __construct()
-    {
-        $this->container = new Container();
+    public function __construct(
+        RewriteCollection $rewriteCollection,
+        ?InvocationStrategyInterface $invocationStrategy = null,
+        ?RequestContext $requestContext = null
+    ) {
+        $this->invocationStrategy = $invocationStrategy ?: new DefaultInvocationStrategy();
+        $this->requestContext = $requestContext;
+        $this->rewriteCollection = $rewriteCollection;
     }
 
-    public function cacheRewrites()
+    public function getActiveRewriteCollection(): RewriteCollection
     {
-        if ($this->container->getRewriteCollectionCache()->exists()) {
-            throw new RuntimeException('@todo');
+        if (! $this->activeRewriteCollection instanceof RewriteCollection) {
+            $this->activeRewriteCollection = $this->rewriteCollection->filter(
+                [$this->invocationStrategy, 'invokeIsActiveCallback']
+            );
         }
 
-        $this->container->getRewriteCollectionCache()->put(
-            $this->container->getRewriteCollection()
-        );
+        return $this->activeRewriteCollection;
     }
 
-    public function getContainer()
+    public function getInvocationStrategy(): InvocationStrategyInterface
     {
-        return $this->container;
+        return $this->invocationStrategy;
+    }
+
+    public function getRequestContext(): RequestContext
+    {
+        if (null === $this->requestContext) {
+            $this->requestContext = RequestContext::fromGlobals();
+        }
+
+        return $this->requestContext;
+    }
+
+    public function getRewriteCollection(): RewriteCollection
+    {
+        return $this->rewriteCollection;
     }
 
     public function initialize()
     {
         // @todo adjust priorities.
-        add_action('init', [$this, 'onInit']);
         add_filter('option_rewrite_rules', [$this, 'onOptionRewriteRules']);
         add_filter('rewrite_rules_array', [$this, 'onRewriteRulesArray']);
         add_filter('pre_update_option_rewrite_rules', [$this, 'onPreUpdateOptionRewriteRules']);
@@ -42,13 +61,6 @@ class Orchestrator
         add_filter('request', [$this, 'onRequest']);
 
         return $this;
-    }
-
-    public function onInit()
-    {
-        if (! $this->rewriteCacheIsConfigured() || ! $this->rewritesAreCached()) {
-            do_action('toy_wp_routing.init', $this->container->getRouteCollection());
-        }
     }
 
     public function onOptionRewriteRules($rules)
@@ -66,7 +78,7 @@ class Orchestrator
             return $rules;
         }
 
-        return array_diff_key($rules, $this->container->getRewriteCollection()->getRewriteRules());
+        return array_diff_key($rules, $this->rewriteCollection->getRewriteRules());
     }
 
     public function onQueryVars($vars)
@@ -76,7 +88,7 @@ class Orchestrator
         }
 
         // @todo only active rewrites?
-        return array_merge($this->container->getRewriteCollection()->getQueryVariables(), $vars);
+        return array_merge($this->rewriteCollection->getQueryVariables(), $vars);
     }
 
     public function onRequest($queryVars)
@@ -95,43 +107,51 @@ class Orchestrator
         return $this->mergeActiveRewriteRules($rules);
     }
 
+
     protected function mergeActiveRewriteRules($rules)
     {
-        return array_merge(
-            $this->container->getActiveRewriteCollection()->getRewriteRules(),
-            $rules
-        );
+        return array_merge($this->getActiveRewriteCollection()->getRewriteRules(), $rules);
     }
 
     protected function respondToMatchedRouteHash($queryVars)
     {
-        // @todo Make this more testable...
-        $qv = $this->container->getPrefix() . 'matchedRoute';
+        if (! is_array($queryVars)) {
+            return;
+        }
 
-        if (
-            ! is_array($queryVars)
-            || ! array_key_exists($qv, $queryVars)
-            || ! is_string($matchedRouteHash = $queryVars[$qv])
-        ) {
+        $hasMatchedRule = false;
+        $matchedRuleKey = null;
+
+        foreach ($queryVars as $key => $_) {
+            if ('matchedRule' === substr($key, -11)) {
+                $hasMatchedRule = true;
+                $matchedRuleKey = $key;
+                break;
+            }
+        }
+
+        if (! $hasMatchedRule) {
+            return;
+        }
+
+        if (! is_string($queryVars[$matchedRuleKey])) {
             return;
         }
 
         // @todo active rewrite collection?
-        $candidates = $this->container
-            ->getRewriteCollection()
-            ->getRewritesByRegexHash($matchedRouteHash);
+        $candidates = $this->rewriteCollection
+            ->getRewritesByRegexHash($queryVars[$matchedRuleKey]);
 
         if (empty($candidates)) {
             return;
         }
 
-        $method = $this->container->getRequestContext()->getIntendedMethod();
+        $method = $this->getRequestContext()->getIntendedMethod();
 
         if (! array_key_exists($method, $candidates)) {
             $responder = new MethodNotAllowedResponder(array_keys($candidates));
         } else {
-            $responder = $this->container
-                ->getInvocationStrategy()
+            $responder = $this->invocationStrategy
                 ->withAdditionalContext(compact('queryVars'))
                 ->invokeHandler($candidates[$method]);
         }
@@ -139,16 +159,6 @@ class Orchestrator
         if ($responder instanceof ResponderInterface) {
             $responder->respond();
         }
-    }
-
-    protected function rewriteCacheIsConfigured(): bool
-    {
-        return $this->container->cacheDirIsSet();
-    }
-
-    protected function rewritesAreCached(): bool
-    {
-        return $this->container->getRewriteCollectionCache()->exists();
     }
 
     protected function shouldModifyRules($rules): bool

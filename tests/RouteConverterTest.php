@@ -23,14 +23,14 @@ class RouteConverterTest extends TestCase
         $this->assertInstanceOf(RewriteInterface::class, $rewrite);
 
         $this->assertSame(
-            ['^someroutestring$' => 'index.php?matchedRoute=' . md5('^someroutestring$')],
-            $rewrite->getRules()
+            ['^someroutestring$' => 'index.php?matchedRule=' . md5('^someroutestring$')],
+            $rewrite->getRewriteRules()
         );
         $this->assertSame(['GET'], $rewrite->getMethods());
         $this->assertSame('somehandler', $rewrite->getHandler());
-        $this->assertSame(['matchedRoute'], $rewrite->getQueryVariables());
+        $this->assertSame(['matchedRule'], $rewrite->getQueryVariables());
         $this->assertSame(
-            ['matchedRoute' => 'matchedRoute'],
+            ['matchedRule' => 'matchedRule'],
             $rewrite->getPrefixedToUnprefixedQueryVariablesMap()
         );
     }
@@ -83,9 +83,9 @@ class RouteConverterTest extends TestCase
         $rewrite = (new RouteConverter())->convert($route);
 
         $this->assertSame([
-            '^someroute$' => 'index.php?matchedRoute=' . md5('^someroute$'),
-            '^someroutestring$' => 'index.php?matchedRoute=' . md5('^someroutestring$'),
-        ], $rewrite->getRules());
+            '^someroute$' => 'index.php?matchedRule=' . md5('^someroute$'),
+            '^someroutestring$' => 'index.php?matchedRule=' . md5('^someroutestring$'),
+        ], $rewrite->getRewriteRules());
     }
 
     public function testConvertWithPrefix()
@@ -96,6 +96,6 @@ class RouteConverterTest extends TestCase
 
         $rewrite = (new RouteConverter())->convert($route);
 
-        $this->assertSame(['pfx_string', 'pfx_matchedRoute'], $rewrite->getQueryVariables());
+        $this->assertSame(['pfx_string', 'pfx_matchedRule'], $rewrite->getQueryVariables());
     }
 }

@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use ToyWpRouting\InvokerBackedInvocationStrategy;
 use ToyWpRouting\Rewrite;
+use ToyWpRouting\RewriteRule;
 
 // @todo Test with custom resolver set on Invoker instance?
 class InvokerBackedInvocationStrategyTest extends TestCase
@@ -20,7 +21,7 @@ class InvokerBackedInvocationStrategyTest extends TestCase
         $strategy = new InvokerBackedInvocationStrategy(new Invoker());
         $rewrite = new Rewrite(
             ['GET'],
-            ['^one$' => ['one' => 'one']],
+            [new RewriteRule('^one$', 'index.php?one=one')],
             function () use (&$invocationCount) {
                 $invocationCount++;
 
@@ -43,7 +44,7 @@ class InvokerBackedInvocationStrategyTest extends TestCase
         $strategy->withAdditionalContext(['queryVars' => ['one' => 'testvalue']]);
         $rewrite = new Rewrite(
             ['GET'],
-            ['^one$' => ['one' => '$matches[1]']],
+            [new RewriteRule('^one$', 'index.php?one=$matches[1]')],
             function ($one) use (&$invocationCount, &$invocationParam) {
                 $invocationCount++;
                 $invocationParam = $one;
@@ -84,7 +85,7 @@ class InvokerBackedInvocationStrategyTest extends TestCase
         $strategy = new InvokerBackedInvocationStrategy(new Invoker(null, $container));
         $rewrite = new Rewrite(
             ['GET'],
-            ['^one$' => ['one' => '$matches[1]']],
+            [new RewriteRule('^one$', 'index.php?one=$matches[1]')],
             'testhandler'
         );
 
@@ -103,14 +104,13 @@ class InvokerBackedInvocationStrategyTest extends TestCase
         $strategy->withAdditionalContext(['queryVars' => ['pfx_one' => 'testvalue']]);
         $rewrite = new Rewrite(
             ['GET'],
-            ['^one$' => ['one' => '$matches[1]']],
+            [new RewriteRule('^one$', 'index.php?one=$matches[1]', 'pfx_')],
             function ($one) use (&$invocationCount, &$invocationParam) {
                 $invocationCount++;
                 $invocationParam = $one;
 
                 return 'returnvalue';
-            },
-            'pfx_'
+            }
         );
 
         $returnValue  = $strategy->invokeHandler($rewrite);
@@ -127,28 +127,24 @@ class InvokerBackedInvocationStrategyTest extends TestCase
         $strategy = new InvokerBackedInvocationStrategy(new Invoker());
         $one = new Rewrite(
             ['GET'],
-            ['^one$' => ['one' => 'one']],
-            function () {
-            },
-            '',
-            function () use (&$invocationCount) {
-                $invocationCount++;
-
-                return true;
-            }
+            [new RewriteRule('^one$', 'index.php?one=one')],
+            'irrelevanthandler'
         );
+        $one->setIsActiveCallback(function () use (&$invocationCount) {
+            $invocationCount++;
+
+            return true;
+        });
         $two = new Rewrite(
             ['GET'],
-            ['^one$' => ['one' => 'one']],
-            function () {
-            },
-            '',
-            function () use (&$invocationCount) {
-                $invocationCount++;
-
-                return false;
-            }
+            [new RewriteRule('^one$', 'index.php?one=one')],
+            'irrelevanthandler'
         );
+        $two->setIsActiveCallback(function () use (&$invocationCount) {
+            $invocationCount++;
+
+            return false;
+        });
 
         $this->assertTrue($strategy->invokeIsActiveCallback($one));
         $this->assertFalse($strategy->invokeIsActiveCallback($two));
@@ -180,12 +176,10 @@ class InvokerBackedInvocationStrategyTest extends TestCase
         $strategy = new InvokerBackedInvocationStrategy(new Invoker(null, $container));
         $rewrite = new Rewrite(
             ['GET'],
-            ['^one$' => ['one' => '$matches[1]']],
-            function () {
-            },
-            '',
-            'testisactivecallback'
+            [new RewriteRule('^one$', 'index.php?one=$matches[1]')],
+            'irrelevanthandler'
         );
+        $rewrite->setIsActiveCallback('testisactivecallback');
 
         $this->assertFalse($strategy->invokeIsActiveCallback($rewrite));
         $this->assertSame(1, $container->invocationCount);
@@ -194,8 +188,11 @@ class InvokerBackedInvocationStrategyTest extends TestCase
     public function testInvokeIsActiveCallbackWithNoCallbackSet()
     {
         $strategy = new InvokerBackedInvocationStrategy(new Invoker());
-        $rewrite = new Rewrite(['GET'], ['^one$' => ['one' => 'one']], function () {
-        });
+        $rewrite = new Rewrite(
+            ['GET'],
+            [new RewriteRule('^one$', 'index.php?one=one')],
+            'irrelevanthandler'
+        );
 
         $isActive = $strategy->invokeIsActiveCallback($rewrite);
 
@@ -209,28 +206,24 @@ class InvokerBackedInvocationStrategyTest extends TestCase
         $strategy = new InvokerBackedInvocationStrategy(new Invoker());
         $one = new Rewrite(
             ['GET'],
-            ['^one$' => ['one' => 'one']],
-            function () {
-            },
-            '',
-            function () use (&$invocationCount) {
-                $invocationCount++;
-
-                return 1;
-            }
+            [new RewriteRule('^one$', 'index.php?one=one')],
+            'irrelevanthandler'
         );
+        $one->setIsActiveCallback(function () use (&$invocationCount) {
+            $invocationCount++;
+
+            return 1;
+        });
         $two = new Rewrite(
             ['GET'],
-            ['^one$' => ['one' => 'one']],
-            function () {
-            },
-            '',
-            function () use (&$invocationCount) {
-                $invocationCount++;
-
-                return '';
-            }
+            [new RewriteRule('^one$', 'index.php?one=one')],
+            'irrelevanthandler'
         );
+        $two->setIsActiveCallback(function () use (&$invocationCount) {
+            $invocationCount++;
+
+            return '';
+        });
 
         $this->assertTrue($strategy->invokeIsActiveCallback($one));
         $this->assertFalse($strategy->invokeIsActiveCallback($two));

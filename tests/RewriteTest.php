@@ -6,70 +6,93 @@ namespace ToyWpRouting\Tests;
 
 use PHPUnit\Framework\TestCase;
 use ToyWpRouting\Rewrite;
+use ToyWpRouting\RewriteRule;
 
 class RewriteTest extends TestCase
 {
     public function testGetters()
     {
-        $rewrite = new Rewrite(['GET'], ['someregex' => ['var' => 'value']], 'somehandler');
+        $rules = [new RewriteRule('someregex', 'index.php?var=value')];
 
-        $this->assertSame(['someregex' => 'index.php?var=value'], $rewrite->getRules());
-        $this->assertSame(['GET'], $rewrite->getMethods());
+        $rewrite = new Rewrite(['GET'], $rules, 'somehandler');
+
         $this->assertSame('somehandler', $rewrite->getHandler());
-        $this->assertSame(['var'], $rewrite->getQueryVariables());
-        $this->assertSame(['var' => 'var'], $rewrite->getPrefixedToUnprefixedQueryVariablesMap());
         $this->assertNull($rewrite->getIsActiveCallback());
+        $this->assertSame(['GET'], $rewrite->getMethods());
+        $this->assertSame(
+            ['var' => 'var', 'matchedRule' => 'matchedRule'],
+            $rewrite->getPrefixedToUnprefixedQueryVariablesMap()
+        );
+        $this->assertSame(['var', 'matchedRule'], $rewrite->getQueryVariables());
+        $this->assertSame(
+            ['someregex' => "index.php?var=value&matchedRule={$rules[0]->getHash()}"],
+            $rewrite->getRewriteRules()
+        );
+        $this->assertSame($rules, $rewrite->getRules());
     }
 
-    public function testMethodsAreUppercased()
+    public function testGettersWithPrefixedRules()
     {
-        $rewrite = new Rewrite(['get'], ['someregex' => ['var' => 'value']], 'somehandler');
+        $rules = [new RewriteRule('someregex', 'index.php?var=value', 'pfx_')];
+
+        $rewrite = new Rewrite(['GET'], $rules, 'somehandler');
+
+        $this->assertSame('somehandler', $rewrite->getHandler());
+        $this->assertNull($rewrite->getIsActiveCallback());
+        $this->assertSame(['GET'], $rewrite->getMethods());
+        $this->assertSame(
+            ['pfx_var' => 'var', 'pfx_matchedRule' => 'matchedRule'],
+            $rewrite->getPrefixedToUnprefixedQueryVariablesMap()
+        );
+        $this->assertSame(['pfx_var', 'pfx_matchedRule'], $rewrite->getQueryVariables());
+        $this->assertSame(
+            ['someregex' => "index.php?pfx_var=value&pfx_matchedRule={$rules[0]->getHash()}"],
+            $rewrite->getRewriteRules()
+        );
+        $this->assertSame($rules, $rewrite->getRules());
+    }
+
+    public function testMethodsAreUppercasedByDefault()
+    {
+        $rewrite = new Rewrite(['get'], [], 'somehandler');
 
         $this->assertSame(['GET'], $rewrite->getMethods());
     }
 
     public function testMultipleMethodsAndRules()
     {
-        $rewrite = new Rewrite(
-            ['GET', 'HEAD', 'POST'],
-            [
-                'someregex' => ['var' => 'value'],
-                'anotherregex' => ['anothervar' => 'anothervalue'],
-            ],
-            'somehandler'
-        );
+        $rules = [
+            new RewriteRule('someregex', 'index.php?var=value'),
+            new RewriteRule('anotherregex', 'index.php?anothervar=anothervalue'),
+        ];
+        $rewrite = new Rewrite(['GET', 'HEAD', 'POST'], $rules, 'somehandler');
 
-        $this->assertSame([
-            'someregex' => 'index.php?var=value',
-            'anotherregex' => 'index.php?anothervar=anothervalue'
-        ], $rewrite->getRules());
+        $this->assertSame('somehandler', $rewrite->getHandler());
+        $this->assertNull($rewrite->getIsActiveCallback());
         $this->assertSame(['GET', 'HEAD', 'POST'], $rewrite->getMethods());
-        $this->assertSame(['var', 'anothervar'], $rewrite->getQueryVariables());
         $this->assertSame([
             'var' => 'var',
+            'matchedRule' => 'matchedRule',
             'anothervar' => 'anothervar',
         ], $rewrite->getPrefixedToUnprefixedQueryVariablesMap());
+        $this->assertSame(['var', 'matchedRule', 'anothervar'], $rewrite->getQueryVariables());
+        $this->assertSame([
+            'someregex' => "index.php?var=value&matchedRule={$rules[0]->getHash()}",
+            'anotherregex' => "index.php?anothervar=anothervalue&matchedRule={$rules[1]->getHash()}"
+        ], $rewrite->getRewriteRules());
+        $this->assertSame($rules, $rewrite->getRules());
     }
 
     public function testWithIsActiveCallback()
     {
         $rewrite = new Rewrite(
             ['GET'],
-            ['someregex' => ['var' => 'value']],
+            [new RewriteRule('someregex', 'index.php?var=value')],
             'somehandler',
-            '',
-            'someisactivecallback'
         );
 
+        $rewrite->setIsActiveCallback('someisactivecallback');
+
         $this->assertSame('someisactivecallback', $rewrite->getIsActiveCallback());
-    }
-
-    public function testWithPrefix()
-    {
-        $rewrite = new Rewrite(['GET'], ['someregex' => ['var' => 'value']], 'somehandler', 'pfx_');
-
-        $this->assertSame(['someregex' => 'index.php?pfx_var=value'], $rewrite->getRules());
-        $this->assertSame(['pfx_var'], $rewrite->getQueryVariables());
-        $this->assertSame(['pfx_var' => 'var'], $rewrite->getPrefixedToUnprefixedQueryVariablesMap());
     }
 }

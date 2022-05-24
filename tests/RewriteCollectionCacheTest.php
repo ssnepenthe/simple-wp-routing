@@ -11,6 +11,7 @@ use ToyWpRouting\OptimizedRewrite;
 use ToyWpRouting\Rewrite;
 use ToyWpRouting\RewriteCollection;
 use ToyWpRouting\RewriteCollectionCache;
+use ToyWpRouting\RewriteRule;
 
 class RewriteCollectionCacheTest extends TestCase
 {
@@ -52,23 +53,33 @@ class RewriteCollectionCacheTest extends TestCase
         $this->assertInstanceOf(RewriteCollection::class, $rewriteCollection);
         $this->assertCount(2, $rewriteCollection->getRewrites());
 
-        $this->assertInstanceOf(OptimizedRewrite::class, $rewriteCollection->getRewrites()[0]);
-        $this->assertNull($rewriteCollection->getRewrites()[0]->getIsActiveCallback());
-        $this->assertSame(['GET'], $rewriteCollection->getRewrites()[0]->getMethods());
-        $this->assertSame(
-            ['/first/' => 'index.php?first=first'],
-            $rewriteCollection->getRewrites()[0]->getRules()
-        );
+        $rewrites = iterator_to_array($rewriteCollection->getRewrites());
 
-        $this->assertInstanceOf(OptimizedRewrite::class, $rewriteCollection->getRewrites()[1]);
+        $this->assertInstanceOf(OptimizedRewrite::class, $rewrites[0]);
+        $this->assertSame('firsthandler', $rewrites[0]->getHandler());
+        $this->assertNull($rewrites[0]->getIsActiveCallback());
+        $this->assertSame(['GET'], $rewrites[0]->getMethods());
+        $this->assertSame(['first' => 'first', 'matchedRule' => 'matchedRule'], $rewrites[0]->getPrefixedToUnprefixedQueryVariablesMap());
+        $this->assertSame(['first', 'matchedRule'], $rewrites[0]->getQueryVariables());
+        $this->assertSame(
+            ['first' => 'index.php?first=first&matchedRule=8b04d5e3775d298e78455efc5ca404d5'],
+            $rewrites[0]->getRewriteRules()
+        );
+        // @todo
+        // $this->assertSame(
+        //     [],
+        //     $rewrites[0]->getRules()
+        // );
+
+        $this->assertInstanceOf(OptimizedRewrite::class, $rewrites[1]);
         $this->assertSame(
             'secondisactive',
-            $rewriteCollection->getRewrites()[1]->getIsActiveCallback()
+            $rewrites[1]->getIsActiveCallback()
         );
-        $this->assertSame(['POST'], $rewriteCollection->getRewrites()[1]->getMethods());
+        $this->assertSame(['POST'], $rewrites[1]->getMethods());
         $this->assertSame(
-            ['/second/' => 'index.php?second=second'],
-            $rewriteCollection->getRewrites()[1]->getRules()
+            ['second' => 'index.php?second=second&matchedRule=a9f0e61a137d86aa9db53465e0801612'],
+            $rewrites[1]->getRewriteRules()
         );
     }
 
@@ -80,7 +91,7 @@ class RewriteCollectionCacheTest extends TestCase
         );
 
         $rewriteCollection = $cache->get();
-        $rewrite = $rewriteCollection->getRewrites()[0];
+        $rewrite = $rewriteCollection->getRewrites()->current();
 
         $this->assertInstanceOf(Closure::class, $rewrite->getHandler());
         $this->assertInstanceOf(Closure::class, $rewrite->getIsActiveCallback());
@@ -93,14 +104,20 @@ class RewriteCollectionCacheTest extends TestCase
 
         $rewriteCollection = new RewriteCollection();
 
-        $one = new Rewrite(['GET'], ['/first/' => ['first' => 'first']], 'somehandler', 'pfx_');
+        $one = new Rewrite(
+            ['GET'],
+            [new RewriteRule('first', 'index.php?first=first', 'pfx_')],
+            'somehandler'
+        );
         $two = new Rewrite(
             ['GET', 'POST'],
-            ['/second/' => ['second' => 'second'], '/third/' => ['third' => 'third']],
-            'anotherhandler',
-            '',
-            'isActive'
+            [
+                new RewriteRule('second', 'index.php?second=second'),
+                new RewriteRule('third', 'index.php?third=third'),
+            ],
+            'anotherhandler'
         );
+        $two->setIsActiveCallback('isActive');
 
         $rewriteCollection->add($one);
         $rewriteCollection->add($two);
@@ -112,24 +129,50 @@ class RewriteCollectionCacheTest extends TestCase
         $this->assertSame([
             [
                 'methods' => ['GET'],
-                'rules' => ['/first/' => 'index.php?pfx_first=first'],
+                'rewriteRules' => ['first' => 'index.php?pfx_first=first&pfx_matchedRule=8b04d5e3775d298e78455efc5ca404d5'],
+                'rules' => [
+                    [
+                        'hash' => '8b04d5e3775d298e78455efc5ca404d5',
+                        'prefixedQueryArray' => ['pfx_first' => 'first', 'pfx_matchedRule' => '8b04d5e3775d298e78455efc5ca404d5'],
+                        'query' => 'index.php?pfx_first=first&pfx_matchedRule=8b04d5e3775d298e78455efc5ca404d5',
+                        'queryArray' => ['first' => 'first', 'matchedRule' => '8b04d5e3775d298e78455efc5ca404d5'],
+                        'regex' => 'first',
+                    ]
+                ],
                 'handler' => 'somehandler',
-                'prefixedToUnprefixedQueryVariablesMap' => ['pfx_first' => 'first'],
-                'queryVariables' => ['pfx_first'],
+                'prefixedToUnprefixedQueryVariablesMap' => ['pfx_first' => 'first', 'pfx_matchedRule' => 'matchedRule'],
+                'queryVariables' => ['pfx_first', 'pfx_matchedRule'],
                 'isActiveCallback' => null
             ],
             [
                 'methods' => ['GET', 'POST'],
+                'rewriteRules' => [
+                    'second' => 'index.php?second=second&matchedRule=a9f0e61a137d86aa9db53465e0801612',
+                    'third' => 'index.php?third=third&matchedRule=dd5c8bf51558ffcbe5007071908e9524',
+                ],
                 'rules' => [
-                    '/second/' => 'index.php?second=second',
-                    '/third/' => 'index.php?third=third',
+                    [
+                        'hash' => 'a9f0e61a137d86aa9db53465e0801612',
+                        'prefixedQueryArray' => ['second' => 'second', 'matchedRule' => 'a9f0e61a137d86aa9db53465e0801612'],
+                        'query' => 'index.php?second=second&matchedRule=a9f0e61a137d86aa9db53465e0801612',
+                        'queryArray' => ['second' => 'second', 'matchedRule' => 'a9f0e61a137d86aa9db53465e0801612'],
+                        'regex' => 'second',
+                    ],
+                    [
+                        'hash' => 'dd5c8bf51558ffcbe5007071908e9524',
+                        'prefixedQueryArray' => ['third' => 'third', 'matchedRule' => 'dd5c8bf51558ffcbe5007071908e9524'],
+                        'query' => 'index.php?third=third&matchedRule=dd5c8bf51558ffcbe5007071908e9524',
+                        'queryArray' => ['third' => 'third', 'matchedRule' => 'dd5c8bf51558ffcbe5007071908e9524'],
+                        'regex' => 'third',
+                    ],
                 ],
                 'handler' => 'anotherhandler',
                 'prefixedToUnprefixedQueryVariablesMap' => [
                     'second' => 'second',
+                    'matchedRule' => 'matchedRule',
                     'third' => 'third'
                 ],
-                'queryVariables' => ['second', 'third'],
+                'queryVariables' => ['second', 'matchedRule', 'third'],
                 'isActiveCallback' => 'isActive',
             ],
         ], include $root->getChild('cache.php')->url());
@@ -160,7 +203,7 @@ class RewriteCollectionCacheTest extends TestCase
         $this->assertSame([], include $root->getChild('cache.php')->url());
 
         $rewriteCollection->add(
-            new Rewrite(['GET'], ['/first/' => ['first' => 'first']], 'somehandler')
+            new Rewrite(['GET'], [new RewriteRule('first', 'index.php?first=first')], 'somehandler')
         );
         $cache->put($rewriteCollection);
 
@@ -174,17 +217,20 @@ class RewriteCollectionCacheTest extends TestCase
 
         $rewriteCollection = new RewriteCollection();
 
-        $one = new Rewrite(['GET'], ['/first/' => ['first' => 'first']], function () {
-        }, 'pfx_');
-        $two = new Rewrite(
-            ['POST'],
-            ['/second/' => ['second' => 'second']],
-            'anotherhandler',
-            '',
+        $one = new Rewrite(
+            ['GET'],
+            [new RewriteRule('first', 'index.php?first=first', 'pfx_')],
             function () {
-                return true;
             }
         );
+        $two = new Rewrite(
+            ['POST'],
+            [new RewriteRule('second', 'index.php?second=second')],
+            'anotherhandler'
+        );
+        $two->setIsActiveCallback(function () {
+            return true;
+        });
 
         $rewriteCollection->add($one);
         $rewriteCollection->add($two);
