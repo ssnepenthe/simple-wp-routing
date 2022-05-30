@@ -61,6 +61,29 @@ class InvokerBackedInvocationStrategyTest extends TestCase
         $this->assertSame('returnvalue', $returnValue);
     }
 
+    public function testInvokeHandlerWithCallableResolver()
+    {
+        $invocationCount = 0;
+        $handler = function () use (&$invocationCount) {
+            $invocationCount++;
+        };
+
+        $strategy = new InvokerBackedInvocationStrategy(new Invoker());
+        $strategy->setCallableResolver(function ($potentialCallable) use ($handler) {
+            if ('handler' === $potentialCallable) {
+                return $handler;
+            }
+
+            return $potentialCallable;
+        });
+
+        $rewrite = new Rewrite(['GET'], [new RewriteRule('^one$', 'index.php?one=one')], 'handler');
+
+        $strategy->invokeHandler($rewrite);
+
+        $this->assertSame(1, $invocationCount);
+    }
+
     public function testInvokeHandlerWithContainerBackedInvoker()
     {
         $container = new class () implements ContainerInterface {
@@ -150,6 +173,52 @@ class InvokerBackedInvocationStrategyTest extends TestCase
         $this->assertTrue($strategy->invokeIsActiveCallback($one));
         $this->assertFalse($strategy->invokeIsActiveCallback($two));
         $this->assertSame(2, $invocationCount);
+    }
+
+    public function testInvokeIsActiveCallbackWithCallableResolver()
+    {
+        $callableResolverInvocationCount = 0;
+        $isActiveCallbackInvocationCount = 0;
+
+        $isActiveCallback = function () use (&$isActiveCallbackInvocationCount) {
+            $isActiveCallbackInvocationCount++;
+        };
+
+        $strategy = new InvokerBackedInvocationStrategy(new Invoker());
+        $strategy->setCallableResolver(
+            function ($potentialCallable) use ($isActiveCallback, &$callableResolverInvocationCount) {
+                $callableResolverInvocationCount++;
+
+                if ('isactivecallback' === $potentialCallable) {
+                    return $isActiveCallback;
+                }
+
+                return $potentialCallable;
+            }
+        );
+
+        $one = new Rewrite(
+            ['GET'],
+            [new RewriteRule('^one$', 'index.php?one=one')],
+            'irrelevanthandler'
+        );
+        $two = new Rewrite(
+            ['GET'],
+            [new RewriteRule('^one$', 'index.php?one=one')],
+            'irrelevanthandler'
+        );
+        $two->setIsActiveCallback('isactivecallback');
+
+        $strategy->invokeIsActiveCallback($one);
+
+        // Not invoked when no callback is set.
+        $this->assertSame(0, $callableResolverInvocationCount);
+        $this->assertSame(0, $isActiveCallbackInvocationCount);
+
+        $strategy->invokeIsActiveCallback($two);
+
+        $this->assertSame(1, $callableResolverInvocationCount);
+        $this->assertSame(1, $isActiveCallbackInvocationCount);
     }
 
     public function testInvokeIsActiveCallbackWithContainerBackedInvoker()

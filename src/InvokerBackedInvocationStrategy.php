@@ -19,7 +19,7 @@ class InvokerBackedInvocationStrategy extends AbstractInvocationStrategy
     {
         // @todo Should this also receive full additional context as second param?
         return $this->invoker->call(
-            $rewrite->getHandler(),
+            $this->resolveCallable($rewrite->getHandler()),
             $this->resolveRelevantQueryVariablesFromContext($rewrite)
         );
     }
@@ -33,6 +33,6 @@ class InvokerBackedInvocationStrategy extends AbstractInvocationStrategy
         }
 
         // @todo Should this get additional context?
-        return (bool) $this->invoker->call($callback);
+        return (bool) $this->invoker->call($this->resolveCallable($callback));
     }
 }

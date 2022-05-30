@@ -102,3 +102,25 @@ If you are using closures for rewrite handlers or active callbacks, you must ins
 ```sh
 composer require opis/closure
 ```
+
+The caching mechanism does not support using objects for rewrite handlers or active callbacks.
+Instead, you should set a callable resolver on the invocation strategy instance:
+
+```php
+$rewrites = new \ToyWpRouting\RewriteCollection('pfx_');
+$rewrites->get('^users$', '', 'usersIndex');
+
+$orchestrator = new \ToyWpRouting\Orchestrator($rewrites);
+
+$orchestrator->getInvocationStrategy()->setCallableResolver(function ($potentialCallable) {
+  if ('usersIndex' === $potentialCallable) {
+    return [new UsersController(), 'index'];
+  }
+
+  // Etc...
+
+  return $potentialCallable;
+});
+
+$orchestrator->initialize();
+```
