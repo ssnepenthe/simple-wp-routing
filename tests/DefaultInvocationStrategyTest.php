@@ -10,6 +10,7 @@ use ToyWpRouting\DefaultInvocationStrategy;
 use ToyWpRouting\Rewrite;
 use ToyWpRouting\RewriteRule;
 
+// @todo Move additional parameter tests to dedicated abstract invocation strategy test.
 class DefaultInvocationStrategyTest extends TestCase
 {
     public function testInvokeHandler()
@@ -38,8 +39,6 @@ class DefaultInvocationStrategyTest extends TestCase
         $invocationCount = 0;
         $invocationParams = [];
 
-        $strategy = new DefaultInvocationStrategy();
-        $strategy->withAdditionalContext(['queryVars' => ['one' => 'testvalue']]);
         $rewrite = new Rewrite(
             ['GET'],
             [new RewriteRule('^one$', 'index.php?one=$matches[1]')],
@@ -51,7 +50,9 @@ class DefaultInvocationStrategyTest extends TestCase
             }
         );
 
-        $returnValue = $strategy->invokeHandler($rewrite);
+        $returnValue = (new DefaultInvocationStrategy())
+            ->withAdditionalContext(['queryVars' => ['one' => 'testvalue']])
+            ->invokeHandler($rewrite);
 
         $this->assertSame(1, $invocationCount);
         $this->assertSame(['one' => 'testvalue'], $invocationParams);
@@ -63,8 +64,6 @@ class DefaultInvocationStrategyTest extends TestCase
         $invocationCount = 0;
         $invocationParams = [];
 
-        $strategy = new DefaultInvocationStrategy();
-        $strategy->withAdditionalContext(['queryVars' => ['pfx_one' => 'testvalue']]);
         $rewrite = new Rewrite(
             ['GET'],
             [new RewriteRule('^one$', 'index.php?one=$matches[1]', 'pfx_')],
@@ -76,7 +75,9 @@ class DefaultInvocationStrategyTest extends TestCase
             }
         );
 
-        $returnValue  = $strategy->invokeHandler($rewrite);
+        $returnValue = (new DefaultInvocationStrategy())
+            ->withAdditionalContext(['queryVars' => ['pfx_one' => 'testvalue']])
+            ->invokeHandler($rewrite);
 
         $this->assertSame(1, $invocationCount);
         $this->assertSame(['one' => 'testvalue'], $invocationParams);

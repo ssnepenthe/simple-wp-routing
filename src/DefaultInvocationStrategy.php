@@ -6,13 +6,14 @@ namespace ToyWpRouting;
 
 use InvalidArgumentException;
 
-class DefaultInvocationStrategy implements InvocationStrategyInterface
+class DefaultInvocationStrategy extends AbstractInvocationStrategy
 {
-    protected $context = [];
-
     public function invokeHandler(RewriteInterface $rewrite)
     {
-        return ($rewrite->getHandler())($this->resolveAdditionalParameters($rewrite));
+        // @todo Should this receive full additional context as second param?
+        return ($rewrite->getHandler())(
+            $this->resolveRelevantQueryVariablesFromContext($rewrite)
+        );
     }
 
     public function invokeIsActiveCallback(RewriteInterface $rewrite)
@@ -27,34 +28,7 @@ class DefaultInvocationStrategy implements InvocationStrategyInterface
             throw new InvalidArgumentException('@todo');
         }
 
+        // @todo Should this get any additional context?
         return (bool) $callback();
-    }
-
-    public function withAdditionalContext(array $context)
-    {
-        $this->context = array_merge($this->context, $context);
-
-        return $this;
-    }
-
-    protected function resolveAdditionalParameters(RewriteInterface $rewrite)
-    {
-        if (! array_key_exists('queryVars', $this->context)) {
-            return [];
-        }
-
-        $resolved = [];
-
-        // @todo also in snake case?
-        // @todo Test with optional params.
-        // @todo Include all query vars?
-        // @todo Include prefixed query vars as well?
-        foreach ($rewrite->getPrefixedToUnprefixedQueryVariablesMap() as $prefixed => $unprefixed) {
-            if (array_key_exists($prefixed, $this->context['queryVars'])) {
-                $resolved[$unprefixed] = $this->context['queryVars'][$prefixed];
-            }
-        }
-
-        return $resolved;
     }
 }

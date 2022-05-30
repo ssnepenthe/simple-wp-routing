@@ -6,9 +6,8 @@ namespace ToyWpRouting;
 
 use Invoker\InvokerInterface;
 
-class InvokerBackedInvocationStrategy implements InvocationStrategyInterface
+class InvokerBackedInvocationStrategy extends AbstractInvocationStrategy
 {
-    protected $context = [];
     protected $invoker;
 
     public function __construct(InvokerInterface $invoker)
@@ -18,9 +17,10 @@ class InvokerBackedInvocationStrategy implements InvocationStrategyInterface
 
     public function invokeHandler(RewriteInterface $rewrite)
     {
+        // @todo Should this also receive full additional context as second param?
         return $this->invoker->call(
             $rewrite->getHandler(),
-            $this->resolveAdditionalParameters($rewrite)
+            $this->resolveRelevantQueryVariablesFromContext($rewrite)
         );
     }
 
@@ -32,35 +32,7 @@ class InvokerBackedInvocationStrategy implements InvocationStrategyInterface
             return true;
         }
 
+        // @todo Should this get additional context?
         return (bool) $this->invoker->call($callback);
-    }
-
-    public function withAdditionalContext(array $context)
-    {
-        // @todo Clone this instance with new context and return that instead?
-        $this->context = array_merge($this->context, $context);
-
-        return $this;
-    }
-
-    protected function resolveAdditionalParameters(RewriteInterface $rewrite)
-    {
-        if (! array_key_exists('queryVars', $this->context)) {
-            return [];
-        }
-
-        $resolved = [];
-
-        // @todo also in snake case?
-        // @todo Test with optional params.
-        // @todo Include all query vars?
-        // @todo Include prefixed query vars as well?
-        foreach ($rewrite->getPrefixedToUnprefixedQueryVariablesMap() as $prefixed => $unprefixed) {
-            if (array_key_exists($prefixed, $this->context['queryVars'])) {
-                $resolved[$unprefixed] = $this->context['queryVars'][$prefixed];
-            }
-        }
-
-        return $resolved;
     }
 }

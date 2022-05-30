@@ -6,7 +6,9 @@ namespace ToyWpRouting;
 
 interface InvocationStrategyInterface
 {
+    public function getContext(): array;
     public function invokeHandler(RewriteInterface $rewrite);
     public function invokeIsActiveCallback(RewriteInterface $rewrite);
-    public function withAdditionalContext(array $context);
+    public function withAdditionalContext(array $context): InvocationStrategyInterface;
+    public function withContext(array $context): InvocationStrategyInterface;
 }

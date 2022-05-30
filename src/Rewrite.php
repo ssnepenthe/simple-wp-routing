@@ -9,8 +9,8 @@ class Rewrite implements RewriteInterface
     protected $handler;
     protected $isActiveCallback;
     protected $methods;
-    protected $queryVariables;
-    protected $rewriteRules;
+    protected $queryVariables = [];
+    protected $rewriteRules = [];
     protected $rules;
 
     public function __construct(array $methods, array $rules, $handler)

@@ -12,6 +12,7 @@ use ToyWpRouting\Rewrite;
 use ToyWpRouting\RewriteRule;
 
 // @todo Test with custom resolver set on Invoker instance?
+// @todo Move additional parameter tests to dedicated abstract invocation strategy test.
 class InvokerBackedInvocationStrategyTest extends TestCase
 {
     public function testInvokeHandler()
@@ -40,8 +41,6 @@ class InvokerBackedInvocationStrategyTest extends TestCase
         $invocationCount = 0;
         $invocationParam = '';
 
-        $strategy = new InvokerBackedInvocationStrategy(new Invoker());
-        $strategy->withAdditionalContext(['queryVars' => ['one' => 'testvalue']]);
         $rewrite = new Rewrite(
             ['GET'],
             [new RewriteRule('^one$', 'index.php?one=$matches[1]')],
@@ -53,7 +52,9 @@ class InvokerBackedInvocationStrategyTest extends TestCase
             }
         );
 
-        $returnValue = $strategy->invokeHandler($rewrite);
+        $returnValue = (new InvokerBackedInvocationStrategy(new Invoker()))
+            ->withAdditionalContext(['queryVars' => ['one' => 'testvalue']])
+            ->invokeHandler($rewrite);
 
         $this->assertSame(1, $invocationCount);
         $this->assertSame('testvalue', $invocationParam);
@@ -100,8 +101,6 @@ class InvokerBackedInvocationStrategyTest extends TestCase
         $invocationCount = 0;
         $invocationParam = [];
 
-        $strategy = new InvokerBackedInvocationStrategy(new Invoker());
-        $strategy->withAdditionalContext(['queryVars' => ['pfx_one' => 'testvalue']]);
         $rewrite = new Rewrite(
             ['GET'],
             [new RewriteRule('^one$', 'index.php?one=$matches[1]', 'pfx_')],
@@ -113,7 +112,9 @@ class InvokerBackedInvocationStrategyTest extends TestCase
             }
         );
 
-        $returnValue  = $strategy->invokeHandler($rewrite);
+        $returnValue  = (new InvokerBackedInvocationStrategy(new Invoker()))
+            ->withAdditionalContext(['queryVars' => ['pfx_one' => 'testvalue']])
+            ->invokeHandler($rewrite);
 
         $this->assertSame(1, $invocationCount);
         $this->assertSame('testvalue', $invocationParam);
