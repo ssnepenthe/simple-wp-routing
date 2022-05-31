@@ -93,7 +93,7 @@ class Orchestrator
 
     public function onRequest($queryVars)
     {
-        $this->respondToMatchedRouteHash($queryVars);
+        $this->respondToMatchedRuleHash($queryVars);
 
         return $queryVars;
     }
@@ -113,7 +113,7 @@ class Orchestrator
         return array_merge($this->getActiveRewriteCollection()->getRewriteRules(), $rules);
     }
 
-    protected function respondToMatchedRouteHash($queryVars)
+    protected function respondToMatchedRuleHash($queryVars)
     {
         if (! is_array($queryVars)) {
             return;
