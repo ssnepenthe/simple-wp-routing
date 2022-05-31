@@ -9,6 +9,20 @@ use ToyWpRouting\RewriteRule;
 
 class RewriteRuleTest extends TestCase
 {
+    public function testEmptyQuery()
+    {
+        $rule = new RewriteRule('someregex', '');
+
+        $this->assertSame("index.php?matchedRule={$rule->getHash()}", $rule->getQuery());
+    }
+
+    public function testEmptyQueryWithPrefix()
+    {
+        $rule = new RewriteRule('someregex', '', 'pfx_');
+
+        $this->assertSame("index.php?pfx_matchedRule={$rule->getHash()}", $rule->getQuery());
+    }
+
     public function testGetters()
     {
         $rule = new RewriteRule('someregex', 'index.php?var=value');
@@ -59,19 +73,5 @@ class RewriteRuleTest extends TestCase
             "index.php?pfx_var=value&pfx_matchedRule={$rule->getHash()}",
             $rule->getQuery()
         );
-    }
-
-    public function testEmptyQuery()
-    {
-        $rule = new RewriteRule('someregex', '');
-
-        $this->assertSame("index.php?matchedRule={$rule->getHash()}", $rule->getQuery());
-    }
-
-    public function testEmptyQueryWithPrefix()
-    {
-        $rule = new RewriteRule('someregex', '', 'pfx_');
-
-        $this->assertSame("index.php?pfx_matchedRule={$rule->getHash()}", $rule->getQuery());
     }
 }
