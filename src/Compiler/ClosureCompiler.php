@@ -27,13 +27,16 @@ class ClosureCompiler
         $ref = new ReflectionClosure($this->closure);
 
         if (! empty($ref->getUseVariables())) {
-            throw new RuntimeException('@todo'); // Import with use keyword
+            throw new RuntimeException('Closures with "use" imports not supported');
         }
 
         if ($ref->isBindingRequired() || $ref->isScopeRequired()) {
-            throw new RuntimeException('@todo'); // $this, self, static, parent
+            throw new RuntimeException(
+                'Closures referencing "$this", "self", "static", or "parent" not supported'
+            );
         }
 
+        // Trim is probably not necessary...
         $code = trim($ref->getCode(), "\t\n\r\0\x0B;");
 
         return $ref->isStatic() ? $code : "static {$code}";

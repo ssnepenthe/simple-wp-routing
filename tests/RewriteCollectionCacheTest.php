@@ -59,10 +59,10 @@ class RewriteCollectionCacheTest extends TestCase
         $this->assertSame('firsthandler', $rewrites[0]->getHandler());
         $this->assertNull($rewrites[0]->getIsActiveCallback());
         $this->assertSame(['GET'], $rewrites[0]->getMethods());
-        $this->assertSame(['first' => 'first', 'matchedRule' => 'matchedRule'], $rewrites[0]->getPrefixedToUnprefixedQueryVariablesMap());
-        $this->assertSame(['first', 'matchedRule'], $rewrites[0]->getQueryVariables());
+        $this->assertSame(['var' => 'var', 'matchedRule' => 'matchedRule'], $rewrites[0]->getPrefixedToUnprefixedQueryVariablesMap());
+        $this->assertSame(['var', 'matchedRule'], $rewrites[0]->getQueryVariables());
         $this->assertSame(
-            ['first' => 'index.php?first=first&matchedRule=8b04d5e3775d298e78455efc5ca404d5'],
+            ['^first$' => 'index.php?var=first&matchedRule=9f79cebcf1735d5eaefeee8dbc7316dd'],
             $rewrites[0]->getRewriteRules()
         );
         // @todo
@@ -73,12 +73,12 @@ class RewriteCollectionCacheTest extends TestCase
 
         $this->assertInstanceOf(OptimizedRewrite::class, $rewrites[1]);
         $this->assertSame(
-            'secondisactive',
+            'secondisactivecallback',
             $rewrites[1]->getIsActiveCallback()
         );
         $this->assertSame(['POST'], $rewrites[1]->getMethods());
         $this->assertSame(
-            ['second' => 'index.php?second=second&matchedRule=a9f0e61a137d86aa9db53465e0801612'],
+            ['^second$' => 'index.php?var=second&matchedRule=3cf5d427e03a68a3881d2d68a86b64f1'],
             $rewrites[1]->getRewriteRules()
         );
     }
@@ -102,7 +102,7 @@ class RewriteCollectionCacheTest extends TestCase
         $root = vfsStream::setup();
         $cache = new RewriteCollectionCache($root->url(), 'cache.php');
 
-        $rewriteCollection = new RewriteCollection();
+        $rewriteCollection = new RewriteCollection('pfx_');
 
         $one = new Rewrite(
             ['GET'],
@@ -125,57 +125,10 @@ class RewriteCollectionCacheTest extends TestCase
         $cache->put($rewriteCollection);
 
         $this->assertTrue($root->hasChild('cache.php'));
-
-        $this->assertSame([
-            [
-                'methods' => ['GET'],
-                'rewriteRules' => ['first' => 'index.php?pfx_first=first&pfx_matchedRule=8b04d5e3775d298e78455efc5ca404d5'],
-                'rules' => [
-                    [
-                        'hash' => '8b04d5e3775d298e78455efc5ca404d5',
-                        'prefixedQueryArray' => ['pfx_first' => 'first', 'pfx_matchedRule' => '8b04d5e3775d298e78455efc5ca404d5'],
-                        'query' => 'index.php?pfx_first=first&pfx_matchedRule=8b04d5e3775d298e78455efc5ca404d5',
-                        'queryArray' => ['first' => 'first', 'matchedRule' => '8b04d5e3775d298e78455efc5ca404d5'],
-                        'regex' => 'first',
-                    ]
-                ],
-                'handler' => 'somehandler',
-                'prefixedToUnprefixedQueryVariablesMap' => ['pfx_first' => 'first', 'pfx_matchedRule' => 'matchedRule'],
-                'queryVariables' => ['pfx_first', 'pfx_matchedRule'],
-                'isActiveCallback' => null
-            ],
-            [
-                'methods' => ['GET', 'POST'],
-                'rewriteRules' => [
-                    'second' => 'index.php?second=second&matchedRule=a9f0e61a137d86aa9db53465e0801612',
-                    'third' => 'index.php?third=third&matchedRule=dd5c8bf51558ffcbe5007071908e9524',
-                ],
-                'rules' => [
-                    [
-                        'hash' => 'a9f0e61a137d86aa9db53465e0801612',
-                        'prefixedQueryArray' => ['second' => 'second', 'matchedRule' => 'a9f0e61a137d86aa9db53465e0801612'],
-                        'query' => 'index.php?second=second&matchedRule=a9f0e61a137d86aa9db53465e0801612',
-                        'queryArray' => ['second' => 'second', 'matchedRule' => 'a9f0e61a137d86aa9db53465e0801612'],
-                        'regex' => 'second',
-                    ],
-                    [
-                        'hash' => 'dd5c8bf51558ffcbe5007071908e9524',
-                        'prefixedQueryArray' => ['third' => 'third', 'matchedRule' => 'dd5c8bf51558ffcbe5007071908e9524'],
-                        'query' => 'index.php?third=third&matchedRule=dd5c8bf51558ffcbe5007071908e9524',
-                        'queryArray' => ['third' => 'third', 'matchedRule' => 'dd5c8bf51558ffcbe5007071908e9524'],
-                        'regex' => 'third',
-                    ],
-                ],
-                'handler' => 'anotherhandler',
-                'prefixedToUnprefixedQueryVariablesMap' => [
-                    'second' => 'second',
-                    'matchedRule' => 'matchedRule',
-                    'third' => 'third'
-                ],
-                'queryVariables' => ['second', 'matchedRule', 'third'],
-                'isActiveCallback' => 'isActive',
-            ],
-        ], include $root->getChild('cache.php')->url());
+        $this->assertInstanceOf(
+            RewriteCollection::class,
+            include $root->getChild('cache.php')->url()
+        );
     }
 
     public function testPutDirectoryDoesNotExist()
@@ -184,6 +137,7 @@ class RewriteCollectionCacheTest extends TestCase
         $cache = new RewriteCollectionCache($root->url() . '/somedir', 'cache.php');
 
         $rewriteCollection = new RewriteCollection();
+        $rewriteCollection->get('^regex$', 'index.php?var=val', 'handler');
 
         $cache->put($rewriteCollection);
 
@@ -197,10 +151,14 @@ class RewriteCollectionCacheTest extends TestCase
         $cache = new RewriteCollectionCache($root->url(), 'cache.php');
 
         $rewriteCollection = new RewriteCollection();
+        $rewriteCollection->get('^regex$', 'index.php?var=val', 'handler');
 
         $cache->put($rewriteCollection);
 
-        $this->assertSame([], include $root->getChild('cache.php')->url());
+        $this->assertInstanceOf(
+            RewriteCollection::class,
+            include $root->getChild('cache.php')->url()
+        );
 
         $rewriteCollection->add(
             new Rewrite(['GET'], [new RewriteRule('first', 'index.php?first=first')], 'somehandler')
@@ -238,14 +196,9 @@ class RewriteCollectionCacheTest extends TestCase
         $cache->put($rewriteCollection);
 
         $dumped = include $root->getChild('cache.php')->url();
+        $dumpedRewrites = iterator_to_array($dumped->getRewrites());
 
-        $this->assertStringStartsWith(
-            'C:32:"Opis\Closure\SerializableClosure"',
-            $dumped[0]['handler']
-        );
-        $this->assertStringStartsWith(
-            'C:32:"Opis\Closure\SerializableClosure"',
-            $dumped[1]['isActiveCallback']
-        );
+        $this->assertInstanceOf(Closure::class, $dumpedRewrites[0]->getHandler());
+        $this->assertInstanceOf(Closure::class, $dumpedRewrites[1]->getIsActiveCallback());
     }
 }

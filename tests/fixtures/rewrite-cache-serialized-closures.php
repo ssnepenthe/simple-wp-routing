@@ -1,46 +1,51 @@
 <?php
 
-return array (
-  0 => 
+declare(strict_types=1);
+
+return new class extends \ToyWpRouting\RewriteCollection
+{
+    public function __construct()
+    {
+        parent::__construct('pfx_');
+
+        $rewrite0 = new \ToyWpRouting\OptimizedRewrite(array (
+  0 => 'GET',
+  1 => 'HEAD',
+), array (
+  '^regex$' => 'index.php?pfx_var=val&pfx_matchedRule=e8362b7488c4e1a7eee5ff88b032f6eb',
+), array (
+  0 => new \ToyWpRouting\OptimizedRewriteRule('e8362b7488c4e1a7eee5ff88b032f6eb', array (
+  'pfx_var' => 'val',
+  'pfx_matchedRule' => 'e8362b7488c4e1a7eee5ff88b032f6eb',
+), 'index.php?pfx_var=val&pfx_matchedRule=e8362b7488c4e1a7eee5ff88b032f6eb', array (
+  'var' => 'val',
+  'matchedRule' => 'e8362b7488c4e1a7eee5ff88b032f6eb',
+), '^regex$'),
+), static function () {}, array (
+  'pfx_var' => 'var',
+  'pfx_matchedRule' => 'matchedRule',
+), array (
+  0 => 'pfx_var',
+  1 => 'pfx_matchedRule',
+), static function () {});
+$this->rewrites->attach($rewrite0);
+
+        $this->rewriteRules = array (
+  '^regex$' => 'index.php?pfx_var=val&pfx_matchedRule=e8362b7488c4e1a7eee5ff88b032f6eb',
+);
+        $this->queryVariables = array (
+  'pfx_var' => 'var',
+  'pfx_matchedRule' => 'matchedRule',
+);
+
+        $this->rewritesByRegexHashAndMethod = array (
+  'e8362b7488c4e1a7eee5ff88b032f6eb' => 
   array (
-    'methods' => 
-    array (
-      0 => 'GET',
-    ),
-    'rewriteRules' => 
-    array (
-      'regex' => 'index.php?rewrite=rewrite&matchedRule=44c5b763d21e9a3ed8cad56977bfd75c',
-    ),
-    'rules' => 
-    array (
-      0 => 
-      array (
-        'hash' => '44c5b763d21e9a3ed8cad56977bfd75c',
-        'prefixedQueryArray' => 
-        array (
-          'rewrite' => 'rewrite',
-          'matchedRule' => '44c5b763d21e9a3ed8cad56977bfd75c',
-        ),
-        'query' => 'index.php?rewrite=rewrite&matchedRule=44c5b763d21e9a3ed8cad56977bfd75c',
-        'queryArray' => 
-        array (
-          'rewrite' => 'rewrite',
-          'matchedRule' => '44c5b763d21e9a3ed8cad56977bfd75c',
-        ),
-        'regex' => 'regex',
-      ),
-    ),
-    'handler' => 'C:32:"Opis\\Closure\\SerializableClosure":137:{a:5:{s:3:"use";a:0:{}s:8:"function";s:14:"function () {}";s:5:"scope";N;s:4:"this";N;s:4:"self";s:32:"000000000000000b0000000000000000";}}',
-    'prefixedToUnprefixedQueryVariablesMap' => 
-    array (
-      'rewrite' => 'rewrite',
-      'matchedRule' => 'matchedRule',
-    ),
-    'queryVariables' => 
-    array (
-      0 => 'rewrite',
-      1 => 'matchedRule',
-    ),
-    'isActiveCallback' => 'C:32:"Opis\\Closure\\SerializableClosure":137:{a:5:{s:3:"use";a:0:{}s:8:"function";s:14:"function () {}";s:5:"scope";N;s:4:"this";N;s:4:"self";s:32:"000000000000000d0000000000000000";}}',
+    'GET' => $rewrite0,
+    'HEAD' => $rewrite0,
   ),
 );
+
+        $this->locked = true;
+    }
+};

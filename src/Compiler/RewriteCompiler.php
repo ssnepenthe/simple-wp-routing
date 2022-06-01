@@ -54,7 +54,9 @@ class RewriteCompiler
             return var_export($value, true);
         }
 
-        throw new RuntimeException('@todo');
+        throw new RuntimeException(
+            'Unsupported callback type - must be closure, string, or array{0: string, 1: string}'
+        );
     }
 
     private function handler(): string
