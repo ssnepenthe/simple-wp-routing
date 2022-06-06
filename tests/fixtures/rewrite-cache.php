@@ -1,88 +1,74 @@
 <?php
 
-return array (
-  0 => 
+declare(strict_types=1);
+
+return new class extends \ToyWpRouting\RewriteCollection
+{
+    public function __construct()
+    {
+        parent::__construct('');
+
+        $rewrite0 = new \ToyWpRouting\OptimizedRewrite(array (
+  0 => 'GET',
+), array (
+  '^first$' => 'index.php?var=first&matchedRule=9f79cebcf1735d5eaefeee8dbc7316dd',
+), array (
+  0 => new \ToyWpRouting\OptimizedRewriteRule('9f79cebcf1735d5eaefeee8dbc7316dd', array (
+  'var' => 'first',
+  'matchedRule' => '9f79cebcf1735d5eaefeee8dbc7316dd',
+), 'index.php?var=first&matchedRule=9f79cebcf1735d5eaefeee8dbc7316dd', array (
+  'var' => 'first',
+  'matchedRule' => '9f79cebcf1735d5eaefeee8dbc7316dd',
+), '^first$'),
+), 'firsthandler', array (
+  'var' => 'var',
+  'matchedRule' => 'matchedRule',
+), array (
+  0 => 'var',
+  1 => 'matchedRule',
+), NULL);
+$this->rewrites->attach($rewrite0);
+$rewrite1 = new \ToyWpRouting\OptimizedRewrite(array (
+  0 => 'POST',
+), array (
+  '^second$' => 'index.php?var=second&matchedRule=3cf5d427e03a68a3881d2d68a86b64f1',
+), array (
+  0 => new \ToyWpRouting\OptimizedRewriteRule('3cf5d427e03a68a3881d2d68a86b64f1', array (
+  'var' => 'second',
+  'matchedRule' => '3cf5d427e03a68a3881d2d68a86b64f1',
+), 'index.php?var=second&matchedRule=3cf5d427e03a68a3881d2d68a86b64f1', array (
+  'var' => 'second',
+  'matchedRule' => '3cf5d427e03a68a3881d2d68a86b64f1',
+), '^second$'),
+), 'secondhandler', array (
+  'var' => 'var',
+  'matchedRule' => 'matchedRule',
+), array (
+  0 => 'var',
+  1 => 'matchedRule',
+), 'secondisactivecallback');
+$this->rewrites->attach($rewrite1);
+
+        $this->rewriteRules = array (
+  '^first$' => 'index.php?var=first&matchedRule=9f79cebcf1735d5eaefeee8dbc7316dd',
+  '^second$' => 'index.php?var=second&matchedRule=3cf5d427e03a68a3881d2d68a86b64f1',
+);
+        $this->queryVariables = array (
+  'var' => 'var',
+  'matchedRule' => 'matchedRule',
+);
+
+        $this->rewritesByRegexHashAndMethod = array (
+  '9f79cebcf1735d5eaefeee8dbc7316dd' => 
   array (
-    'methods' => 
-    array (
-      0 => 'GET',
-    ),
-    'rewriteRules' => 
-    array (
-      'first' => 'index.php?first=first&matchedRule=8b04d5e3775d298e78455efc5ca404d5',
-    ),
-    'rules' => 
-    array (
-      0 => 
-      array (
-        'hash' => '8b04d5e3775d298e78455efc5ca404d5',
-        'prefixedQueryArray' => 
-        array (
-          'first' => 'first',
-          'matchedRule' => '8b04d5e3775d298e78455efc5ca404d5',
-        ),
-        'query' => 'index.php?first=first&matchedRule=8b04d5e3775d298e78455efc5ca404d5',
-        'queryArray' => 
-        array (
-          'first' => 'first',
-          'matchedRule' => '8b04d5e3775d298e78455efc5ca404d5',
-        ),
-        'regex' => 'first',
-      ),
-    ),
-    'handler' => 'firsthandler',
-    'prefixedToUnprefixedQueryVariablesMap' => 
-    array (
-      'first' => 'first',
-      'matchedRule' => 'matchedRule',
-    ),
-    'queryVariables' => 
-    array (
-      0 => 'first',
-      1 => 'matchedRule',
-    ),
-    'isActiveCallback' => NULL,
+    'GET' => $rewrite0,
   ),
-  1 => 
+  '3cf5d427e03a68a3881d2d68a86b64f1' => 
   array (
-    'methods' => 
-    array (
-      0 => 'POST',
-    ),
-    'rewriteRules' => 
-    array (
-      'second' => 'index.php?second=second&matchedRule=a9f0e61a137d86aa9db53465e0801612',
-    ),
-    'rules' => 
-    array (
-      0 => 
-      array (
-        'hash' => 'a9f0e61a137d86aa9db53465e0801612',
-        'prefixedQueryArray' => 
-        array (
-          'second' => 'second',
-          'matchedRule' => 'a9f0e61a137d86aa9db53465e0801612',
-        ),
-        'query' => 'index.php?second=second&matchedRule=a9f0e61a137d86aa9db53465e0801612',
-        'queryArray' => 
-        array (
-          'second' => 'second',
-          'matchedRule' => 'a9f0e61a137d86aa9db53465e0801612',
-        ),
-        'regex' => 'second',
-      ),
-    ),
-    'handler' => 'secondhandler',
-    'prefixedToUnprefixedQueryVariablesMap' => 
-    array (
-      'second' => 'second',
-      'matchedRule' => 'matchedRule',
-    ),
-    'queryVariables' => 
-    array (
-      0 => 'second',
-      1 => 'matchedRule',
-    ),
-    'isActiveCallback' => 'secondisactive',
+    'POST' => $rewrite1,
   ),
 );
+
+        $this->locked = true;
+    }
+};

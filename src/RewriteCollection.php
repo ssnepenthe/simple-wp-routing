@@ -100,6 +100,11 @@ class RewriteCollection
         );
     }
 
+    public function getPrefix(): string
+    {
+        return $this->prefix;
+    }
+
     public function getPrefixedToUnprefixedQueryVariablesMap()
     {
         return $this->queryVariables;

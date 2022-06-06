@@ -1,0 +1,16 @@
+array (
+  0 => new \ToyWpRouting\OptimizedRewriteRule('c43997731c5fc6fbc8b82cacbcb57daf', array (
+  'pfx_var' => 'one',
+  'pfx_matchedRule' => 'c43997731c5fc6fbc8b82cacbcb57daf',
+), 'index.php?pfx_var=one&pfx_matchedRule=c43997731c5fc6fbc8b82cacbcb57daf', array (
+  'var' => 'one',
+  'matchedRule' => 'c43997731c5fc6fbc8b82cacbcb57daf',
+), '^oneregex$'),
+  1 => new \ToyWpRouting\OptimizedRewriteRule('c5090b1b8a5d15fa926bd867aaeeee18', array (
+  'pfx_var' => 'two',
+  'pfx_matchedRule' => 'c5090b1b8a5d15fa926bd867aaeeee18',
+), 'index.php?pfx_var=two&pfx_matchedRule=c5090b1b8a5d15fa926bd867aaeeee18', array (
+  'var' => 'two',
+  'matchedRule' => 'c5090b1b8a5d15fa926bd867aaeeee18',
+), '^tworegex$'),
+)
