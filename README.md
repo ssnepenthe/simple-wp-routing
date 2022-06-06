@@ -108,7 +108,7 @@ If you are using closures for rewrite handlers or active callbacks, you must ins
 composer require opis/closure
 ```
 
-The caching mechanism does not support using objects for rewrite handlers or active callbacks.
+The caching mechanism does not support using instance methods for rewrite handlers or active callbacks.
 Instead, you should set a callable resolver on the invocation strategy instance:
 
 ```php
