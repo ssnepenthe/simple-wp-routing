@@ -19,7 +19,7 @@ class InvokerBackedInvocationStrategyTest extends TestCase
     {
         $invocationCount = 0;
 
-        $strategy = new InvokerBackedInvocationStrategy(new Invoker());
+        $strategy = new InvokerBackedInvocationStrategy();
         $rewrite = new Rewrite(
             ['GET'],
             [new RewriteRule('^one$', 'index.php?one=one')],
@@ -52,7 +52,7 @@ class InvokerBackedInvocationStrategyTest extends TestCase
             }
         );
 
-        $returnValue = (new InvokerBackedInvocationStrategy(new Invoker()))
+        $returnValue = (new InvokerBackedInvocationStrategy())
             ->withAdditionalContext(['queryVars' => ['one' => 'testvalue']])
             ->invokeHandler($rewrite);
 
@@ -68,7 +68,7 @@ class InvokerBackedInvocationStrategyTest extends TestCase
             $invocationCount++;
         };
 
-        $strategy = new InvokerBackedInvocationStrategy(new Invoker());
+        $strategy = new InvokerBackedInvocationStrategy();
         $strategy->setCallableResolver(function ($potentialCallable) use ($handler) {
             if ('handler' === $potentialCallable) {
                 return $handler;
@@ -135,7 +135,7 @@ class InvokerBackedInvocationStrategyTest extends TestCase
             }
         );
 
-        $returnValue  = (new InvokerBackedInvocationStrategy(new Invoker()))
+        $returnValue  = (new InvokerBackedInvocationStrategy())
             ->withAdditionalContext(['queryVars' => ['pfx_one' => 'testvalue']])
             ->invokeHandler($rewrite);
 
@@ -148,7 +148,7 @@ class InvokerBackedInvocationStrategyTest extends TestCase
     {
         $invocationCount = 0;
 
-        $strategy = new InvokerBackedInvocationStrategy(new Invoker());
+        $strategy = new InvokerBackedInvocationStrategy();
         $one = new Rewrite(
             ['GET'],
             [new RewriteRule('^one$', 'index.php?one=one')],
@@ -184,7 +184,7 @@ class InvokerBackedInvocationStrategyTest extends TestCase
             $isActiveCallbackInvocationCount++;
         };
 
-        $strategy = new InvokerBackedInvocationStrategy(new Invoker());
+        $strategy = new InvokerBackedInvocationStrategy();
         $strategy->setCallableResolver(
             function ($potentialCallable) use ($isActiveCallback, &$callableResolverInvocationCount) {
                 $callableResolverInvocationCount++;
@@ -257,7 +257,7 @@ class InvokerBackedInvocationStrategyTest extends TestCase
 
     public function testInvokeIsActiveCallbackWithNoCallbackSet()
     {
-        $strategy = new InvokerBackedInvocationStrategy(new Invoker());
+        $strategy = new InvokerBackedInvocationStrategy();
         $rewrite = new Rewrite(
             ['GET'],
             [new RewriteRule('^one$', 'index.php?one=one')],
@@ -273,7 +273,7 @@ class InvokerBackedInvocationStrategyTest extends TestCase
     {
         $invocationCount = 0;
 
-        $strategy = new InvokerBackedInvocationStrategy(new Invoker());
+        $strategy = new InvokerBackedInvocationStrategy();
         $one = new Rewrite(
             ['GET'],
             [new RewriteRule('^one$', 'index.php?one=one')],

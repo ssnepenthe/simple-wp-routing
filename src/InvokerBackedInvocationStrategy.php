@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace ToyWpRouting;
 
+use Invoker\Invoker;
 use Invoker\InvokerInterface;
 
 class InvokerBackedInvocationStrategy extends AbstractInvocationStrategy
 {
     protected $invoker;
 
-    public function __construct(InvokerInterface $invoker)
+    public function __construct(?InvokerInterface $invoker = null)
     {
-        $this->invoker = $invoker;
+        $this->invoker = $invoker ?: new Invoker();
     }
 
     public function invokeHandler(RewriteInterface $rewrite)
