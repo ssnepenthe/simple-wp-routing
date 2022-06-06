@@ -1,6 +1,9 @@
 # toy-wp-routing
 Provides a more modern experience for working with the WP Rewrite API
 
+## Warning
+This package is currently in development and is subject to breaking changes without notice until a release has been tagged.
+
 ## Basic Usage
 There are two intended ways to use this package -
 
