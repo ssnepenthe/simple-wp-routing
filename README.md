@@ -40,6 +40,8 @@ $rewrites->get('^api/products$', '', function() { /** */ })->setIsActiveCallback
 (new \ToyWpRouting\Orchestrator($rewrites))->initialize();
 ```
 
+Note that if you are using the same regex for multiple request methods, their query strings must all match.
+
 ### Routes
 Routes can be used to more closely mimic the experience of a modern router. The route syntax comes
 from [nikic/fast-route](https://github.com/nikic/FastRoute).
