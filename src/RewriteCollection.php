@@ -14,7 +14,7 @@ class RewriteCollection
     protected $queryVariables = [];
     protected $rewriteRules = [];
     /**
-     * @var SplObjectStorage<RewriteInterface>
+     * @var SplObjectStorage<RewriteInterface, null>
      */
     protected $rewrites;
     protected $rewritesByRegexHashAndMethod = [];
@@ -56,7 +56,7 @@ class RewriteCollection
         return $rewrite;
     }
 
-    public function any(string $regex, string $query, $handler): Rewrite
+    public function any(string $regex, string $query, $handler): RewriteInterface
     {
         return $this->add(
             $this->create(
@@ -68,7 +68,7 @@ class RewriteCollection
         );
     }
 
-    public function delete(string $regex, string $query, $handler): Rewrite
+    public function delete(string $regex, string $query, $handler): RewriteInterface
     {
         return $this->add(
             $this->create(['DELETE'], $regex, $query, $handler)
@@ -93,7 +93,7 @@ class RewriteCollection
         return $collection;
     }
 
-    public function get(string $regex, string $query, $handler): Rewrite
+    public function get(string $regex, string $query, $handler): RewriteInterface
     {
         return $this->add(
             $this->create(['GET', 'HEAD'], $regex, $query, $handler)
@@ -146,28 +146,28 @@ class RewriteCollection
         return $this;
     }
 
-    public function options(string $regex, string $query, $handler): Rewrite
+    public function options(string $regex, string $query, $handler): RewriteInterface
     {
         return $this->add(
             $this->create(['OPTIONS'], $regex, $query, $handler)
         );
     }
 
-    public function patch(string $regex, string $query, $handler): Rewrite
+    public function patch(string $regex, string $query, $handler): RewriteInterface
     {
         return $this->add(
             $this->create(['PATCH'], $regex, $query, $handler)
         );
     }
 
-    public function post(string $regex, string $query, $handler): Rewrite
+    public function post(string $regex, string $query, $handler): RewriteInterface
     {
         return $this->add(
             $this->create(['POST'], $regex, $query, $handler)
         );
     }
 
-    public function put(string $regex, string $query, $handler): Rewrite
+    public function put(string $regex, string $query, $handler): RewriteInterface
     {
         return $this->add(
             $this->create(['PUT'], $regex, $query, $handler)

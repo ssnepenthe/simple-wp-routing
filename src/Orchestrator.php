@@ -54,8 +54,15 @@ class Orchestrator
     public function initialize()
     {
         // @todo adjust priorities.
+
+        /**
+         * @psalm-suppress HookNotFound
+         */
         add_filter('option_rewrite_rules', [$this, 'onOptionRewriteRules']);
         add_filter('rewrite_rules_array', [$this, 'onRewriteRulesArray']);
+        /**
+         * @psalm-suppress HookNotFound
+         */
         add_filter('pre_update_option_rewrite_rules', [$this, 'onPreUpdateOptionRewriteRules']);
         add_filter('query_vars', [$this, 'onQueryVars']);
         add_filter('request', [$this, 'onRequest']);
@@ -134,6 +141,12 @@ class Orchestrator
             return;
         }
 
+        /**
+         * @psalm-suppress PossiblyNullArrayOffset
+         * @todo The logic above for determining matched rule key can be refactored now that we have
+         *       introduced the RewriteCollection->getPrefix() method. Or better yet, we should
+         *       probably refactor to use $wp->matched_rule instead of a query variable.
+         */
         if (! is_string($queryVars[$matchedRuleKey])) {
             return;
         }
