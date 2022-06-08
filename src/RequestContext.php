@@ -97,7 +97,10 @@ class RequestContext
         if (! in_array($override, $allowedOverrides, true)) {
             // @todo Looser override validation? See symfony/http-foundation Request->getMethod().
             // @todo maybe shouldn't throw?
-            throw new RuntimeException('@todo');
+            throw new RuntimeException(sprintf(
+                'Invalid request method - must be one of %s',
+                implode(', ', $allowedOverrides)
+            ));
         }
 
         return $override;

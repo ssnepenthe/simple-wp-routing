@@ -55,6 +55,7 @@ class RewriteCollectionTest extends TestCase
     public function testAddWhenLocked()
     {
         $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Cannot add rewrites when rewrite collection is locked');
 
         $rewriteCollection = new RewriteCollection();
         $rewriteCollection->lock();

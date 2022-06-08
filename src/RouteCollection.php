@@ -29,7 +29,7 @@ class RouteCollection
     public function add(array $methods, string $route, $handler): Route
     {
         if ($this->locked) {
-            throw new RuntimeException('Cannot add routes when toue collection is locked');
+            throw new RuntimeException('Cannot add routes when route collection is locked');
         }
 
         $route = new Route($methods, $route, $handler);

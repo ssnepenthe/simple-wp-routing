@@ -107,6 +107,7 @@ class RequestContextTest extends TestCase
     public function testGetIntendedMethodWithInvalidOverride()
     {
         $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Invalid request method - must be one of');
 
         $request = new RequestContext('POST', ['X-HTTP-METHOD-OVERRIDE' => 'INVALID']);
 

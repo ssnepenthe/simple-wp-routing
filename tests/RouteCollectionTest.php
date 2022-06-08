@@ -30,6 +30,7 @@ class RouteCollectionTest extends TestCase
     public function testAddWhenLocked()
     {
         $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Cannot add routes when route collection is locked');
 
         $collection = new RouteCollection();
         $collection->lock();
