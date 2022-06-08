@@ -42,6 +42,14 @@ class Support
         ));
     }
 
+    public static function isValidMethodsList(array $methods): bool
+    {
+        return empty(array_diff(
+            $methods,
+            ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
+        ));
+    }
+
     public static function parseQuery(string $query): array
     {
         if ('index.php?' === substr($query, 0, 10)) {

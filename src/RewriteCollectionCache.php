@@ -8,8 +8,9 @@ use ToyWpRouting\Compiler\RewriteCollectionCompiler;
 
 class RewriteCollectionCache
 {
-    protected $dir;
-    protected $file;
+    protected string $dir;
+
+    protected string $file;
 
     public function __construct(string $dir, string $file = 'rewrite-cache.php')
     {
@@ -17,7 +18,7 @@ class RewriteCollectionCache
         $this->file = $file;
     }
 
-    public function delete()
+    public function delete(): void
     {
         $file = "{$this->dir}/{$this->file}";
 
@@ -36,7 +37,7 @@ class RewriteCollectionCache
         return static::staticInclude("{$this->dir}/{$this->file}");
     }
 
-    public function put(RewriteCollection $rewriteCollection)
+    public function put(RewriteCollection $rewriteCollection): void
     {
         if (! file_exists($this->dir)) {
             mkdir($this->dir, 0700, true);
@@ -50,6 +51,9 @@ class RewriteCollectionCache
         file_put_contents("{$this->dir}/{$this->file}", $compiled);
     }
 
+    /**
+     * @return mixed
+     */
     protected static function staticInclude(string $file)
     {
         return include $file;

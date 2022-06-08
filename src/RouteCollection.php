@@ -8,16 +8,25 @@ use RuntimeException;
 
 class RouteCollection
 {
-    protected $locked = false;
-    protected $prefix;
-    protected $routes = [];
+    protected bool $locked = false;
+
+    protected string $prefix;
+
+    /**
+     * @var Route[]
+     */
+    protected array $routes = [];
 
     public function __construct(string $prefix = '')
     {
         $this->prefix = $prefix;
     }
 
-    public function add(array $methods, string $route, $handler)
+    /**
+     * @param array<int, "GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS"> $methods
+     * @param mixed $handler
+     */
+    public function add(array $methods, string $route, $handler): Route
     {
         if ($this->locked) {
             throw new RuntimeException('Cannot add routes when toue collection is locked');
@@ -34,7 +43,10 @@ class RouteCollection
         return $route;
     }
 
-    public function any(string $route, $handler)
+    /**
+     * @param mixed $handler
+     */
+    public function any(string $route, $handler): Route
     {
         return $this->add(
             ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -43,12 +55,18 @@ class RouteCollection
         );
     }
 
-    public function delete(string $route, $handler)
+    /**
+     * @param mixed $handler
+     */
+    public function delete(string $route, $handler): Route
     {
         return $this->add(['DELETE'], $route, $handler);
     }
 
-    public function get(string $route, $handler)
+    /**
+     * @param mixed $handler
+     */
+    public function get(string $route, $handler): Route
     {
         return $this->add(['GET', 'HEAD'], $route, $handler);
     }
@@ -58,6 +76,9 @@ class RouteCollection
         return $this->prefix;
     }
 
+    /**
+     * @return Route[]
+     */
     public function getRoutes(): array
     {
         return $this->routes;
@@ -68,29 +89,41 @@ class RouteCollection
         return $this->locked;
     }
 
-    public function lock()
+    public function lock(): self
     {
         $this->locked = true;
 
         return $this;
     }
 
-    public function options(string $route, $handler)
+    /**
+     * @param mixed $handler
+     */
+    public function options(string $route, $handler): Route
     {
         return $this->add(['OPTIONS'], $route, $handler);
     }
 
-    public function patch(string $route, $handler)
+    /**
+     * @param mixed $handler
+     */
+    public function patch(string $route, $handler): Route
     {
         return $this->add(['PATCH'], $route, $handler);
     }
 
-    public function post(string $route, $handler)
+    /**
+     * @param mixed $handler
+     */
+    public function post(string $route, $handler): Route
     {
         return $this->add(['POST'], $route, $handler);
     }
 
-    public function put(string $route, $handler)
+    /**
+     * @param mixed $handler
+     */
+    public function put(string $route, $handler): Route
     {
         return $this->add(['PUT'], $route, $handler);
     }

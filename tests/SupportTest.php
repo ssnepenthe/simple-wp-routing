@@ -51,6 +51,28 @@ class SupportTest extends TestCase
         );
     }
 
+    public function testIsValidMethodsList()
+    {
+        // Full list of valid methods.
+        $this->assertTrue(Support::isValidMethodsList(
+            ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT']
+        ));
+        // Subset of list.
+        $this->assertTrue(Support::isValidMethodsList(['GET', 'POST', 'PUT']));
+
+        // False for lowercase methods.
+        $this->assertFalse(Support::isValidMethodsList(
+            ['delete', 'get', 'head', 'options', 'patch', 'post', 'put']
+        ));
+        $this->assertFalse(Support::isValidMethodsList(['get', 'post', 'put']));
+        // False for full list with any additional.
+        $this->assertFalse(Support::isValidMethodsList(
+            ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT', 'NONSENSE']
+        ));
+        // False for subset of list with additional.
+        $this->assertFalse(Support::isValidMethodsList(['GET', 'POST', 'PUT', 'IRRELEVANT']));
+    }
+
     public function testParseQuery()
     {
         $query = 'index.php?one=two&three=four&five=six';

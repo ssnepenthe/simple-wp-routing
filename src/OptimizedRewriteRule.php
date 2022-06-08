@@ -7,12 +7,26 @@ namespace ToyWpRouting;
 // @todo Tests?
 class OptimizedRewriteRule implements RewriteRuleInterface
 {
-    protected $hash;
-    protected $prefixedQueryArray;
-    protected $query;
-    protected $queryArray;
-    protected $regex;
+    protected string $hash;
 
+    /**
+     * @var array<string, string>
+     */
+    protected array $prefixedQueryArray;
+
+    protected string $query;
+
+    /**
+     * @var array<string, string>
+     */
+    protected array $queryArray;
+
+    protected string $regex;
+
+    /**
+     * @param array<string, string> $prefixedQueryArray
+     * @param array<string, string> $queryArray
+     */
     public function __construct(
         string $hash,
         array $prefixedQueryArray,
@@ -32,6 +46,9 @@ class OptimizedRewriteRule implements RewriteRuleInterface
         return $this->hash;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getPrefixedQueryArray(): array
     {
         return $this->prefixedQueryArray;
@@ -42,6 +59,9 @@ class OptimizedRewriteRule implements RewriteRuleInterface
         return $this->query;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getQueryArray(): array
     {
         return $this->queryArray;

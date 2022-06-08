@@ -270,7 +270,7 @@ class OrchestratorTest extends TestCase
     {
         $responder = new class () implements ResponderInterface {
             public $count = 0;
-            public function respond()
+            public function respond(): void
             {
                 $this->count++;
             }

@@ -8,6 +8,9 @@ use ToyWpRouting\RewriteRuleInterface;
 
 class RewriteRuleListCompiler
 {
+    /**
+     * @var RewriteRuleInterface[]
+     */
     private array $rules;
 
     public function __construct(array $rules)

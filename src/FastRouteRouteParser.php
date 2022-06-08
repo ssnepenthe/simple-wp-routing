@@ -10,13 +10,16 @@ use FastRoute\RouteParser\Std;
 
 class FastRouteRouteParser implements RouteParserInterface
 {
-    protected $parser;
+    protected RouteParser $parser;
 
     public function __construct(?RouteParser $parser = null)
     {
         $this->parser = $parser ?: new Std();
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function parse(string $route): array
     {
         if ('' === $route) {
@@ -36,7 +39,12 @@ class FastRouteRouteParser implements RouteParserInterface
         return $rewrites;
     }
 
-    protected function convertSegments($segments)
+    /**
+     * @param array<int, string|array{0: string, 1: string}> $segments
+     *
+     * @return array{0: string, 1: string}
+     */
+    protected function convertSegments(array $segments): array
     {
         if ('' === $segments[0]) {
             throw new BadRouteException('Empty routes not allowed');

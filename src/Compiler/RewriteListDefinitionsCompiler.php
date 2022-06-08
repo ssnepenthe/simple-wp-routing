@@ -8,6 +8,9 @@ use ToyWpRouting\RewriteInterface;
 
 class RewriteListDefinitionsCompiler
 {
+    /**
+     * @var RewriteInterface[]
+     */
     private array $rewrites;
 
     public function __construct(array $rewrites)

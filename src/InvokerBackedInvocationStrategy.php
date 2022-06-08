@@ -9,7 +9,7 @@ use Invoker\InvokerInterface;
 
 class InvokerBackedInvocationStrategy extends AbstractInvocationStrategy
 {
-    protected $invoker;
+    protected InvokerInterface $invoker;
 
     public function __construct(?InvokerInterface $invoker = null)
     {

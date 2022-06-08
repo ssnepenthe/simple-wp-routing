@@ -8,9 +8,16 @@ use RuntimeException;
 
 class RequestContext
 {
-    protected $headers;
-    protected $method;
+    /**
+     * @var array<string, string>
+     */
+    protected array $headers;
 
+    protected string $method;
+
+    /**
+     * @param array<string, string> $headers
+     */
     public function __construct(string $method, array $headers)
     {
         $this->method = strtoupper($method);
@@ -20,11 +27,15 @@ class RequestContext
         }
     }
 
-    public static function extractHeaders(array $server)
+    public static function extractHeaders(array $server): array
     {
         $headers = [];
 
         foreach ($server as $key => $value) {
+            if (! is_string($key)) {
+                continue;
+            }
+
             $upper = strtoupper($key);
 
             if (0 === strpos($upper, 'HTTP_')) {

@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace ToyWpRouting;
 
+use WP_Query;
+
 class MethodNotAllowedResponder implements ResponderInterface
 {
-    protected $allowedMethods;
+    /**
+     * @var string[]
+     */
+    protected array $allowedMethods;
 
     public function __construct(array $allowedMethods)
     {
@@ -31,15 +36,20 @@ class MethodNotAllowedResponder implements ResponderInterface
         return $parts;
     }
 
-    public function onParseQuery($wp_query)
+    /**
+     * @param mixed $wpQuery
+     */
+    public function onParseQuery($wpQuery): void
     {
-        // Is this necessary or would it be sufficient just to set $wp_query->is_home = false?
-        // Or would it be better to use the 'parse_request' filter and unset all query variables
-        // before they ever get to $wp_query?
-        $wp_query->init_query_flags();
+        if ($wpQuery instanceof WP_Query) {
+            // Is this necessary or would it be sufficient just to set $wpQuery->is_home = false?
+            // Or would it be better to use the 'parse_request' filter and unset all query variables
+            // before they ever get to $wpQuery?
+            $wpQuery->init_query_flags();
+        }
     }
 
-    public function onTemplateInclude($_)
+    public function onTemplateInclude(): string
     {
         // Alternatively we can allow wordpress to handle status header for us by setting the
         // 'error' query variable on the global wp instance to '405' within the 'parse_request'
@@ -51,7 +61,7 @@ class MethodNotAllowedResponder implements ResponderInterface
         $errorTemplate = get_query_template('405');
 
         // Alternatively we might want to just fall back to the theme index template...
-        if ('' === $errorTemplate) {
+        if (! \is_string($errorTemplate) || '' === $errorTemplate) {
             $errorTemplate = dirname(__DIR__) . '/templates/405.php';
         }
 
@@ -67,7 +77,7 @@ class MethodNotAllowedResponder implements ResponderInterface
         return $headers;
     }
 
-    public function respond()
+    public function respond(): void
     {
         add_filter('body_class', [$this, 'onBodyClass']);
         add_filter('document_title_parts', [$this, 'onDocumentTitleParts']);

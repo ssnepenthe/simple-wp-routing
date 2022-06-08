@@ -7,12 +7,23 @@ namespace ToyWpRouting;
 // @todo More getters? prefixedToUnprefixedVariableMap, queryVariables, prefix, queryArray, prefixedQueryArray, individual values from query array?
 class RewriteRule implements RewriteRuleInterface
 {
-    protected $prefix = '';
-    protected $prefixedQueryArray;
-    protected $query;
-    protected $queryArray;
-    protected $rawQuery;
-    protected $regex;
+    protected string $prefix = '';
+
+    /**
+     * @var array<string, string>
+     */
+    protected array $prefixedQueryArray;
+
+    protected string $query;
+
+    /**
+     * @var array<string, string>
+     */
+    protected array $queryArray;
+
+    protected string $rawQuery;
+
+    protected string $regex;
 
     public function __construct(string $regex, string $query, string $prefix = '')
     {
@@ -29,6 +40,10 @@ class RewriteRule implements RewriteRuleInterface
         return md5($this->regex);
     }
 
+    /**
+     *
+     * @return array<string, string>
+     */
     public function getPrefixedQueryArray(): array
     {
         return $this->prefixedQueryArray;
@@ -39,6 +54,10 @@ class RewriteRule implements RewriteRuleInterface
         return $this->query;
     }
 
+    /**
+     *
+     * @return array<string, string>
+     */
     public function getQueryArray(): array
     {
         return $this->queryArray;

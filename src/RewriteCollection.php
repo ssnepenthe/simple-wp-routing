@@ -9,14 +9,28 @@ use SplObjectStorage;
 
 class RewriteCollection
 {
-    protected $locked = false;
-    protected $prefix;
-    protected $queryVariables = [];
+    protected bool $locked = false;
+
+    protected string $prefix;
+
+    /**
+     * @var array<string, string>
+     */
+    protected array $queryVariables = [];
+
+    /**
+     * @var array<string, string>
+     */
     protected $rewriteRules = [];
+
     /**
      * @var SplObjectStorage<RewriteInterface, null>
      */
     protected $rewrites;
+
+    /**
+     * @var array<string, array<"GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS", RewriteInterface>>
+     */
     protected $rewritesByRegexHashAndMethod = [];
 
     public function __construct(string $prefix = '')
@@ -56,6 +70,9 @@ class RewriteCollection
         return $rewrite;
     }
 
+    /**
+     * @param mixed $handler
+     */
     public function any(string $regex, string $query, $handler): RewriteInterface
     {
         return $this->add(
@@ -68,6 +85,9 @@ class RewriteCollection
         );
     }
 
+    /**
+     * @param mixed $handler
+     */
     public function delete(string $regex, string $query, $handler): RewriteInterface
     {
         return $this->add(
@@ -75,12 +95,16 @@ class RewriteCollection
         );
     }
 
-    public function filter(callable $filterFunction)
+    /**
+     * @param callable(RewriteInterface):bool $filterFunction
+     */
+    public function filter(callable $filterFunction): self
     {
         $collection = new self($this->prefix);
 
         foreach ($this->rewrites as $rewrite) {
             if ($filterFunction($rewrite)) {
+                // @TODO !!!!!!!!!!!!!
                 $collection->add($rewrite);
             }
         }
@@ -93,6 +117,9 @@ class RewriteCollection
         return $collection;
     }
 
+    /**
+     * @param mixed $handler
+     */
     public function get(string $regex, string $query, $handler): RewriteInterface
     {
         return $this->add(
@@ -105,26 +132,42 @@ class RewriteCollection
         return $this->prefix;
     }
 
-    public function getPrefixedToUnprefixedQueryVariablesMap()
+    /**
+     * @return array<string, string>
+     */
+    public function getPrefixedToUnprefixedQueryVariablesMap(): array
     {
         return $this->queryVariables;
     }
 
-    public function getQueryVariables()
+    /**
+     * @return string[]
+     */
+    public function getQueryVariables(): array
     {
         return array_keys($this->queryVariables);
     }
 
-    public function getRewriteRules()
+    /**
+     *
+     * @return array<string, string>
+     */
+    public function getRewriteRules(): array
     {
         return $this->rewriteRules;
     }
 
-    public function getRewrites()
+    /**
+     * @return SplObjectStorage<RewriteInterface, null>
+     */
+    public function getRewrites(): SplObjectStorage
     {
         return $this->rewrites;
     }
 
+    /**
+     * @return array<"GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS", RewriteInterface>
+     */
     public function getRewritesByRegexHash(string $regexHash): array
     {
         if (! array_key_exists($regexHash, $this->rewritesByRegexHashAndMethod)) {
@@ -134,7 +177,7 @@ class RewriteCollection
         return $this->rewritesByRegexHashAndMethod[$regexHash];
     }
 
-    public function isLocked()
+    public function isLocked(): bool
     {
         return $this->locked;
     }
@@ -174,6 +217,10 @@ class RewriteCollection
         );
     }
 
+    /**
+     * @param array<int, "GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS"> $methods
+     * @param mixed $handler
+     */
     protected function create(array $methods, string $regex, string $query, $handler): Rewrite
     {
         return new Rewrite($methods, [new RewriteRule($regex, $query, $this->prefix)], $handler);

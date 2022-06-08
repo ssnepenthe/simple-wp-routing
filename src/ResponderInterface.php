@@ -6,5 +6,5 @@ namespace ToyWpRouting;
 
 interface ResponderInterface
 {
-    public function respond();
+    public function respond(): void;
 }

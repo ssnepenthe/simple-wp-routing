@@ -52,13 +52,6 @@ class RewriteTest extends TestCase
         $this->assertSame($rules, $rewrite->getRules());
     }
 
-    public function testMethodsAreUppercasedByDefault()
-    {
-        $rewrite = new Rewrite(['get'], [], 'somehandler');
-
-        $this->assertSame(['GET'], $rewrite->getMethods());
-    }
-
     public function testMultipleMethodsAndRules()
     {
         $rules = [

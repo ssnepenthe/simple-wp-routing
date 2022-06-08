@@ -6,14 +6,14 @@ namespace ToyWpRouting;
 
 class RouteConverter
 {
-    protected $parser;
+    protected RouteParserInterface $parser;
 
     public function __construct(?RouteParserInterface $parser = null)
     {
         $this->parser = $parser ?: new FastRouteRouteParser();
     }
 
-    public function convert(Route $route): RewriteInterface
+    public function convert(Route $route): Rewrite
     {
         $rules = $this->parser->parse($route->getRoute());
 

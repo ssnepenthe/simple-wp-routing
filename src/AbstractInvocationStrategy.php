@@ -6,8 +6,12 @@ namespace ToyWpRouting;
 
 abstract class AbstractInvocationStrategy implements InvocationStrategyInterface
 {
+    /**
+     * @var callable|null
+     */
     protected $callableResolver;
-    protected $context = [];
+
+    protected array $context = [];
 
     public function getCallableResolver(): ?callable
     {
@@ -23,7 +27,7 @@ abstract class AbstractInvocationStrategy implements InvocationStrategyInterface
 
     abstract public function invokeIsActiveCallback(RewriteInterface $rewrite);
 
-    public function setCallableResolver(callable $callableResolver)
+    public function setCallableResolver(callable $callableResolver): void
     {
         $this->callableResolver = $callableResolver;
     }
@@ -53,7 +57,7 @@ abstract class AbstractInvocationStrategy implements InvocationStrategyInterface
         return $potentialCallable;
     }
 
-    protected function resolveRelevantQueryVariablesFromContext(RewriteInterface $rewrite)
+    protected function resolveRelevantQueryVariablesFromContext(RewriteInterface $rewrite): array
     {
         if (! array_key_exists('queryVars', $this->context)) {
             return [];

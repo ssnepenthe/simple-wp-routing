@@ -6,10 +6,19 @@ namespace ToyWpRouting;
 
 class Orchestrator
 {
+    /**
+     * @var RewriteCollection|null
+     */
     protected $activeRewriteCollection;
-    protected $invocationStrategy;
+
+    protected InvocationStrategyInterface $invocationStrategy;
+
+    /**
+     * @var RequestContext|null
+     */
     protected $requestContext;
-    protected $rewriteCollection;
+
+    protected RewriteCollection $rewriteCollection;
 
     public function __construct(
         RewriteCollection $rewriteCollection,
@@ -51,7 +60,7 @@ class Orchestrator
         return $this->rewriteCollection;
     }
 
-    public function initialize()
+    public function initialize(): self
     {
         // @todo adjust priorities.
 
@@ -114,13 +123,15 @@ class Orchestrator
         return $this->mergeActiveRewriteRules($rules);
     }
 
-
-    protected function mergeActiveRewriteRules($rules)
+    protected function mergeActiveRewriteRules(array $rules): array
     {
         return array_merge($this->getActiveRewriteCollection()->getRewriteRules(), $rules);
     }
 
-    protected function respondToMatchedRuleHash($queryVars)
+    /**
+     * @param mixed $queryVars
+     */
+    protected function respondToMatchedRuleHash($queryVars): void
     {
         if (! is_array($queryVars)) {
             return;
@@ -174,6 +185,9 @@ class Orchestrator
         }
     }
 
+    /**
+     * @param mixed $rules
+     */
     protected function shouldModifyRules($rules): bool
     {
         return is_array($rules) && count($rules) > 0;
