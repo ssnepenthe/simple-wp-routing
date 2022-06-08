@@ -244,7 +244,7 @@ class OrchestratorTest extends TestCase
         $this->assertSame(1, $count);
     }
 
-    public function testOnRequestMatchedRewriteButInvalidMethod()
+    public function testOnRequestMatchedRewriteButNotMatchedMethod()
     {
         $rewrites = new RewriteCollection();
         $rewrites->get($this->regex, 'index.php?var=value', function () {
@@ -264,6 +264,30 @@ class OrchestratorTest extends TestCase
         $this->assertNotFalse(has_action('parse_query', "{$fqcn}->onParseQuery()"));
         $this->assertNotFalse(has_filter('template_include', "{$fqcn}->onTemplateInclude()"));
         $this->assertNotFalse(has_filter('wp_headers', "{$fqcn}->onWpHeaders()"));
+    }
+
+    public function testOnRequestMatchedRewriteInvalidRequestMethodOverride()
+    {
+        $rewrites = new RewriteCollection();
+        $rewrites->get($this->regex, 'index.php?var=value', function () {
+            throw new RuntimeException('This should not happen');
+        });
+
+        $orchestrator = new Orchestrator($rewrites, null, new RequestContext(
+            'POST',
+            ['X-HTTP-METHOD-OVERRIDE' => 'BADMETHOD']
+        ));
+
+        $orchestrator->onRequest(['matchedRule' => $this->hash]);
+        $fqcn = MethodNotAllowedResponder::class;
+
+        $this->assertFalse(has_filter('body_class', "{$fqcn}->onBodyClass()"));
+        $this->assertFalse(
+            has_filter('document_title_parts', "{$fqcn}->onDocumentTitleParts()")
+        );
+        $this->assertFalse(has_action('parse_query', "{$fqcn}->onParseQuery()"));
+        $this->assertFalse(has_filter('template_include', "{$fqcn}->onTemplateInclude()"));
+        $this->assertFalse(has_filter('wp_headers', "{$fqcn}->onWpHeaders()"));
     }
 
     public function testOnRequestMatchedRewriteWithResponderReturnedFromHandler()

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ToyWpRouting;
 
+use RuntimeException;
+
 class Orchestrator
 {
     /**
@@ -170,7 +172,11 @@ class Orchestrator
             return;
         }
 
-        $method = $this->getRequestContext()->getIntendedMethod();
+        try {
+            $method = $this->getRequestContext()->getIntendedMethod();
+        } catch (RuntimeException $e) {
+            return;
+        }
 
         if (! array_key_exists($method, $candidates)) {
             $responder = new MethodNotAllowedResponder(array_keys($candidates));
