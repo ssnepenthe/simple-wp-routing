@@ -52,6 +52,16 @@ class RouteConverterTest extends TestCase
         );
     }
 
+    public function testConvertCollectionWithPrefix()
+    {
+        $routeCollection = new RouteCollection('pfx_');
+        $routeCollection->get('one', 'somehandler');
+
+        $convertedCollection = (new RouteConverter())->convertCollection($routeCollection);
+
+        $this->assertSame('pfx_', $convertedCollection->getPrefix());
+    }
+
     public function testConvertWithIsActiveCallback()
     {
         // isActiveCallback is automatically applied to rewrites.
