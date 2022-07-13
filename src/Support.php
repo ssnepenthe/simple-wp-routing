@@ -44,6 +44,10 @@ class Support
 
     public static function isValidMethodsList(array $methods): bool
     {
+        if ([] === $methods) {
+            return false;
+        }
+
         return empty(array_diff(
             $methods,
             ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']

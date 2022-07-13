@@ -53,6 +53,9 @@ class SupportTest extends TestCase
 
     public function testIsValidMethodsList()
     {
+        // False for empty array.
+        $this->assertFalse(Support::isValidMethodsList([]));
+
         // Full list of valid methods.
         $this->assertTrue(Support::isValidMethodsList(
             ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT']
