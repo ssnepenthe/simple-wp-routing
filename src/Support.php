@@ -11,6 +11,10 @@ class Support
 {
     public static function applyPrefix(string $value, string $prefix): string
     {
+        if ('' === $prefix) {
+            return $value;
+        }
+
         if ($prefix === substr($value, 0, strlen($prefix))) {
             return $value;
         }
@@ -20,6 +24,10 @@ class Support
 
     public static function applyPrefixToKeys(array $array, string $prefix): array
     {
+        if ('' === $prefix) {
+            return $array;
+        }
+
         $newArray = [];
 
         foreach ($array as $key => $value) {
