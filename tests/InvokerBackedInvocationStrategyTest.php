@@ -7,7 +7,6 @@ namespace ToyWpRouting\Tests;
 use Invoker\InvokerInterface;
 use PHPUnit\Framework\TestCase;
 use ToyWpRouting\InvokerBackedInvocationStrategy;
-use ToyWpRouting\RewriteInterface;
 
 // @todo Test with custom resolver set on Invoker instance?
 // @todo Move additional parameter tests to dedicated abstract invocation strategy test.
