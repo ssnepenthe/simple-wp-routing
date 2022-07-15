@@ -10,6 +10,7 @@ return new class extends \ToyWpRouting\RewriteCollection
 
         $rewrite0 = new \ToyWpRouting\OptimizedRewrite(array (
   0 => 'GET',
+  1 => 'HEAD',
 ), array (
   '^first$' => 'index.php?var=first&matchedRule=9f79cebcf1735d5eaefeee8dbc7316dd',
 ), array (
@@ -62,6 +63,7 @@ $this->rewrites->attach($rewrite1);
   '9f79cebcf1735d5eaefeee8dbc7316dd' => 
   array (
     'GET' => $rewrite0,
+    'HEAD' => $rewrite0,
   ),
   '3cf5d427e03a68a3881d2d68a86b64f1' => 
   array (

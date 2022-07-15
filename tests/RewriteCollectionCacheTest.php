@@ -58,7 +58,7 @@ class RewriteCollectionCacheTest extends TestCase
         $this->assertInstanceOf(OptimizedRewrite::class, $rewrites[0]);
         $this->assertSame('firsthandler', $rewrites[0]->getHandler());
         $this->assertNull($rewrites[0]->getIsActiveCallback());
-        $this->assertSame(['GET'], $rewrites[0]->getMethods());
+        $this->assertSame(['GET', 'HEAD'], $rewrites[0]->getMethods());
         $this->assertSame(['var' => 'var', 'matchedRule' => 'matchedRule'], $rewrites[0]->getPrefixedToUnprefixedQueryVariablesMap());
         $this->assertSame(['var', 'matchedRule'], $rewrites[0]->getQueryVariables());
         $this->assertSame(
