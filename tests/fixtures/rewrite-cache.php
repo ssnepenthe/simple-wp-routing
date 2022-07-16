@@ -12,13 +12,7 @@ return new class extends \ToyWpRouting\RewriteCollection
   0 => 'GET',
   1 => 'HEAD',
 ), array (
-  0 => new \ToyWpRouting\OptimizedRewriteRule('9f79cebcf1735d5eaefeee8dbc7316dd', array (
-  'var' => 'first',
-  'matchedRule' => '9f79cebcf1735d5eaefeee8dbc7316dd',
-), 'index.php?var=first&matchedRule=9f79cebcf1735d5eaefeee8dbc7316dd', array (
-  'var' => 'first',
-  'matchedRule' => '9f79cebcf1735d5eaefeee8dbc7316dd',
-), array (
+  0 => new \ToyWpRouting\OptimizedRewriteRule('9f79cebcf1735d5eaefeee8dbc7316dd', 'index.php?var=first&matchedRule=9f79cebcf1735d5eaefeee8dbc7316dd', array (
   'var' => 'var',
   'matchedRule' => 'matchedRule',
 ), '^first$'),
@@ -30,13 +24,7 @@ $this->rewrites->attach($rewrite0);
 $rewrite1 = new \ToyWpRouting\OptimizedRewrite(array (
   0 => 'POST',
 ), array (
-  0 => new \ToyWpRouting\OptimizedRewriteRule('3cf5d427e03a68a3881d2d68a86b64f1', array (
-  'var' => 'second',
-  'matchedRule' => '3cf5d427e03a68a3881d2d68a86b64f1',
-), 'index.php?var=second&matchedRule=3cf5d427e03a68a3881d2d68a86b64f1', array (
-  'var' => 'second',
-  'matchedRule' => '3cf5d427e03a68a3881d2d68a86b64f1',
-), array (
+  0 => new \ToyWpRouting\OptimizedRewriteRule('3cf5d427e03a68a3881d2d68a86b64f1', 'index.php?var=second&matchedRule=3cf5d427e03a68a3881d2d68a86b64f1', array (
   'var' => 'var',
   'matchedRule' => 'matchedRule',
 ), '^second$'),

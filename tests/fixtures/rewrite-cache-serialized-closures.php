@@ -12,13 +12,7 @@ return new class extends \ToyWpRouting\RewriteCollection
   0 => 'GET',
   1 => 'HEAD',
 ), array (
-  0 => new \ToyWpRouting\OptimizedRewriteRule('e8362b7488c4e1a7eee5ff88b032f6eb', array (
-  'pfx_var' => 'val',
-  'pfx_matchedRule' => 'e8362b7488c4e1a7eee5ff88b032f6eb',
-), 'index.php?pfx_var=val&pfx_matchedRule=e8362b7488c4e1a7eee5ff88b032f6eb', array (
-  'var' => 'val',
-  'matchedRule' => 'e8362b7488c4e1a7eee5ff88b032f6eb',
-), array (
+  0 => new \ToyWpRouting\OptimizedRewriteRule('e8362b7488c4e1a7eee5ff88b032f6eb', 'index.php?pfx_var=val&pfx_matchedRule=e8362b7488c4e1a7eee5ff88b032f6eb', array (
   'pfx_var' => 'var',
   'pfx_matchedRule' => 'matchedRule',
 ), '^regex$'),

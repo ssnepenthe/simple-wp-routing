@@ -2,13 +2,7 @@ $rewrite0 = new \ToyWpRouting\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), array (
-  0 => new \ToyWpRouting\OptimizedRewriteRule('2c74a3787bae884d9648eb0bc7e3c8a0', array (
-  'pfx_var' => 'get',
-  'pfx_matchedRule' => '2c74a3787bae884d9648eb0bc7e3c8a0',
-), 'index.php?pfx_var=get&pfx_matchedRule=2c74a3787bae884d9648eb0bc7e3c8a0', array (
-  'var' => 'get',
-  'matchedRule' => '2c74a3787bae884d9648eb0bc7e3c8a0',
-), array (
+  0 => new \ToyWpRouting\OptimizedRewriteRule('2c74a3787bae884d9648eb0bc7e3c8a0', 'index.php?pfx_var=get&pfx_matchedRule=2c74a3787bae884d9648eb0bc7e3c8a0', array (
   'pfx_var' => 'var',
   'pfx_matchedRule' => 'matchedRule',
 ), '^getregex$'),
@@ -22,13 +16,7 @@ $this->rewrites->attach($rewrite0);
 $rewrite1 = new \ToyWpRouting\OptimizedRewrite(array (
   0 => 'POST',
 ), array (
-  0 => new \ToyWpRouting\OptimizedRewriteRule('9a3f43b00ec8400aee6a7ef0191ede24', array (
-  'pfx_var' => 'post',
-  'pfx_matchedRule' => '9a3f43b00ec8400aee6a7ef0191ede24',
-), 'index.php?pfx_var=post&pfx_matchedRule=9a3f43b00ec8400aee6a7ef0191ede24', array (
-  'var' => 'post',
-  'matchedRule' => '9a3f43b00ec8400aee6a7ef0191ede24',
-), array (
+  0 => new \ToyWpRouting\OptimizedRewriteRule('9a3f43b00ec8400aee6a7ef0191ede24', 'index.php?pfx_var=post&pfx_matchedRule=9a3f43b00ec8400aee6a7ef0191ede24', array (
   'pfx_var' => 'var',
   'pfx_matchedRule' => 'matchedRule',
 ), '^postregex$'),

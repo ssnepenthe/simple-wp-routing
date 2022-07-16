@@ -8,17 +8,7 @@ class RewriteRule implements RewriteRuleInterface
 {
     protected string $prefix = '';
 
-    /**
-     * @var array<string, string>
-     */
-    protected array $prefixedQueryArray;
-
     protected string $query;
-
-    /**
-     * @var array<string, string>
-     */
-    protected array $queryArray;
 
     /**
      * @var array<string, string>
@@ -43,27 +33,9 @@ class RewriteRule implements RewriteRuleInterface
         return md5($this->regex);
     }
 
-    /**
-     *
-     * @return array<string, string>
-     */
-    public function getPrefixedQueryArray(): array
-    {
-        return $this->prefixedQueryArray;
-    }
-
     public function getQuery(): string
     {
         return $this->query;
-    }
-
-    /**
-     *
-     * @return array<string, string>
-     */
-    public function getQueryArray(): array
-    {
-        return $this->queryArray;
     }
 
     public function getQueryVariables(): array
@@ -86,9 +58,7 @@ class RewriteRule implements RewriteRuleInterface
 
         $query = Support::buildQuery($prefixedQueryArray);
 
-        $this->prefixedQueryArray = $prefixedQueryArray;
         $this->query = $query;
-        $this->queryArray = $queryArray;
         $this->queryVariables = array_combine(
             array_keys($prefixedQueryArray),
             array_keys($queryArray)
