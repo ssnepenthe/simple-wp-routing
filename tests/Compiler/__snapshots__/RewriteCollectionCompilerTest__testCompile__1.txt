@@ -11,8 +11,6 @@ return new class extends \ToyWpRouting\RewriteCollection
         $rewrite0 = new \ToyWpRouting\OptimizedRewrite(array (
   0 => 'POST',
 ), array (
-  '^regex$' => 'index.php?some=var&matchedRule=e8362b7488c4e1a7eee5ff88b032f6eb',
-), array (
   0 => new \ToyWpRouting\OptimizedRewriteRule('e8362b7488c4e1a7eee5ff88b032f6eb', array (
   'some' => 'var',
   'matchedRule' => 'e8362b7488c4e1a7eee5ff88b032f6eb',
@@ -23,14 +21,11 @@ return new class extends \ToyWpRouting\RewriteCollection
   'some' => 'some',
   'matchedRule' => 'matchedRule',
 ), '^regex$'),
-), static function () {
-        }, array (
+), array (
   'some' => 'some',
   'matchedRule' => 'matchedRule',
-), array (
-  0 => 'some',
-  1 => 'matchedRule',
-), NULL);
+), static function () {
+        }, NULL);
 $this->rewrites->attach($rewrite0);
 
         $this->rewriteRules = array (

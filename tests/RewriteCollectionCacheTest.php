@@ -59,12 +59,6 @@ class RewriteCollectionCacheTest extends TestCase
         $this->assertSame('firsthandler', $rewrites[0]->getHandler());
         $this->assertNull($rewrites[0]->getIsActiveCallback());
         $this->assertSame(['GET', 'HEAD'], $rewrites[0]->getMethods());
-        $this->assertSame(['var' => 'var', 'matchedRule' => 'matchedRule'], $rewrites[0]->getPrefixedToUnprefixedQueryVariablesMap());
-        $this->assertSame(['var', 'matchedRule'], $rewrites[0]->getQueryVariables());
-        $this->assertSame(
-            ['^first$' => 'index.php?var=first&matchedRule=9f79cebcf1735d5eaefeee8dbc7316dd'],
-            $rewrites[0]->getRewriteRules()
-        );
         // @todo
         // $this->assertSame(
         //     [],
@@ -77,10 +71,6 @@ class RewriteCollectionCacheTest extends TestCase
             $rewrites[1]->getIsActiveCallback()
         );
         $this->assertSame(['POST'], $rewrites[1]->getMethods());
-        $this->assertSame(
-            ['^second$' => 'index.php?var=second&matchedRule=3cf5d427e03a68a3881d2d68a86b64f1'],
-            $rewrites[1]->getRewriteRules()
-        );
     }
 
     public function testGetWithSerializedClosures()

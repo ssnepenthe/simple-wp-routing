@@ -24,8 +24,8 @@ trait CreatesRewriteStubs
         }
 
         if (array_key_exists('qvMap', $args)) {
-            $rewrite->method('getPrefixedToUnprefixedQueryVariablesMap')
-                ->willReturn($args['qvMap']);
+            $rewrite->method('mapQueryVariable')
+                ->willReturnCallback(fn ($queryVariable) => $args['qvMap'][$queryVariable] ?? null);
         }
 
         return $rewrite;

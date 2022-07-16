@@ -48,14 +48,13 @@ class RewriteCollection
 
         $this->rewrites->attach($rewrite);
 
-        //  @todo Minimize loopage?
-        $this->rewriteRules = array_merge($this->rewriteRules, $rewrite->getRewriteRules());
-        $this->queryVariables = array_merge(
-            $this->queryVariables,
-            $rewrite->getPrefixedToUnprefixedQueryVariablesMap()
-        );
-
         foreach ($rewrite->getRules() as $rule) {
+            $this->rewriteRules[$rule->getRegex()] = $rule->getQuery();
+
+            foreach ($rule->getQueryVariables() as $prefixed => $unprefixed) {
+                $this->queryVariables[$prefixed] = $unprefixed;
+            }
+
             $hash = $rule->getHash();
 
             if (! array_key_exists($hash, $this->rewritesByRegexHashAndMethod)) {

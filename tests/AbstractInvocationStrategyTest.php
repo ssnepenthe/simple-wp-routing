@@ -38,8 +38,9 @@ class AbstractInvocationStrategyTest extends TestCase
             ]]);
 
         $rewrite = $this->createStub(RewriteInterface::class);
-        $rewrite->method('getPrefixedToUnprefixedQueryVariablesMap')
-            ->willReturn(['someqv' => 'someqv']);
+        $rewrite->method('mapQueryVariable')
+            ->withConsecutive(['someqv'], ['unusedqv'])
+            ->willReturnOnConsecutiveCalls('someqv', null);
 
         $this->assertSame(
             ['someqv' => 'someval'],
@@ -53,7 +54,7 @@ class AbstractInvocationStrategyTest extends TestCase
 
         $rewrite = $this->createMock(RewriteInterface::class);
         $rewrite->expects($this->never())
-            ->method('getPrefixedToUnprefixedQueryVariablesMap');
+            ->method('mapQueryVariable');
 
         $this->assertSame([], $strategy->relevantQueryVariablesProxy($rewrite));
     }
@@ -67,8 +68,9 @@ class AbstractInvocationStrategyTest extends TestCase
             ]]);
 
         $rewrite = $this->createStub(RewriteInterface::class);
-        $rewrite->method('getPrefixedToUnprefixedQueryVariablesMap')
-            ->willReturn(['pfx_someqv' => 'someqv']);
+        $rewrite->method('mapQueryVariable')
+            ->withConsecutive(['pfx_someqv'], ['pfx_unusedqv'])
+            ->willReturnOnConsecutiveCalls('someqv', null);
 
         $this->assertSame(
             ['someqv' => 'someval'],

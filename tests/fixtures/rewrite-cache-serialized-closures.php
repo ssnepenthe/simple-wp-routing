@@ -12,8 +12,6 @@ return new class extends \ToyWpRouting\RewriteCollection
   0 => 'GET',
   1 => 'HEAD',
 ), array (
-  '^regex$' => 'index.php?pfx_var=val&pfx_matchedRule=e8362b7488c4e1a7eee5ff88b032f6eb',
-), array (
   0 => new \ToyWpRouting\OptimizedRewriteRule('e8362b7488c4e1a7eee5ff88b032f6eb', array (
   'pfx_var' => 'val',
   'pfx_matchedRule' => 'e8362b7488c4e1a7eee5ff88b032f6eb',
@@ -24,13 +22,10 @@ return new class extends \ToyWpRouting\RewriteCollection
   'pfx_var' => 'var',
   'pfx_matchedRule' => 'matchedRule',
 ), '^regex$'),
-), static function () {}, array (
+), array (
   'pfx_var' => 'var',
   'pfx_matchedRule' => 'matchedRule',
-), array (
-  0 => 'pfx_var',
-  1 => 'pfx_matchedRule',
-), static function () {});
+), static function () {}, static function () {});
 $this->rewrites->attach($rewrite0);
 
         $this->rewriteRules = array (

@@ -22,22 +22,9 @@ interface RewriteInterface
     public function getMethods(): array;
 
     /**
-     * @return array<string, string>
-     */
-    public function getPrefixedToUnprefixedQueryVariablesMap(): array;
-
-    /**
-     * @return string[]
-     */
-    public function getQueryVariables(): array;
-
-    /**
-     * @return array<string, string>
-     */
-    public function getRewriteRules(): array;
-
-    /**
      * @return RewriteRuleInterface[]
      */
     public function getRules(): array;
+
+    public function mapQueryVariable(string $queryVariable): ?string;
 }

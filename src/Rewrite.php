@@ -24,16 +24,6 @@ class Rewrite implements RewriteInterface
     protected array $methods;
 
     /**
-     * @var array<string, string>
-     */
-    protected array $queryVariables = [];
-
-    /**
-     * @var array<string, string>
-     */
-    protected array $rewriteRules = [];
-
-    /**
      * @var RewriteRuleInterface[]
      */
     protected array $rules;
@@ -43,19 +33,16 @@ class Rewrite implements RewriteInterface
      * @param RewriteRuleInterface[] $rules
      * @param mixed $handler
      */
-    public function __construct(array $methods, array $rules, $handler)
+    public function __construct(array $methods, array $rules, $handler, $isActiveCallback = null)
     {
         if (! Support::isValidMethodsList($methods)) {
             throw new InvalidArgumentException('@todo');
         }
 
-        // @todo Create setters for methods and rules instead?
-        // @todo assert methods and rules are not empty?
         $this->methods = $methods;
         $this->rules = (fn (RewriteRuleInterface ...$rules) => $rules)(...$rules);
         $this->handler = $handler;
-
-        $this->computeAdditionalState();
+        $this->isActiveCallback = $isActiveCallback;
     }
 
     /**
@@ -83,35 +70,24 @@ class Rewrite implements RewriteInterface
     }
 
     /**
-     * @return array<string, string>
-     */
-    public function getPrefixedToUnprefixedQueryVariablesMap(): array
-    {
-        return $this->queryVariables;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getQueryVariables(): array
-    {
-        return array_keys($this->queryVariables);
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    public function getRewriteRules(): array
-    {
-        return $this->rewriteRules;
-    }
-
-    /**
      * @return RewriteRuleInterface[]
      */
     public function getRules(): array
     {
         return $this->rules;
+    }
+
+    public function mapQueryVariable(string $queryVariable): ?string
+    {
+        foreach ($this->rules as $rule) {
+            $queryVariables = $rule->getQueryVariables();
+
+            if (array_key_exists($queryVariable, $queryVariables)) {
+                return $queryVariables[$queryVariable];
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -122,15 +98,5 @@ class Rewrite implements RewriteInterface
         $this->isActiveCallback = $isActiveCallback;
 
         return $this;
-    }
-
-    protected function computeAdditionalState(): void
-    {
-        foreach ($this->rules as $rule) {
-            // @todo Eliminate rewrite rules at this level? Handled by rewrite collection.
-            $this->rewriteRules[$rule->getRegex()] = $rule->getQuery();
-
-            $this->queryVariables = array_merge($this->queryVariables, $rule->getQueryVariables());
-        }
     }
 }

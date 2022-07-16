@@ -327,14 +327,6 @@ class RewriteCollectionTest extends TestCase
             ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
             $rewrite->getMethods()
         );
-        $this->assertSame([
-            'var' => 'var',
-            'matchedRule' => 'matchedRule',
-        ], $rewrite->getPrefixedToUnprefixedQueryVariablesMap());
-        $this->assertSame(['var', 'matchedRule'], $rewrite->getQueryVariables());
-        $this->assertSame([
-            'someregex' => "index.php?var=value&matchedRule={$matchedRule}"
-        ], $rewrite->getRewriteRules());
         $this->assertCount(1, $rewrite->getRules());
 
         $collection = new RewriteCollection();

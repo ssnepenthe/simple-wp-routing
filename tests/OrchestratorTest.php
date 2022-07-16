@@ -65,13 +65,12 @@ class OrchestratorTest extends TestCase
         $orchestrator = new Orchestrator($rewrites);
 
         $active = $orchestrator->getActiveRewriteCollection();
-        $activeHash = md5('someregex');
 
         $this->assertInstanceOf(RewriteCollection::class, $active);
         $this->assertCount(1, $active->getRewrites());
         $this->assertSame(
-            ['someregex' => "index.php?var=value&matchedRule={$activeHash}"],
-            $active->getRewrites()->current()->getRewriteRules()
+            'somehandler',
+            $active->getRewrites()->current()->getHandler()
         );
 
         // Result is cached.
