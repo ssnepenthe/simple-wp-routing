@@ -37,6 +37,10 @@ class RewriteRuleTest extends TestCase
             'var' => 'value',
             'matchedRule' => $rule->getHash(),
         ], $rule->getQueryArray());
+        $this->assertSame([
+            'var' => 'var',
+            'matchedRule' => 'matchedRule',
+        ], $rule->getQueryVariables());
     }
 
     public function testGettersWithPrefix()
@@ -56,6 +60,10 @@ class RewriteRuleTest extends TestCase
             'var' => 'value',
             'matchedRule' => $rule->getHash(),
         ], $rule->getQueryArray());
+        $this->assertSame([
+            'pfx_var' => 'var',
+            'pfx_matchedRule' => 'matchedRule',
+        ], $rule->getQueryVariables());
     }
 
     public function testQueryWithoutLeadingIndexPhp()

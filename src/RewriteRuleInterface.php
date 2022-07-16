@@ -21,5 +21,10 @@ interface RewriteRuleInterface
      */
     public function getQueryArray(): array;
 
+    /**
+     * @return array<string, string>
+     */
+    public function getQueryVariables(): array;
+
     public function getRegex(): string;
 }

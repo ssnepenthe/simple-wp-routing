@@ -130,18 +130,7 @@ class Rewrite implements RewriteInterface
             // @todo Eliminate rewrite rules at this level? Handled by rewrite collection.
             $this->rewriteRules[$rule->getRegex()] = $rule->getQuery();
 
-            $prefixedQueryVariables = array_keys($rule->getPrefixedQueryArray());
-            $queryVariables = array_keys($rule->getQueryArray());
-
-            $count = count($queryVariables);
-
-            // @todo ???
-            // assert(count($queryVariables) === count($prefixedQueryVariables));
-
-            // @todo array_combine()??
-            for ($i = 0; $i < $count; $i++) {
-                $this->queryVariables[$prefixedQueryVariables[$i]] = $queryVariables[$i];
-            }
+            $this->queryVariables = array_merge($this->queryVariables, $rule->getQueryVariables());
         }
     }
 }

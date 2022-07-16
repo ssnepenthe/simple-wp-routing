@@ -10,6 +10,9 @@ $rewrite0 = new \ToyWpRouting\OptimizedRewrite(array (
 ), 'index.php?pfx_var=get&pfx_matchedRule=2c74a3787bae884d9648eb0bc7e3c8a0', array (
   'var' => 'get',
   'matchedRule' => '2c74a3787bae884d9648eb0bc7e3c8a0',
+), array (
+  'pfx_var' => 'var',
+  'pfx_matchedRule' => 'matchedRule',
 ), '^getregex$'),
 ), static function () {
             }, array (
@@ -32,6 +35,9 @@ $rewrite1 = new \ToyWpRouting\OptimizedRewrite(array (
 ), 'index.php?pfx_var=post&pfx_matchedRule=9a3f43b00ec8400aee6a7ef0191ede24', array (
   'var' => 'post',
   'matchedRule' => '9a3f43b00ec8400aee6a7ef0191ede24',
+), array (
+  'pfx_var' => 'var',
+  'pfx_matchedRule' => 'matchedRule',
 ), '^postregex$'),
 ), static function () {
             }, array (

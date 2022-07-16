@@ -21,23 +21,31 @@ class OptimizedRewriteRule implements RewriteRuleInterface
      */
     protected array $queryArray;
 
+    /**
+     * @var array<string, string>
+     */
+    protected array $queryVariables;
+
     protected string $regex;
 
     /**
      * @param array<string, string> $prefixedQueryArray
      * @param array<string, string> $queryArray
+     * @param array<string, string> $queryVariables
      */
     public function __construct(
         string $hash,
         array $prefixedQueryArray,
         string $query,
         array $queryArray,
+        array $queryVariables,
         string $regex
     ) {
         $this->hash = $hash;
         $this->prefixedQueryArray = $prefixedQueryArray;
         $this->query = $query;
         $this->queryArray = $queryArray;
+        $this->queryVariables = $queryVariables;
         $this->regex = $regex;
     }
 
@@ -65,6 +73,11 @@ class OptimizedRewriteRule implements RewriteRuleInterface
     public function getQueryArray(): array
     {
         return $this->queryArray;
+    }
+
+    public function getQueryVariables(): array
+    {
+        return $this->queryVariables;
     }
 
     public function getRegex(): string
