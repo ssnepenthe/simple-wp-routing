@@ -27,20 +27,10 @@ class RouteCollection
         $this->invocationStrategy = $invocationStrategy ?: new DefaultInvocationStrategy();
     }
 
-    /**
-     * @param array<int, "GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS"> $methods
-     * @param mixed $handler
-     */
-    public function add(array $methods, string $route, $handler): Route
+    public function add(Route $route): Route
     {
         if ($this->locked) {
             throw new RuntimeException('Cannot add routes when route collection is locked');
-        }
-
-        $route = new Route($methods, $route, $handler);
-
-        if ('' !== $this->prefix) {
-            $route->setPrefix($this->prefix);
         }
 
         $this->routes[] = $route;
@@ -54,9 +44,11 @@ class RouteCollection
     public function any(string $route, $handler): Route
     {
         return $this->add(
-            ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-            $route,
-            $handler
+            $this->create(
+                ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+                $route,
+                $handler
+            )
         );
     }
 
@@ -65,7 +57,9 @@ class RouteCollection
      */
     public function delete(string $route, $handler): Route
     {
-        return $this->add(['DELETE'], $route, $handler);
+        return $this->add(
+            $this->create(['DELETE'], $route, $handler)
+        );
     }
 
     /**
@@ -73,7 +67,9 @@ class RouteCollection
      */
     public function get(string $route, $handler): Route
     {
-        return $this->add(['GET', 'HEAD'], $route, $handler);
+        return $this->add(
+            $this->create(['GET', 'HEAD'], $route, $handler)
+        );
     }
 
     public function getInvocationStrategy(): InvocationStrategyInterface
@@ -111,7 +107,9 @@ class RouteCollection
      */
     public function options(string $route, $handler): Route
     {
-        return $this->add(['OPTIONS'], $route, $handler);
+        return $this->add(
+            $this->create(['OPTIONS'], $route, $handler)
+        );
     }
 
     /**
@@ -119,7 +117,9 @@ class RouteCollection
      */
     public function patch(string $route, $handler): Route
     {
-        return $this->add(['PATCH'], $route, $handler);
+        return $this->add(
+            $this->create(['PATCH'], $route, $handler)
+        );
     }
 
     /**
@@ -127,7 +127,9 @@ class RouteCollection
      */
     public function post(string $route, $handler): Route
     {
-        return $this->add(['POST'], $route, $handler);
+        return $this->add(
+            $this->create(['POST'], $route, $handler)
+        );
     }
 
     /**
@@ -135,6 +137,25 @@ class RouteCollection
      */
     public function put(string $route, $handler): Route
     {
-        return $this->add(['PUT'], $route, $handler);
+        return $this->add(
+            $this->create(['PUT'], $route, $handler)
+        );
+    }
+
+    /**
+     * @param array<int, "GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS"> $methods
+     * @param mixed $handler
+     */
+    protected function create(array $methods, string $route, $handler): Route
+    {
+        $route = new Route($methods, $route, $handler);
+
+        if ('' !== $this->prefix) {
+            $route->setPrefix($this->prefix);
+        }
+
+        $route->setInvocationStrategy($this->invocationStrategy);
+
+        return $route;
     }
 }
