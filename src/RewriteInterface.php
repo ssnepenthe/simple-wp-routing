@@ -26,5 +26,9 @@ interface RewriteInterface
      */
     public function getRules(): array;
 
+    public function handle(array $queryVariables = []);
+
+    public function isActive(): bool;
+
     public function mapQueryVariable(string $queryVariable): ?string;
 }

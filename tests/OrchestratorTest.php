@@ -6,7 +6,6 @@ namespace ToyWpRouting\Tests;
 
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use ToyWpRouting\DefaultInvocationStrategy;
 use ToyWpRouting\MethodNotAllowedResponder;
 use ToyWpRouting\Orchestrator;
 use ToyWpRouting\RequestContext;
@@ -38,43 +37,6 @@ class OrchestratorTest extends TestCase
 
         $this->regex = null;
         $this->hash = null;
-    }
-
-    public function testDefaults()
-    {
-        $orchestrator = new Orchestrator(new RewriteCollection());
-
-        $this->assertInstanceOf(
-            DefaultInvocationStrategy::class,
-            $orchestrator->getInvocationStrategy()
-        );
-    }
-
-    public function testGetActiveRewriteCollection()
-    {
-        $rewrites = new RewriteCollection();
-        $rewrites->get('someregex', 'index.php?var=value', 'somehandler');
-        $rewrites->get(
-            'anotherregex',
-            'index.php?anothervar=anothervalue',
-            'anotherhandler'
-        )->setIsActiveCallback(function () {
-            return false;
-        });
-
-        $orchestrator = new Orchestrator($rewrites);
-
-        $active = $orchestrator->getActiveRewriteCollection();
-
-        $this->assertInstanceOf(RewriteCollection::class, $active);
-        $this->assertCount(1, $active->getRewrites());
-        $this->assertSame(
-            'somehandler',
-            $active->getRewrites()->current()->getHandler()
-        );
-
-        // Result is cached.
-        $this->assertSame($active, $orchestrator->getActiveRewriteCollection());
     }
 
     public function testOnOptionRewriteRulesAndOnRewriteRulesArray()
@@ -236,7 +198,7 @@ class OrchestratorTest extends TestCase
             $count++;
         });
 
-        $orchestrator = new Orchestrator($rewrites, null, new RequestContext('GET', []));
+        $orchestrator = new Orchestrator($rewrites, new RequestContext('GET', []));
 
         $orchestrator->onRequest(['matchedRule' => $this->hash]);
 
@@ -250,7 +212,7 @@ class OrchestratorTest extends TestCase
             throw new RuntimeException('This should not happen');
         });
 
-        $orchestrator = new Orchestrator($rewrites, null, new RequestContext('POST', []));
+        $orchestrator = new Orchestrator($rewrites, new RequestContext('POST', []));
 
         $orchestrator->onRequest(['matchedRule' => $this->hash]);
 
@@ -304,7 +266,7 @@ class OrchestratorTest extends TestCase
             return $responder;
         });
 
-        $orchestrator = new Orchestrator($rewrites, null, new RequestContext('GET', []));
+        $orchestrator = new Orchestrator($rewrites, new RequestContext('GET', []));
 
         $orchestrator->onRequest(['matchedRule' => $this->hash]);
 
@@ -313,7 +275,6 @@ class OrchestratorTest extends TestCase
 
     public function testOnRequestMatchedRewriteWithVariables()
     {
-        // @todo Test with invoker backed strategy?
         $foundId = $foundFormat = null;
 
         $rewrites = new RewriteCollection();
@@ -327,7 +288,7 @@ class OrchestratorTest extends TestCase
             }
         );
 
-        $orchestrator = new Orchestrator($rewrites, null, new RequestContext('GET', []));
+        $orchestrator = new Orchestrator($rewrites, new RequestContext('GET', []));
 
         $orchestrator->onRequest([
             'matchedRule' => $this->hash,

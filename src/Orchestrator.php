@@ -9,14 +9,7 @@ use RuntimeException;
 class Orchestrator
 {
     /**
-     * @var RewriteCollection|null
-     */
-    protected $activeRewriteCollection;
-
-    protected InvocationStrategyInterface $invocationStrategy;
-
-    /**
-     * @var RequestContext|null
+     * @var ?RequestContext
      */
     protected $requestContext;
 
@@ -24,28 +17,11 @@ class Orchestrator
 
     public function __construct(
         RewriteCollection $rewriteCollection,
-        ?InvocationStrategyInterface $invocationStrategy = null,
         ?RequestContext $requestContext = null
     ) {
-        $this->invocationStrategy = $invocationStrategy ?: new DefaultInvocationStrategy();
+        // @todo accept invoker and have factory methods for rewrite and route collections, cache, etc?
         $this->requestContext = $requestContext;
         $this->rewriteCollection = $rewriteCollection;
-    }
-
-    public function getActiveRewriteCollection(): RewriteCollection
-    {
-        if (! $this->activeRewriteCollection instanceof RewriteCollection) {
-            $this->activeRewriteCollection = $this->rewriteCollection->filter(
-                [$this->invocationStrategy, 'invokeIsActiveCallback']
-            );
-        }
-
-        return $this->activeRewriteCollection;
-    }
-
-    public function getInvocationStrategy(): InvocationStrategyInterface
-    {
-        return $this->invocationStrategy;
     }
 
     public function getRequestContext(): RequestContext
@@ -105,8 +81,7 @@ class Orchestrator
             return $vars;
         }
 
-        // @todo only active rewrites?
-        return array_merge($this->rewriteCollection->getQueryVariables(), $vars);
+        return array_merge($this->rewriteCollection->getActiveQueryVariables(), $vars);
     }
 
     public function onRequest($queryVars)
@@ -127,7 +102,7 @@ class Orchestrator
 
     protected function mergeActiveRewriteRules(array $rules): array
     {
-        return array_merge($this->getActiveRewriteCollection()->getRewriteRules(), $rules);
+        return array_merge($this->rewriteCollection->getActiveRewriteRules(), $rules);
     }
 
     /**
@@ -164,9 +139,8 @@ class Orchestrator
             return;
         }
 
-        // @todo active rewrite collection?
         $candidates = $this->rewriteCollection
-            ->getRewritesByRegexHash($queryVars[$matchedRuleKey]);
+            ->getActiveRewritesByRegexHash($queryVars[$matchedRuleKey]);
 
         if (empty($candidates)) {
             return;
@@ -181,9 +155,7 @@ class Orchestrator
         if (! array_key_exists($method, $candidates)) {
             $responder = new MethodNotAllowedResponder(array_keys($candidates));
         } else {
-            $responder = $this->invocationStrategy
-                ->withAdditionalContext(compact('queryVars'))
-                ->invokeHandler($candidates[$method]);
+            $responder = $candidates[$method]->handle($queryVars);
         }
 
         if ($responder instanceof ResponderInterface) {

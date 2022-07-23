@@ -40,10 +40,18 @@ class RouteConverter
 
     public function convertCollection(RouteCollection $routeCollection): RewriteCollection
     {
-        $rewriteCollection = new RewriteCollection($routeCollection->getPrefix());
+        $invocationStrategy = $routeCollection->getInvocationStrategy();
+
+        $rewriteCollection = new RewriteCollection(
+            $routeCollection->getPrefix(),
+            $invocationStrategy
+        );
 
         foreach ($routeCollection->getRoutes() as $route) {
-            $rewriteCollection->add($this->convert($route));
+            $rewrite = $this->convert($route);
+            $rewrite->setInvocationStrategy($invocationStrategy);
+
+            $rewriteCollection->add($rewrite);
         }
 
         return $rewriteCollection;

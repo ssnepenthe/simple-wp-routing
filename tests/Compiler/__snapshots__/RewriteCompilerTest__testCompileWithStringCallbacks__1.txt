@@ -9,4 +9,4 @@ new \ToyWpRouting\OptimizedRewrite(array (
 ), array (
   'pfx_var' => 'var',
   'pfx_matchedRule' => 'matchedRule',
-), 'handler', 'isactivecallback')
+), $this->invocationStrategy, 'handler', 'isactivecallback')

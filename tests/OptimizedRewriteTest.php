@@ -6,6 +6,7 @@ namespace ToyWpRouting\Tests;
 
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use ToyWpRouting\InvocationStrategyInterface;
 use ToyWpRouting\OptimizedRewrite;
 use ToyWpRouting\RewriteRule;
 
@@ -17,6 +18,7 @@ class OptimizedRewriteTest extends TestCase
             ['GET'],
             $rules = [new RewriteRule('someregex', 'index.php?var=value', 'pfx_')],
             ['pfx_var' => 'var'],
+            $this->createStub(InvocationStrategyInterface::class),
             'somehandler',
             'isActiveCallback'
         );
@@ -39,6 +41,7 @@ class OptimizedRewriteTest extends TestCase
                 'some' => 'some',
                 'pfx_another' => 'another',
             ],
+            $this->createStub(InvocationStrategyInterface::class),
             'somehandler',
             'isActiveCallback'
         );
@@ -47,6 +50,21 @@ class OptimizedRewriteTest extends TestCase
         $this->assertSame('another', $rewrite->mapQueryVariable('pfx_another'));
         $this->assertNull($rewrite->mapQueryVariable('another'));
         $this->assertNull($rewrite->mapQueryVariable('andanother'));
+    }
+
+    public function testSetInvocationStrategy()
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Cannot override invocationStrategy');
+
+        $rewrite = new OptimizedRewrite(
+            ['GET'],
+            [new RewriteRule('someregex', 'some=query')],
+            ['some' => 'some'],
+            $this->createStub(InvocationStrategyInterface::class),
+            'somehandler'
+        );
+        $rewrite->setInvocationStrategy($this->createStub(InvocationStrategyInterface::class));
     }
 
     public function testSetIsActiveCallback()
@@ -58,6 +76,7 @@ class OptimizedRewriteTest extends TestCase
             ['GET'],
             [new RewriteRule('someregex', 'some=query')],
             ['some' => 'some'],
+            $this->createStub(InvocationStrategyInterface::class),
             'somehandler'
         );
         $rewrite->setIsActiveCallback('someisactivecallback');

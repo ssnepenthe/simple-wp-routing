@@ -34,8 +34,8 @@ class RewriteListDefinitionsCompiler
     private function prepareTemplate(): string
     {
         return implode(PHP_EOL, array_map(
-            fn ($n) => "\$rewrite{$n} = %s;" . PHP_EOL . "\$this->rewrites->attach(\$rewrite{$n});",
-            range(0, count($this->rewrites) - 1)
+            fn ($_) => '$this->rewrites->attach(%s);',
+            $this->rewrites
         ));
     }
 }

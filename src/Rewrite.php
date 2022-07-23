@@ -14,6 +14,11 @@ class Rewrite implements RewriteInterface
     protected $handler;
 
     /**
+     * @var InvocationStrategyInterface
+     */
+    protected $invocationStrategy;
+
+    /**
      * @var mixed
      */
     protected $isActiveCallback;
@@ -53,6 +58,15 @@ class Rewrite implements RewriteInterface
         return $this->handler;
     }
 
+    public function getInvocationStrategy()
+    {
+        if (! $this->invocationStrategy instanceof InvocationStrategyInterface) {
+            $this->invocationStrategy = new DefaultInvocationStrategy();
+        }
+
+        return $this->invocationStrategy;
+    }
+
     /**
      * @return mixed
      */
@@ -77,6 +91,18 @@ class Rewrite implements RewriteInterface
         return $this->rules;
     }
 
+    public function handle(array $queryVariables = [])
+    {
+        return $this->getInvocationStrategy()
+            ->withAdditionalContext(['queryVars' => $queryVariables])
+            ->invokeHandler($this);
+    }
+
+    public function isActive(): bool
+    {
+        return $this->getInvocationStrategy()->invokeIsActiveCallback($this);
+    }
+
     public function mapQueryVariable(string $queryVariable): ?string
     {
         foreach ($this->rules as $rule) {
@@ -88,6 +114,13 @@ class Rewrite implements RewriteInterface
         }
 
         return null;
+    }
+
+    public function setInvocationStrategy(InvocationStrategyInterface $invocationStrategy): self
+    {
+        $this->invocationStrategy = $invocationStrategy;
+
+        return $this;
     }
 
     /**

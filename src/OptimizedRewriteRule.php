@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ToyWpRouting;
 
-// @todo Tests?
 class OptimizedRewriteRule implements RewriteRuleInterface
 {
     protected string $hash;

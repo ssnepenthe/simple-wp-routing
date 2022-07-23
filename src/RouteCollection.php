@@ -8,6 +8,8 @@ use RuntimeException;
 
 class RouteCollection
 {
+    protected InvocationStrategyInterface $invocationStrategy;
+
     protected bool $locked = false;
 
     protected string $prefix;
@@ -17,9 +19,12 @@ class RouteCollection
      */
     protected array $routes = [];
 
-    public function __construct(string $prefix = '')
-    {
+    public function __construct(
+        string $prefix = '',
+        ?InvocationStrategyInterface $invocationStrategy = null
+    ) {
         $this->prefix = $prefix;
+        $this->invocationStrategy = $invocationStrategy ?: new DefaultInvocationStrategy();
     }
 
     /**
@@ -69,6 +74,11 @@ class RouteCollection
     public function get(string $route, $handler): Route
     {
         return $this->add(['GET', 'HEAD'], $route, $handler);
+    }
+
+    public function getInvocationStrategy(): InvocationStrategyInterface
+    {
+        return $this->invocationStrategy;
     }
 
     public function getPrefix(): string

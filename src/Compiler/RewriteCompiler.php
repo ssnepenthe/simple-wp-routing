@@ -10,7 +10,7 @@ use ToyWpRouting\RewriteInterface;
 
 class RewriteCompiler
 {
-    private const TEMPLATE = 'new \\ToyWpRouting\\OptimizedRewrite(%s, %s, %s, %s, %s)';
+    private const TEMPLATE = 'new \\ToyWpRouting\\OptimizedRewrite(%s, %s, %s, $this->invocationStrategy, %s, %s)';
 
     private RewriteInterface $rewrite;
 

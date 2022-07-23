@@ -9,7 +9,7 @@ new \ToyWpRouting\OptimizedRewrite(array (
 ), array (
   'pfx_var' => 'var',
   'pfx_matchedRule' => 'matchedRule',
-), array (
+), $this->invocationStrategy, array (
   0 => 'handlerclass',
   1 => 'handlermethod',
 ), array (

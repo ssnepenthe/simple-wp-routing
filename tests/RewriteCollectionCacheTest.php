@@ -117,7 +117,7 @@ class RewriteCollectionCacheTest extends TestCase
         $this->assertTrue($root->hasChild('cache.php'));
         $this->assertInstanceOf(
             RewriteCollection::class,
-            include $root->getChild('cache.php')->url()
+            (include $root->getChild('cache.php')->url())()
         );
     }
 
@@ -147,7 +147,7 @@ class RewriteCollectionCacheTest extends TestCase
 
         $this->assertInstanceOf(
             RewriteCollection::class,
-            include $root->getChild('cache.php')->url()
+            (include $root->getChild('cache.php')->url())()
         );
 
         $rewriteCollection->add(
@@ -185,7 +185,7 @@ class RewriteCollectionCacheTest extends TestCase
 
         $cache->put($rewriteCollection);
 
-        $dumped = include $root->getChild('cache.php')->url();
+        $dumped = (include $root->getChild('cache.php')->url())();
         $dumpedRewrites = iterator_to_array($dumped->getRewrites());
 
         $this->assertInstanceOf(Closure::class, $dumpedRewrites[0]->getHandler());

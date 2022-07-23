@@ -9,5 +9,5 @@ new \ToyWpRouting\OptimizedRewrite(array (
 ), array (
   'pfx_var' => 'var',
   'pfx_matchedRule' => 'matchedRule',
-), static function () {
+), $this->invocationStrategy, static function () {
             }, NULL)

@@ -1,4 +1,4 @@
-$rewrite0 = new \ToyWpRouting\OptimizedRewrite(array (
+$this->rewrites->attach(new \ToyWpRouting\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), array (
@@ -9,11 +9,10 @@ $rewrite0 = new \ToyWpRouting\OptimizedRewrite(array (
 ), array (
   'pfx_var' => 'var',
   'pfx_matchedRule' => 'matchedRule',
-), static function () {
+), $this->invocationStrategy, static function () {
             }, static function () {
-        });
-$this->rewrites->attach($rewrite0);
-$rewrite1 = new \ToyWpRouting\OptimizedRewrite(array (
+        }));
+$this->rewrites->attach(new \ToyWpRouting\OptimizedRewrite(array (
   0 => 'POST',
 ), array (
   0 => new \ToyWpRouting\OptimizedRewriteRule('9a3f43b00ec8400aee6a7ef0191ede24', 'index.php?pfx_var=post&pfx_matchedRule=9a3f43b00ec8400aee6a7ef0191ede24', array (
@@ -23,6 +22,5 @@ $rewrite1 = new \ToyWpRouting\OptimizedRewrite(array (
 ), array (
   'pfx_var' => 'var',
   'pfx_matchedRule' => 'matchedRule',
-), static function () {
-            }, NULL);
-$this->rewrites->attach($rewrite1);
+), $this->invocationStrategy, static function () {
+            }, NULL));
