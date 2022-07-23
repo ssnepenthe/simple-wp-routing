@@ -146,18 +146,6 @@ class RewriteCollection
     /**
      * @return array<string, string>
      */
-    public function getPrefixedToUnprefixedQueryVariablesMap(): array
-    {
-        if (null === $this->activeQueryVariables) {
-            $this->prepareComputedProperties();
-        }
-
-        return $this->activeQueryVariables;
-    }
-
-    /**
-     * @return array<string, string>
-     */
     public function getRewriteRules(): array
     {
         if (null === $this->rewriteRules) {

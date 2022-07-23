@@ -40,7 +40,7 @@ class RewriteCollectionCache
 
     public function get(): RewriteCollection
     {
-        $factory = static::staticInclude("{$this->dir}/{$this->file}");
+        $factory = (static fn ($dir, $file) => include "{$dir}/{$file}")($this->dir, $this->file);
 
         return $factory($this->getInvocationStrategy());
     }
@@ -69,13 +69,5 @@ class RewriteCollectionCache
         $this->invocationStrategy = $invocationStrategy;
 
         return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    protected static function staticInclude(string $file)
-    {
-        return include $file;
     }
 }

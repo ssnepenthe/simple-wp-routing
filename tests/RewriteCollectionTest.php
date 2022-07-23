@@ -43,11 +43,6 @@ class RewriteCollectionTest extends TestCase
             'someregex' => "index.php?var=value&matchedRule={$rule->getHash()}"
         ], $rewriteCollection->getRewriteRules());
 
-        // 'matchedRule' var is automatically added.
-        $this->assertSame([
-            'var' => 'var',
-            'matchedRule' => 'matchedRule',
-        ], $rewriteCollection->getPrefixedToUnprefixedQueryVariablesMap());
         $this->assertSame(['var', 'matchedRule'], $rewriteCollection->getActiveQueryVariables());
     }
 
@@ -172,12 +167,6 @@ class RewriteCollectionTest extends TestCase
         $rewriteCollection->add($two);
         $rewriteCollection->add($three);
 
-        $this->assertSame([
-            'first' => 'first',
-            'matchedRule' => 'matchedRule',
-            'third' => 'third',
-            'fourth' => 'fourth',
-        ], $rewriteCollection->getPrefixedToUnprefixedQueryVariablesMap());
         $this->assertSame(
             ['first', 'matchedRule', 'third', 'fourth'],
             $rewriteCollection->getActiveQueryVariables()
@@ -228,15 +217,6 @@ class RewriteCollectionTest extends TestCase
         $rewriteCollection->add($two);
         $rewriteCollection->add($three);
 
-        $this->assertSame(
-            [
-            'pfx_first' => 'first',
-            'pfx_matchedRule' => 'matchedRule',
-            'pfx_third' => 'third',
-            'pfx_fourth' => 'fourth',
-        ],
-            $rewriteCollection->getPrefixedToUnprefixedQueryVariablesMap()
-        );
         $this->assertSame(
             ['pfx_first', 'pfx_matchedRule', 'pfx_third', 'pfx_fourth'],
             $rewriteCollection->getActiveQueryVariables()
