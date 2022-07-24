@@ -65,7 +65,7 @@ class Support
     public static function parseQuery(string $query): array
     {
         if ('index.php?' === substr($query, 0, 10)) {
-            $query = substr_replace($query, '', 0, 10);
+            $query = substr($query, 10);
         }
 
         parse_str($query, $result);
