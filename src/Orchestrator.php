@@ -19,7 +19,6 @@ class Orchestrator
         RewriteCollection $rewriteCollection,
         ?RequestContext $requestContext = null
     ) {
-        // @todo accept invoker and have factory methods for rewrite and route collections, cache, etc?
         $this->requestContext = $requestContext;
         $this->rewriteCollection = $rewriteCollection;
     }
@@ -114,27 +113,12 @@ class Orchestrator
             return;
         }
 
-        $hasMatchedRule = false;
-        $matchedRuleKey = null;
+        $matchedRuleKey = "{$this->rewriteCollection->getPrefix()}matchedRule";
 
-        foreach ($queryVars as $key => $_) {
-            if ('matchedRule' === substr($key, -11)) {
-                $hasMatchedRule = true;
-                $matchedRuleKey = $key;
-                break;
-            }
-        }
-
-        if (! $hasMatchedRule) {
+        if (! array_key_exists($matchedRuleKey, $queryVars)) {
             return;
         }
 
-        /**
-         * @psalm-suppress PossiblyNullArrayOffset
-         * @todo The logic above for determining matched rule key can be refactored now that we have
-         *       introduced the RewriteCollection->getPrefix() method. Or better yet, we should
-         *       probably refactor to use $wp->matched_rule instead of a query variable.
-         */
         if (! is_string($queryVars[$matchedRuleKey])) {
             return;
         }
