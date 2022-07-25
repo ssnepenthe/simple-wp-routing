@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting;
+namespace ToyWpRouting\Compiler;
 
 use RuntimeException;
+use ToyWpRouting\InvocationStrategyInterface;
+use ToyWpRouting\Rewrite;
 
 class OptimizedRewrite extends Rewrite
 {

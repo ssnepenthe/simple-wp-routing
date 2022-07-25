@@ -11,11 +11,11 @@ return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy 
         {
             parent::__construct('pfx_', $invocationStrategy);
 
-            $this->rewrites->attach(new \ToyWpRouting\OptimizedRewrite(array (
+            $this->rewrites->attach(new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), array (
-  0 => new \ToyWpRouting\OptimizedRewriteRule('e8362b7488c4e1a7eee5ff88b032f6eb', 'index.php?pfx_var=val&pfx_matchedRule=e8362b7488c4e1a7eee5ff88b032f6eb', array (
+  0 => new \ToyWpRouting\Compiler\OptimizedRewriteRule('e8362b7488c4e1a7eee5ff88b032f6eb', 'index.php?pfx_var=val&pfx_matchedRule=e8362b7488c4e1a7eee5ff88b032f6eb', array (
   'pfx_var' => 'var',
   'pfx_matchedRule' => 'matchedRule',
 ), '^regex$'),

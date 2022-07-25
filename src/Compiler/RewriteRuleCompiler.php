@@ -8,7 +8,7 @@ use ToyWpRouting\RewriteRuleInterface;
 
 class RewriteRuleCompiler
 {
-    private const TEMPLATE = 'new \\ToyWpRouting\\OptimizedRewriteRule(%s, %s, %s, %s)';
+    private const TEMPLATE = 'new \\ToyWpRouting\\Compiler\\OptimizedRewriteRule(%s, %s, %s, %s)';
 
     private RewriteRuleInterface $rule;
 
