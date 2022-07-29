@@ -81,7 +81,7 @@ $rewrites = (new \ToyWpRouting\RouteConverter())->convertCollection($routes);
 ```
 
 ## Caching
-Whether you are using rewrites or routes, it is recommended to enable rewrite caching.
+If you have opcache enabled, you may see improved performance by enabling rewrite caching.
 
 ```php
 $cache = new \ToyWpRouting\RewriteCollectionCache(__DIR__ . '/var/cache');
@@ -95,7 +95,7 @@ if ($cache->exists()) {
 (new \ToyWpRouting\Orchestrator($rewrites))->initialize();
 ```
 
-Caching is not automatic - You might want to use something like WP-CLI to manage the cache.
+Caching is not automatic - You will want to use something like WP-CLI to manage the cache.
 
 Use `RewriteCollectionCache->put(RewriteCollection)` to cache rewrites. Existing cache will be
 overwritten.
@@ -129,3 +129,7 @@ $orchestrator->getInvocationStrategy()->setCallableResolver(function ($potential
 
 $orchestrator->initialize();
 ```
+
+Please note that if opcache is not enabled performance will likely suffer by using the rewrite cache.
+
+That said - It is always best to perform some sort of profiling on a case-by-case base in order to determine what is best for your specific environment.
