@@ -2,7 +2,11 @@
 Provides a more modern experience for working with the WP Rewrite API
 
 ## Warning
-This package is currently in development and is subject to breaking changes without notice until a release has been tagged.
+This package is currently in development and is subject to breaking changes without notice until v1.0 has been tagged.
+
+It is one in a series of [WordPress toys](https://github.com/ssnepenthe?tab=repositories&q=topic%3Atoy+topic%3Awordpress&type=&language=&sort=) I have been working on with the intention of exploring ways to modernize the feel of working with WordPress.
+
+As the label suggests, it should be treated as a toy.
 
 ## Basic Usage
 There are two intended ways to use this package -
