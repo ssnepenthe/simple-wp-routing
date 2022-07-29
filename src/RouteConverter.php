@@ -31,6 +31,12 @@ class RouteConverter
             $route->getHandler()
         );
 
+        $invocationStrategy = $route->getInvocationStrategy();
+
+        if ($invocationStrategy instanceof InvocationStrategyInterface) {
+            $rewrite->setInvocationStrategy($invocationStrategy);
+        }
+
         if (null !== $isActiveCallback = $route->getIsActiveCallback()) {
             $rewrite->setIsActiveCallback($isActiveCallback);
         }
@@ -40,10 +46,21 @@ class RouteConverter
 
     public function convertCollection(RouteCollection $routeCollection): RewriteCollection
     {
-        $rewriteCollection = new RewriteCollection($routeCollection->getPrefix());
+        $invocationStrategy = $routeCollection->getInvocationStrategy();
+
+        $rewriteCollection = new RewriteCollection(
+            $routeCollection->getPrefix(),
+            $invocationStrategy
+        );
 
         foreach ($routeCollection->getRoutes() as $route) {
-            $rewriteCollection->add($this->convert($route));
+            $rewrite = $this->convert($route);
+
+            if (! $route->getInvocationStrategy() instanceof InvocationStrategyInterface) {
+                $rewrite->setInvocationStrategy($invocationStrategy);
+            }
+
+            $rewriteCollection->add($rewrite);
         }
 
         return $rewriteCollection;

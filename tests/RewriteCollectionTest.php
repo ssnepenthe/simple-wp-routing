@@ -8,7 +8,6 @@ use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use ToyWpRouting\Rewrite;
 use ToyWpRouting\RewriteCollection;
-use ToyWpRouting\RewriteInterface;
 use ToyWpRouting\RewriteRule;
 
 class RewriteCollectionTest extends TestCase
@@ -44,12 +43,7 @@ class RewriteCollectionTest extends TestCase
             'someregex' => "index.php?var=value&matchedRule={$rule->getHash()}"
         ], $rewriteCollection->getRewriteRules());
 
-        // 'matchedRule' var is automatically added.
-        $this->assertSame([
-            'var' => 'var',
-            'matchedRule' => 'matchedRule',
-        ], $rewriteCollection->getPrefixedToUnprefixedQueryVariablesMap());
-        $this->assertSame(['var', 'matchedRule'], $rewriteCollection->getQueryVariables());
+        $this->assertSame(['var', 'matchedRule'], $rewriteCollection->getActiveQueryVariables());
     }
 
     public function testAddWhenLocked()
@@ -81,60 +75,7 @@ class RewriteCollectionTest extends TestCase
         ], $collection->getRewriteRules());
     }
 
-    public function testFilter()
-    {
-        $rewriteCollection = new RewriteCollection();
-
-        $one = new Rewrite(
-            ['GET'],
-            [new RewriteRule('first', 'index.php?first=first')],
-            'somehandler'
-        );
-        $two = new Rewrite(
-            ['POST'],
-            [new RewriteRule('second', 'index.php?second=second')],
-            'somehandler'
-        );
-        $three = new Rewrite(
-            ['GET'],
-            [new RewriteRule('third', 'index.php?third=third')],
-            'somehandler'
-        );
-
-        $rewriteCollection->add($one);
-        $rewriteCollection->add($two);
-        $rewriteCollection->add($three);
-
-        $filtered = $rewriteCollection->filter(function (RewriteInterface $rewrite) {
-            return ['GET'] === $rewrite->getMethods();
-        });
-
-        $this->assertInstanceOf(RewriteCollection::class, $filtered);
-        $this->assertNotSame($rewriteCollection, $filtered);
-
-        $this->assertSame([$one, $three], iterator_to_array($filtered->getRewrites()));
-    }
-
-    public function testFilterWhenLocked()
-    {
-        $rewriteCollection = new RewriteCollection();
-
-        $rewriteCollection->add(
-            new Rewrite(['GET'], [new RewriteRule('first', 'index.php?first=first')], 'somehandler')
-        );
-
-        $this->assertFalse($rewriteCollection->filter(function () {
-            return true;
-        })->isLocked());
-
-        $rewriteCollection->lock();
-
-        $this->assertTrue($rewriteCollection->filter(function () {
-            return true;
-        })->isLocked());
-    }
-
-    public function testGetRewritesByRegexHash()
+    public function testGetActiveRewritesByRegexHash()
     {
         $rewriteCollection = new RewriteCollection();
 
@@ -178,11 +119,11 @@ class RewriteCollectionTest extends TestCase
 
         $this->assertSame(
             ['GET' => $one, 'POST' => $one, 'PUT' => $two, 'DELETE' => $three],
-            $rewriteCollection->getRewritesByRegexHash($hash)
+            $rewriteCollection->getActiveRewritesByRegexHash($hash)
         );
     }
 
-    public function testGetRewritesByRegexHashNotFound()
+    public function testGetActiveRewritesByRegexHashNotFound()
     {
         $rewriteCollection = new RewriteCollection();
 
@@ -196,7 +137,7 @@ class RewriteCollectionTest extends TestCase
             )
         );
 
-        $this->assertSame([], $rewriteCollection->getRewritesByRegexHash($hash));
+        $this->assertSame([], $rewriteCollection->getActiveRewritesByRegexHash($hash));
     }
 
     public function testGetters()
@@ -211,6 +152,7 @@ class RewriteCollectionTest extends TestCase
             [$rTwo = new RewriteRule('second', 'index.php?second=second')],
             'somehandler'
         );
+        $two->setIsActiveCallback(fn () => false);
         $three = new Rewrite(
             ['POST'],
             [
@@ -225,16 +167,9 @@ class RewriteCollectionTest extends TestCase
         $rewriteCollection->add($two);
         $rewriteCollection->add($three);
 
-        $this->assertSame([
-            'first' => 'first',
-            'matchedRule' => 'matchedRule',
-            'second' => 'second',
-            'third' => 'third',
-            'fourth' => 'fourth',
-        ], $rewriteCollection->getPrefixedToUnprefixedQueryVariablesMap());
         $this->assertSame(
-            ['first', 'matchedRule', 'second', 'third', 'fourth'],
-            $rewriteCollection->getQueryVariables()
+            ['first', 'matchedRule', 'third', 'fourth'],
+            $rewriteCollection->getActiveQueryVariables()
         );
         $this->assertSame([
             'first' => "index.php?first=first&matchedRule={$rOne->getHash()}",
@@ -242,6 +177,11 @@ class RewriteCollectionTest extends TestCase
             'third' => "index.php?third=third&matchedRule={$rThree->getHash()}",
             'fourth' => "index.php?fourth=fourth&matchedRule={$rFour->getHash()}",
         ], $rewriteCollection->getRewriteRules());
+        $this->assertSame([
+            'first' => "index.php?first=first&matchedRule={$rOne->getHash()}",
+            'third' => "index.php?third=third&matchedRule={$rThree->getHash()}",
+            'fourth' => "index.php?fourth=fourth&matchedRule={$rFour->getHash()}",
+        ], $rewriteCollection->getActiveRewriteRules());
         $this->assertSame(
             [$one, $two, $three],
             iterator_to_array($rewriteCollection->getRewrites())
@@ -262,6 +202,7 @@ class RewriteCollectionTest extends TestCase
             [$rTwo = new RewriteRule('second', 'index.php?second=second', $prefix)],
             'somehandler'
         );
+        $two->setIsActiveCallback(fn () => false);
         $three = new Rewrite(
             ['POST'],
             [
@@ -277,18 +218,8 @@ class RewriteCollectionTest extends TestCase
         $rewriteCollection->add($three);
 
         $this->assertSame(
-            [
-            'pfx_first' => 'first',
-            'pfx_matchedRule' => 'matchedRule',
-            'pfx_second' => 'second',
-            'pfx_third' => 'third',
-            'pfx_fourth' => 'fourth',
-        ],
-            $rewriteCollection->getPrefixedToUnprefixedQueryVariablesMap()
-        );
-        $this->assertSame(
-            ['pfx_first', 'pfx_matchedRule', 'pfx_second', 'pfx_third', 'pfx_fourth'],
-            $rewriteCollection->getQueryVariables()
+            ['pfx_first', 'pfx_matchedRule', 'pfx_third', 'pfx_fourth'],
+            $rewriteCollection->getActiveQueryVariables()
         );
         $this->assertSame([
             'first' => "index.php?pfx_first=first&pfx_matchedRule={$rOne->getHash()}",
@@ -296,6 +227,11 @@ class RewriteCollectionTest extends TestCase
             'third' => "index.php?pfx_third=third&pfx_matchedRule={$rThree->getHash()}",
             'fourth' => "index.php?pfx_fourth=fourth&pfx_matchedRule={$rFour->getHash()}",
         ], $rewriteCollection->getRewriteRules());
+        $this->assertSame([
+            'first' => "index.php?pfx_first=first&pfx_matchedRule={$rOne->getHash()}",
+            'third' => "index.php?pfx_third=third&pfx_matchedRule={$rThree->getHash()}",
+            'fourth' => "index.php?pfx_fourth=fourth&pfx_matchedRule={$rFour->getHash()}",
+        ], $rewriteCollection->getActiveRewriteRules());
         $this->assertSame(
             [$one, $two, $three],
             iterator_to_array($rewriteCollection->getRewrites())
@@ -327,14 +263,6 @@ class RewriteCollectionTest extends TestCase
             ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
             $rewrite->getMethods()
         );
-        $this->assertSame([
-            'var' => 'var',
-            'matchedRule' => 'matchedRule',
-        ], $rewrite->getPrefixedToUnprefixedQueryVariablesMap());
-        $this->assertSame(['var', 'matchedRule'], $rewrite->getQueryVariables());
-        $this->assertSame([
-            'someregex' => "index.php?var=value&matchedRule={$matchedRule}"
-        ], $rewrite->getRewriteRules());
         $this->assertCount(1, $rewrite->getRules());
 
         $collection = new RewriteCollection();

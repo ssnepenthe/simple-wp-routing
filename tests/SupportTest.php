@@ -28,12 +28,30 @@ class SupportTest extends TestCase
         );
     }
 
+    public function testApplyPrefixToKeysWithEmptyPrefix()
+    {
+        // @todo Ideally we would be able to test not just that this works but that it isbailing early.
+        $value = ['one' => 'two', 'three' => 'four', 'five' => 'six'];
+        $prefix = '';
+
+        $this->assertSame($value, Support::applyPrefixToKeys($value, $prefix));
+    }
+
     public function testApplyPrefixWhenStringIsAlreadyPrefixed()
     {
         $prefixedValue = 'pfx_irrelevant';
         $prefix = 'pfx_';
 
         $this->assertSame('pfx_irrelevant', Support::applyPrefix($prefixedValue, $prefix));
+    }
+
+    public function testApplyPrefixWithEmptyPrefix()
+    {
+        // @todo Ideally we would be able to test not just that this works but that it isbailing early.
+        $value = 'irrelevant';
+        $prefix = '';
+
+        $this->assertSame($value, Support::applyPrefix($value, $prefix));
     }
 
     // @todo test with empty input
@@ -53,6 +71,9 @@ class SupportTest extends TestCase
 
     public function testIsValidMethodsList()
     {
+        // False for empty array.
+        $this->assertFalse(Support::isValidMethodsList([]));
+
         // Full list of valid methods.
         $this->assertTrue(Support::isValidMethodsList(
             ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT']

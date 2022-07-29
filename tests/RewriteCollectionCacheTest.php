@@ -7,7 +7,7 @@ namespace ToyWpRouting\Tests;
 use Closure;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
-use ToyWpRouting\OptimizedRewrite;
+use ToyWpRouting\Compiler\OptimizedRewrite;
 use ToyWpRouting\Rewrite;
 use ToyWpRouting\RewriteCollection;
 use ToyWpRouting\RewriteCollectionCache;
@@ -58,13 +58,7 @@ class RewriteCollectionCacheTest extends TestCase
         $this->assertInstanceOf(OptimizedRewrite::class, $rewrites[0]);
         $this->assertSame('firsthandler', $rewrites[0]->getHandler());
         $this->assertNull($rewrites[0]->getIsActiveCallback());
-        $this->assertSame(['GET'], $rewrites[0]->getMethods());
-        $this->assertSame(['var' => 'var', 'matchedRule' => 'matchedRule'], $rewrites[0]->getPrefixedToUnprefixedQueryVariablesMap());
-        $this->assertSame(['var', 'matchedRule'], $rewrites[0]->getQueryVariables());
-        $this->assertSame(
-            ['^first$' => 'index.php?var=first&matchedRule=9f79cebcf1735d5eaefeee8dbc7316dd'],
-            $rewrites[0]->getRewriteRules()
-        );
+        $this->assertSame(['GET', 'HEAD'], $rewrites[0]->getMethods());
         // @todo
         // $this->assertSame(
         //     [],
@@ -77,10 +71,6 @@ class RewriteCollectionCacheTest extends TestCase
             $rewrites[1]->getIsActiveCallback()
         );
         $this->assertSame(['POST'], $rewrites[1]->getMethods());
-        $this->assertSame(
-            ['^second$' => 'index.php?var=second&matchedRule=3cf5d427e03a68a3881d2d68a86b64f1'],
-            $rewrites[1]->getRewriteRules()
-        );
     }
 
     public function testGetWithSerializedClosures()
@@ -127,7 +117,7 @@ class RewriteCollectionCacheTest extends TestCase
         $this->assertTrue($root->hasChild('cache.php'));
         $this->assertInstanceOf(
             RewriteCollection::class,
-            include $root->getChild('cache.php')->url()
+            (include $root->getChild('cache.php')->url())()
         );
     }
 
@@ -157,7 +147,7 @@ class RewriteCollectionCacheTest extends TestCase
 
         $this->assertInstanceOf(
             RewriteCollection::class,
-            include $root->getChild('cache.php')->url()
+            (include $root->getChild('cache.php')->url())()
         );
 
         $rewriteCollection->add(
@@ -195,7 +185,7 @@ class RewriteCollectionCacheTest extends TestCase
 
         $cache->put($rewriteCollection);
 
-        $dumped = include $root->getChild('cache.php')->url();
+        $dumped = (include $root->getChild('cache.php')->url())();
         $dumpedRewrites = iterator_to_array($dumped->getRewrites());
 
         $this->assertInstanceOf(Closure::class, $dumpedRewrites[0]->getHandler());

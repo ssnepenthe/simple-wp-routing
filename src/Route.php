@@ -14,6 +14,11 @@ class Route
     protected $handler;
 
     /**
+     * @var ?InvocationStrategyInterface
+     */
+    protected $invocationStrategy;
+
+    /**
      * @var mixed
      */
     protected $isActiveCallback;
@@ -50,6 +55,11 @@ class Route
         return $this->handler;
     }
 
+    public function getInvocationStrategy(): ?InvocationStrategyInterface
+    {
+        return $this->invocationStrategy;
+    }
+
     /**
      * @return mixed
      */
@@ -74,6 +84,13 @@ class Route
     public function getRoute(): string
     {
         return $this->route;
+    }
+
+    public function setInvocationStrategy(InvocationStrategyInterface $invocationStrategy): self
+    {
+        $this->invocationStrategy = $invocationStrategy;
+
+        return $this;
     }
 
     public function setPrefix(string $prefix): self

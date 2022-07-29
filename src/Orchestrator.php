@@ -9,14 +9,7 @@ use RuntimeException;
 class Orchestrator
 {
     /**
-     * @var RewriteCollection|null
-     */
-    protected $activeRewriteCollection;
-
-    protected InvocationStrategyInterface $invocationStrategy;
-
-    /**
-     * @var RequestContext|null
+     * @var ?RequestContext
      */
     protected $requestContext;
 
@@ -24,28 +17,10 @@ class Orchestrator
 
     public function __construct(
         RewriteCollection $rewriteCollection,
-        ?InvocationStrategyInterface $invocationStrategy = null,
         ?RequestContext $requestContext = null
     ) {
-        $this->invocationStrategy = $invocationStrategy ?: new DefaultInvocationStrategy();
         $this->requestContext = $requestContext;
         $this->rewriteCollection = $rewriteCollection;
-    }
-
-    public function getActiveRewriteCollection(): RewriteCollection
-    {
-        if (! $this->activeRewriteCollection instanceof RewriteCollection) {
-            $this->activeRewriteCollection = $this->rewriteCollection->filter(
-                [$this->invocationStrategy, 'invokeIsActiveCallback']
-            );
-        }
-
-        return $this->activeRewriteCollection;
-    }
-
-    public function getInvocationStrategy(): InvocationStrategyInterface
-    {
-        return $this->invocationStrategy;
     }
 
     public function getRequestContext(): RequestContext
@@ -105,8 +80,7 @@ class Orchestrator
             return $vars;
         }
 
-        // @todo only active rewrites?
-        return array_merge($this->rewriteCollection->getQueryVariables(), $vars);
+        return array_merge($this->rewriteCollection->getActiveQueryVariables(), $vars);
     }
 
     public function onRequest($queryVars)
@@ -127,7 +101,7 @@ class Orchestrator
 
     protected function mergeActiveRewriteRules(array $rules): array
     {
-        return array_merge($this->getActiveRewriteCollection()->getRewriteRules(), $rules);
+        return array_merge($this->rewriteCollection->getActiveRewriteRules(), $rules);
     }
 
     /**
@@ -139,34 +113,18 @@ class Orchestrator
             return;
         }
 
-        $hasMatchedRule = false;
-        $matchedRuleKey = null;
+        $matchedRuleKey = "{$this->rewriteCollection->getPrefix()}matchedRule";
 
-        foreach ($queryVars as $key => $_) {
-            if ('matchedRule' === substr($key, -11)) {
-                $hasMatchedRule = true;
-                $matchedRuleKey = $key;
-                break;
-            }
-        }
-
-        if (! $hasMatchedRule) {
+        if (! array_key_exists($matchedRuleKey, $queryVars)) {
             return;
         }
 
-        /**
-         * @psalm-suppress PossiblyNullArrayOffset
-         * @todo The logic above for determining matched rule key can be refactored now that we have
-         *       introduced the RewriteCollection->getPrefix() method. Or better yet, we should
-         *       probably refactor to use $wp->matched_rule instead of a query variable.
-         */
         if (! is_string($queryVars[$matchedRuleKey])) {
             return;
         }
 
-        // @todo active rewrite collection?
         $candidates = $this->rewriteCollection
-            ->getRewritesByRegexHash($queryVars[$matchedRuleKey]);
+            ->getActiveRewritesByRegexHash($queryVars[$matchedRuleKey]);
 
         if (empty($candidates)) {
             return;
@@ -181,9 +139,7 @@ class Orchestrator
         if (! array_key_exists($method, $candidates)) {
             $responder = new MethodNotAllowedResponder(array_keys($candidates));
         } else {
-            $responder = $this->invocationStrategy
-                ->withAdditionalContext(compact('queryVars'))
-                ->invokeHandler($candidates[$method]);
+            $responder = $candidates[$method]->handle($queryVars);
         }
 
         if ($responder instanceof ResponderInterface) {

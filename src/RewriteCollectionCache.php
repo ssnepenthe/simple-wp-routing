@@ -12,10 +12,16 @@ class RewriteCollectionCache
 
     protected string $file;
 
-    public function __construct(string $dir, string $file = 'rewrite-cache.php')
-    {
+    protected InvocationStrategyInterface $invocationStrategy;
+
+    public function __construct(
+        string $dir,
+        string $file = 'rewrite-cache.php',
+        ?InvocationStrategyInterface $invocationStrategy = null
+    ) {
         $this->dir = $dir;
         $this->file = $file;
+        $this->invocationStrategy = $invocationStrategy ?: new DefaultInvocationStrategy();
     }
 
     public function delete(): void
@@ -34,7 +40,14 @@ class RewriteCollectionCache
 
     public function get(): RewriteCollection
     {
-        return static::staticInclude("{$this->dir}/{$this->file}");
+        $factory = (static fn ($dir, $file) => include "{$dir}/{$file}")($this->dir, $this->file);
+
+        return $factory($this->getInvocationStrategy());
+    }
+
+    public function getInvocationStrategy(): InvocationStrategyInterface
+    {
+        return $this->invocationStrategy;
     }
 
     public function put(RewriteCollection $rewriteCollection): void
@@ -51,11 +64,10 @@ class RewriteCollectionCache
         file_put_contents("{$this->dir}/{$this->file}", $compiled);
     }
 
-    /**
-     * @return mixed
-     */
-    protected static function staticInclude(string $file)
+    public function setInvocationStrategy(InvocationStrategyInterface $invocationStrategy): self
     {
-        return include $file;
+        $this->invocationStrategy = $invocationStrategy;
+
+        return $this;
     }
 }

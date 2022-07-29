@@ -8,7 +8,7 @@ use ToyWpRouting\RewriteRuleInterface;
 
 class RewriteRuleCompiler
 {
-    private const TEMPLATE = 'new \\ToyWpRouting\\OptimizedRewriteRule(%s, %s, %s, %s, %s)';
+    private const TEMPLATE = 'new \\ToyWpRouting\\Compiler\\OptimizedRewriteRule(%s, %s, %s, %s)';
 
     private RewriteRuleInterface $rule;
 
@@ -27,9 +27,8 @@ class RewriteRuleCompiler
         return sprintf(
             self::TEMPLATE,
             $this->hash(),
-            $this->prefixedQueryArray(),
             $this->query(),
-            $this->queryArray(),
+            $this->queryVariables(),
             $this->regex()
         );
     }
@@ -39,19 +38,14 @@ class RewriteRuleCompiler
         return var_export($this->rule->getHash(), true);
     }
 
-    private function prefixedQueryArray(): string
-    {
-        return var_export($this->rule->getPrefixedQueryArray(), true);
-    }
-
     private function query(): string
     {
         return var_export($this->rule->getQuery(), true);
     }
 
-    private function queryArray(): string
+    private function queryVariables(): string
     {
-        return var_export($this->rule->getQueryArray(), true);
+        return var_export($this->rule->getQueryVariables(), true);
     }
 
     private function regex(): string

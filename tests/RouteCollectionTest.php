@@ -15,8 +15,8 @@ class RouteCollectionTest extends TestCase
     public function testAdd()
     {
         $collection = new RouteCollection();
-        $collection->add(['GET'], 'someroutestring', function () {
-        });
+        $collection->add(new Route(['GET'], 'someroutestring', function () {
+        }));
 
         $route = $collection->getRoutes()[0];
 
@@ -34,17 +34,8 @@ class RouteCollectionTest extends TestCase
 
         $collection = new RouteCollection();
         $collection->lock();
-        $collection->add(['GET'], 'someroutestring', function () {
-        });
-    }
-
-    public function testAddWithPrefix()
-    {
-        $collection = new RouteCollection('pfx_');
-        $collection->add(['GET'], 'someroutestring', function () {
-        });
-
-        $this->assertSame('pfx_', $collection->getRoutes()[0]->getPrefix());
+        $collection->add(new Route(['GET'], 'someroutestring', function () {
+        }));
     }
 
     public function testIsLocked()
@@ -97,5 +88,14 @@ class RouteCollectionTest extends TestCase
         $collection->put('someroutestring', function () {
         });
         $this->assertSame(['PUT'], $collection->getRoutes()[0]->getMethods());
+    }
+
+    public function testShorthandMethodsWithPrefix()
+    {
+        $collection = new RouteCollection('pfx_');
+        $collection->get('someroutestring', function () {
+        });
+
+        $this->assertSame('pfx_', $collection->getRoutes()[0]->getPrefix());
     }
 }

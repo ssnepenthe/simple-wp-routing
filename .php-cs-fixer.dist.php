@@ -20,6 +20,7 @@ return (new Config())
 		Finder::create()
 			->in(__DIR__)
 			->exclude([
+				'bin',
 				'templates',
 				'tests/fixtures',
 			])

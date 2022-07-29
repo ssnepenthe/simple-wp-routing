@@ -10,7 +10,7 @@ use ToyWpRouting\RewriteInterface;
 
 class RewriteCompiler
 {
-    private const TEMPLATE = 'new \\ToyWpRouting\\OptimizedRewrite(%s, %s, %s, %s, %s, %s, %s)';
+    private const TEMPLATE = 'new \\ToyWpRouting\\Compiler\\OptimizedRewrite(%s, %s, %s, $this->invocationStrategy, %s, %s)';
 
     private RewriteInterface $rewrite;
 
@@ -29,11 +29,9 @@ class RewriteCompiler
         return sprintf(
             self::TEMPLATE,
             $this->methods(),
-            $this->rewriteRules(),
             $this->rules(),
-            $this->handler(),
-            $this->prefixedToUnprefixedQueryVariablesMap(),
             $this->queryVariables(),
+            $this->handler(),
             $this->isActiveCallback()
         );
     }
@@ -80,19 +78,17 @@ class RewriteCompiler
         return var_export($this->rewrite->getMethods(), true);
     }
 
-    private function prefixedToUnprefixedQueryVariablesMap(): string
-    {
-        return var_export($this->rewrite->getPrefixedToUnprefixedQueryVariablesMap(), true);
-    }
-
     private function queryVariables(): string
     {
-        return var_export($this->rewrite->getQueryVariables(), true);
-    }
+        $queryVariables = [];
 
-    private function rewriteRules(): string
-    {
-        return var_export($this->rewrite->getRewriteRules(), true);
+        foreach ($this->rewrite->getRules() as $rule) {
+            foreach ($rule->getQueryVariables() as $prefixed => $unprefixed) {
+                $queryVariables[$prefixed] = $unprefixed;
+            }
+        }
+
+        return var_export($queryVariables, true);
     }
 
     private function rules(): string

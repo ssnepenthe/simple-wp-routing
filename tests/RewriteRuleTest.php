@@ -28,15 +28,11 @@ class RewriteRuleTest extends TestCase
         $rule = new RewriteRule('someregex', 'index.php?var=value');
 
         $this->assertSame(md5('someregex'), $rule->getHash());
-        $this->assertSame([
-            'var' => 'value',
-            'matchedRule' => $rule->getHash(),
-        ], $rule->getPrefixedQueryArray());
         $this->assertSame("index.php?var=value&matchedRule={$rule->getHash()}", $rule->getQuery());
         $this->assertSame([
-            'var' => 'value',
-            'matchedRule' => $rule->getHash(),
-        ], $rule->getQueryArray());
+            'var' => 'var',
+            'matchedRule' => 'matchedRule',
+        ], $rule->getQueryVariables());
     }
 
     public function testGettersWithPrefix()
@@ -44,18 +40,14 @@ class RewriteRuleTest extends TestCase
         $rule = new RewriteRule('someregex', 'index.php?var=value', 'pfx_');
 
         $this->assertSame(md5('someregex'), $rule->getHash());
-        $this->assertSame([
-            'pfx_var' => 'value',
-            'pfx_matchedRule' => $rule->getHash(),
-        ], $rule->getPrefixedQueryArray());
         $this->assertSame(
             "index.php?pfx_var=value&pfx_matchedRule={$rule->getHash()}",
             $rule->getQuery()
         );
         $this->assertSame([
-            'var' => 'value',
-            'matchedRule' => $rule->getHash(),
-        ], $rule->getQueryArray());
+            'pfx_var' => 'var',
+            'pfx_matchedRule' => 'matchedRule',
+        ], $rule->getQueryVariables());
     }
 
     public function testQueryWithoutLeadingIndexPhp()

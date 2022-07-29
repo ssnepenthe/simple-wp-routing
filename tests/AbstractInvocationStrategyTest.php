@@ -6,9 +6,7 @@ namespace ToyWpRouting\Tests;
 
 use PHPUnit\Framework\TestCase;
 use ToyWpRouting\AbstractInvocationStrategy;
-use ToyWpRouting\Rewrite;
 use ToyWpRouting\RewriteInterface;
-use ToyWpRouting\RewriteRule;
 
 class AbstractInvocationStrategyTest extends TestCase
 {
@@ -39,16 +37,14 @@ class AbstractInvocationStrategyTest extends TestCase
                 'unusedqv' => 'unusedval',
             ]]);
 
+        $rewrite = $this->createStub(RewriteInterface::class);
+        $rewrite->method('mapQueryVariable')
+            ->withConsecutive(['someqv'], ['unusedqv'])
+            ->willReturnOnConsecutiveCalls('someqv', null);
+
         $this->assertSame(
             ['someqv' => 'someval'],
-            $strategy->relevantQueryVariablesProxy(
-                new Rewrite(
-                    [],
-                    [new RewriteRule('^one$', 'index.php?someqv=someval')],
-                    function () {
-                    }
-                )
-            )
+            $strategy->relevantQueryVariablesProxy($rewrite)
         );
     }
 
@@ -56,11 +52,11 @@ class AbstractInvocationStrategyTest extends TestCase
     {
         $strategy = $this->createInvocationStrategy();
 
-        $this->assertSame(
-            [],
-            $strategy->relevantQueryVariablesProxy(new Rewrite([], [], function () {
-            }))
-        );
+        $rewrite = $this->createMock(RewriteInterface::class);
+        $rewrite->expects($this->never())
+            ->method('mapQueryVariable');
+
+        $this->assertSame([], $strategy->relevantQueryVariablesProxy($rewrite));
     }
 
     public function testResolveRelevantQueryVariablesFromAdditionalContextWithPrefix()
@@ -71,16 +67,14 @@ class AbstractInvocationStrategyTest extends TestCase
                 'pfx_unusedqv' => 'unusedval',
             ]]);
 
+        $rewrite = $this->createStub(RewriteInterface::class);
+        $rewrite->method('mapQueryVariable')
+            ->withConsecutive(['pfx_someqv'], ['pfx_unusedqv'])
+            ->willReturnOnConsecutiveCalls('someqv', null);
+
         $this->assertSame(
             ['someqv' => 'someval'],
-            $strategy->relevantQueryVariablesProxy(
-                new Rewrite(
-                    [],
-                    [new RewriteRule('^one$', 'index.php?someqv=someval', 'pfx_')],
-                    function () {
-                    }
-                )
-            )
+            $strategy->relevantQueryVariablesProxy($rewrite)
         );
     }
 

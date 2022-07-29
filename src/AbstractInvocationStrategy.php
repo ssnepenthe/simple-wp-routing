@@ -69,9 +69,9 @@ abstract class AbstractInvocationStrategy implements InvocationStrategyInterface
         // @todo Test with optional params.
         // @todo Include all query vars?
         // @todo Include prefixed query vars as well?
-        foreach ($rewrite->getPrefixedToUnprefixedQueryVariablesMap() as $prefixed => $unprefixed) {
-            if (array_key_exists($prefixed, $this->context['queryVars'])) {
-                $resolved[$unprefixed] = $this->context['queryVars'][$prefixed];
+        foreach ($this->context['queryVars'] as $key => $value) {
+            if (is_string($newKey = $rewrite->mapQueryVariable($key))) {
+                $resolved[$newKey] = $value;
             }
         }
 

@@ -14,6 +14,11 @@ class Rewrite implements RewriteInterface
     protected $handler;
 
     /**
+     * @var InvocationStrategyInterface
+     */
+    protected $invocationStrategy;
+
+    /**
      * @var mixed
      */
     protected $isActiveCallback;
@@ -22,16 +27,6 @@ class Rewrite implements RewriteInterface
      * @var array<int, "GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS">
      */
     protected array $methods;
-
-    /**
-     * @var array<string, string>
-     */
-    protected array $queryVariables = [];
-
-    /**
-     * @var array<string, string>
-     */
-    protected array $rewriteRules = [];
 
     /**
      * @var RewriteRuleInterface[]
@@ -43,19 +38,16 @@ class Rewrite implements RewriteInterface
      * @param RewriteRuleInterface[] $rules
      * @param mixed $handler
      */
-    public function __construct(array $methods, array $rules, $handler)
+    public function __construct(array $methods, array $rules, $handler, $isActiveCallback = null)
     {
         if (! Support::isValidMethodsList($methods)) {
             throw new InvalidArgumentException('@todo');
         }
 
-        // @todo Create setters for methods and rules instead?
-        // @todo assert methods and rules are not empty?
         $this->methods = $methods;
         $this->rules = (fn (RewriteRuleInterface ...$rules) => $rules)(...$rules);
         $this->handler = $handler;
-
-        $this->computeAdditionalState();
+        $this->isActiveCallback = $isActiveCallback;
     }
 
     /**
@@ -64,6 +56,15 @@ class Rewrite implements RewriteInterface
     public function getHandler()
     {
         return $this->handler;
+    }
+
+    public function getInvocationStrategy()
+    {
+        if (! $this->invocationStrategy instanceof InvocationStrategyInterface) {
+            $this->invocationStrategy = new DefaultInvocationStrategy();
+        }
+
+        return $this->invocationStrategy;
     }
 
     /**
@@ -83,35 +84,43 @@ class Rewrite implements RewriteInterface
     }
 
     /**
-     * @return array<string, string>
-     */
-    public function getPrefixedToUnprefixedQueryVariablesMap(): array
-    {
-        return $this->queryVariables;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getQueryVariables(): array
-    {
-        return array_keys($this->queryVariables);
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    public function getRewriteRules(): array
-    {
-        return $this->rewriteRules;
-    }
-
-    /**
      * @return RewriteRuleInterface[]
      */
     public function getRules(): array
     {
         return $this->rules;
+    }
+
+    public function handle(array $queryVariables = [])
+    {
+        return $this->getInvocationStrategy()
+            ->withAdditionalContext(['queryVars' => $queryVariables])
+            ->invokeHandler($this);
+    }
+
+    public function isActive(): bool
+    {
+        return $this->getInvocationStrategy()->invokeIsActiveCallback($this);
+    }
+
+    public function mapQueryVariable(string $queryVariable): ?string
+    {
+        foreach ($this->rules as $rule) {
+            $queryVariables = $rule->getQueryVariables();
+
+            if (array_key_exists($queryVariable, $queryVariables)) {
+                return $queryVariables[$queryVariable];
+            }
+        }
+
+        return null;
+    }
+
+    public function setInvocationStrategy(InvocationStrategyInterface $invocationStrategy): self
+    {
+        $this->invocationStrategy = $invocationStrategy;
+
+        return $this;
     }
 
     /**
@@ -122,26 +131,5 @@ class Rewrite implements RewriteInterface
         $this->isActiveCallback = $isActiveCallback;
 
         return $this;
-    }
-
-    protected function computeAdditionalState(): void
-    {
-        foreach ($this->rules as $rule) {
-            // @todo Eliminate rewrite rules at this level? Handled by rewrite collection.
-            $this->rewriteRules[$rule->getRegex()] = $rule->getQuery();
-
-            $prefixedQueryVariables = array_keys($rule->getPrefixedQueryArray());
-            $queryVariables = array_keys($rule->getQueryArray());
-
-            $count = count($queryVariables);
-
-            // @todo ???
-            // assert(count($queryVariables) === count($prefixedQueryVariables));
-
-            // @todo array_combine()??
-            for ($i = 0; $i < $count; $i++) {
-                $this->queryVariables[$prefixedQueryVariables[$i]] = $queryVariables[$i];
-            }
-        }
     }
 }
