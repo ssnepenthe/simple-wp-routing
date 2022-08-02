@@ -11,9 +11,26 @@ trait ModifiesResponseHeaders
         'headers' => [],
     ];
 
-    public function withHeader(string $key, string $value): self
+    public function withHeader(string $key, $values, bool $replace = true): self
     {
-        $this->modifiesResponseHeadersData['headers'][$key] = $value;
+        if (is_array($values)) {
+            $values = array_values($values);
+
+            if (true === $replace || ! isset($this->modifiesResponseHeadersData['headers'][$key])) {
+                $this->modifiesResponseHeadersData['headers'][$key] = $values;
+            } else {
+                $this->modifiesResponseHeadersData['headers'][$key] = array_merge(
+                    $this->modifiesResponseHeadersData['headers'][$key],
+                    $values
+                );
+            }
+        } else {
+            if (true === $replace || ! isset($this->modifiesResponseHeadersData['headers'][$key])) {
+                $this->modifiesResponseHeadersData['headers'][$key] = [$values];
+            } else {
+                $this->modifiesResponseHeadersData['headers'][$key][] = $values;
+            }
+        }
 
         return $this;
     }
@@ -22,8 +39,8 @@ trait ModifiesResponseHeaders
     {
         $this->modifiesResponseHeadersData['headers'] = [];
 
-        foreach ($headers as $key => $value) {
-            $this->withHeader($key, $value);
+        foreach ($headers as $key => $values) {
+            $this->withHeader($key, $values);
         }
 
         return $this;
@@ -31,14 +48,19 @@ trait ModifiesResponseHeaders
 
     protected function initializeModifiesResponseHeaders(): void
     {
-        $this->addFilter('wp_headers', function ($headers) {
-            // @todo Handle multiple headers with same key?
-            // @todo Return our array of headers if ! is_array($headers)?
-            if (is_array($headers) && ! empty($this->modifiesResponseHeadersData['headers'])) {
-                $headers = array_merge($headers, $this->modifiesResponseHeadersData['headers']);
+        $this->addAction('send_headers', function () {
+            if (headers_sent()) {
+                return;
             }
 
-            return $headers;
+            foreach ($this->modifiesResponseHeadersData['headers'] as $key => $values) {
+                foreach ($values as $value) {
+                    // @todo Should we check $key and force replace param to true for certain headers?
+                    // For example, Symfony prevents multiple content type headers.
+                    // Should we also set status code as third param when we get around to implementing?
+                    header("{$key}: {$value}", false);
+                }
+            }
         });
     }
 }
