@@ -50,10 +50,21 @@ trait SendsJsonResponses
                 return;
             }
 
-            if ($this->statusCode >= 200 && $this->statusCode < 300) {
-                wp_send_json_success($this->data, $this->statusCode, $this->options);
+            if (
+                $this->sendsJsonResponsesData['status'] >= 200
+                && $this->sendsJsonResponsesData['status'] < 300
+            ) {
+                wp_send_json_success(
+                    $this->sendsJsonResponsesData['data'],
+                    $this->sendsJsonResponsesData['status'],
+                    $this->sendsJsonResponsesData['options']
+                );
             } else {
-                wp_send_json_error($this->data, $this->statusCode, $this->options);
+                wp_send_json_error(
+                    $this->sendsJsonResponsesData['data'],
+                    $this->sendsJsonResponsesData['status'],
+                    $this->sendsJsonResponsesData['options']
+                );
             }
         });
 
