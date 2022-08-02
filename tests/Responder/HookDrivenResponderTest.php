@@ -24,6 +24,18 @@ class HookDrivenResponderTest extends TestCase
 
     public function testCheckForConflicts()
     {
+        $responder = new class extends HookDrivenResponder
+        {
+            use One;
+            use Three;
+        };
+        $responder->respond();
+
+        $this->assertSame(1, $responder->conflictCount);
+    }
+
+    public function testCheckForConflictsThrowsFirstConflict()
+    {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('test-conflict-message');
 
@@ -39,10 +51,18 @@ class HookDrivenResponderTest extends TestCase
 trait One
 {
     public $oneCount = 0;
+    public $conflictCount = 0;
 
     protected function initializeOne(): void
     {
         $this->oneCount++;
+
+        $this->addConflictCheck(function () {
+            $this->conflictCount++;
+
+            // As long as we don't return a string we shouldn't get any errors.
+            return;
+        });
     }
 }
 
