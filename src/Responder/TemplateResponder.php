@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Responder;
 
+use ToyWpRouting\Responder\Concerns\ModifiesResponseHtml;
+
 // @todo modifies wp? modifies wp query?
 class TemplateResponder extends HookDrivenResponder
 {

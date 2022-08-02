@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Responder;
 
+use ToyWpRouting\Responder\Concerns\ModifiesResponseHeaders;
+use ToyWpRouting\Responder\Concerns\SendsJsonResponses;
+
 class JsonResponder extends HookDrivenResponder
 {
     use ModifiesResponseHeaders;

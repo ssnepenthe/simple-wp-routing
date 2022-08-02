@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder;
+namespace ToyWpRouting\Responder\Concerns;
 
 // @todo ModifiesResponseTemplateHtml? enqueue scripts and style? 404 preempt?
 trait ModifiesResponseHtml
