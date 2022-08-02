@@ -84,6 +84,61 @@ $rewrites = (new \ToyWpRouting\RouteConverter())->convertCollection($routes);
 (new \ToyWpRouting\Orchestrator($rewrites))->initialize();
 ```
 
+## Responders
+Rewrite handlers can optionally return an instance of `ToyWpRouting\Responder\ResponderInterface`. The `respond` method on the returned responder will automatically be invoked on the `request` filter.
+
+This allows common behavior to easily be wrapped up for reuse.
+
+The following basic responder implementations are included:
+
+### ToyWpRouting\Responder\JsonResponder
+```php
+$routes->get('api/products', function () {
+  $products = getAllProducts();
+
+  return new JsonResponder(['products' => $products]);
+});
+```
+
+Responses are sent using `wp_send_json_success` or `wp_send_json_error` depending on the status code, so data will be available at `response.data`.
+
+### ToyWpRouting\Responder\NotFoundResponder
+```php
+$routes->get('api/products/{product}', function ($attrs) {
+  $product = getProductById($attrs['product']);
+
+  if (! $product) {
+    return new NotFoundResponder();
+  }
+
+  return new JsonResponder($product);
+});
+```
+
+### ToyWpRouting\Responder\RedirectResponder
+```php
+$routes->get('r/{redirect}', function ($attrs) {
+  $location = getRedirectLocationById($attrs['redirect']);
+
+  return new RedirectResponder($location);
+});
+```
+
+Redirects are sent using `wp_safe_redirect` by default. You can optionally chain a call to the `withUnsafeRedirectsAllowed` method to use `wp_redirect` instead.
+
+```php
+return (new RedirectResponder($location))->withUnsafeRedirectsAllowed();
+```
+
+### ToyWpRouting\Responder\TemplateResponder
+```php
+$routes->get('thank-you', function () {
+  return new TemplateResponder(__DIR__ . '/templates/thank-you.php');
+});
+```
+
+Templates are loaded via the `template_include` filter.
+
 ## Caching
 If you have opcache enabled, you may see improved performance by enabling rewrite caching.
 
