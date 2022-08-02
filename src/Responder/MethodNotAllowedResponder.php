@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting;
+namespace ToyWpRouting\Responder;
 
 use WP_Query;
 
@@ -62,7 +62,7 @@ class MethodNotAllowedResponder implements ResponderInterface
 
         // Alternatively we might want to just fall back to the theme index template...
         if (! \is_string($errorTemplate) || '' === $errorTemplate) {
-            $errorTemplate = dirname(__DIR__) . '/templates/405.php';
+            $errorTemplate = realpath(__DIR__ . '/../../templates/405.php');
         }
 
         return $errorTemplate;

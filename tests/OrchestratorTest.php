@@ -6,10 +6,10 @@ namespace ToyWpRouting\Tests;
 
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use ToyWpRouting\MethodNotAllowedResponder;
 use ToyWpRouting\Orchestrator;
 use ToyWpRouting\RequestContext;
-use ToyWpRouting\ResponderInterface;
+use ToyWpRouting\Responder\MethodNotAllowedResponder;
+use ToyWpRouting\Responder\ResponderInterface;
 use ToyWpRouting\RewriteCollection;
 
 use function Brain\Monkey\setUp;
