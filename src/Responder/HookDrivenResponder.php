@@ -109,7 +109,7 @@ class HookDrivenResponder implements ResponderInterface
             $method = 'initialize' . Support::classBaseName($trait);
 
             if (method_exists($this, $method)) {
-                ($this->{$method})();
+                $this->{$method}();
             }
         }
     }
