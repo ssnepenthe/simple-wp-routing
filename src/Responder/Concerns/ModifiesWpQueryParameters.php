@@ -43,11 +43,37 @@ trait ModifiesWpQueryParameters
             'is_post_type_archive' => false,
         ],
         'queryVariables' => [],
+        'overwrite' => false,
     ];
+
+    public function withAdditionalQueryFlags(array $queryFlags): self
+    {
+        foreach ($queryFlags as $key => $value) {
+            $this->withQueryFlag($key, $value);
+        }
+
+        return $this;
+    }
+
+    public function withAdditionalQueryVariables(array $queryVariables): self
+    {
+        foreach ($queryVariables as $key => $value) {
+            $this->withQueryVariable($key, $value);
+        }
+
+        return $this;
+    }
 
     public function withAllQueryFlagsReset(): self
     {
         $this->modifiesWpQueryParametersData['flags'] = $this->modifiesWpQueryParametersData['flagsInitialState'];
+
+        return $this;
+    }
+
+    public function withExistingQueryVariablesOverwritten(): self
+    {
+        $this->modifiesWpQueryParametersData['overwrite'] = true;
 
         return $this;
     }
@@ -99,8 +125,16 @@ trait ModifiesWpQueryParameters
                 $wpQuery->{$key} = $value;
             }
 
-            foreach ($this->modifiesWpQueryParametersData['queryVariables'] as $key => $value) {
-                $wpQuery->query_vars[$key] = $value;
+            if (empty($this->modifiesWpQueryParametersData['queryVariables'])) {
+                return;
+            }
+
+            if ($this->modifiesWpQueryParametersData['overwrite']) {
+                $wpQuery->query_vars = $this->modifiesWpQueryParametersData['queryVariables'];
+            } else {
+                foreach ($this->modifiesWpQueryParametersData['queryVariables'] as $key => $value) {
+                    $wpQuery->query_vars[$key] = $value;
+                }
             }
         });
     }
