@@ -4,14 +4,22 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Responder\Concerns;
 
-// @todo ModifiesResponseTemplateHtml? enqueue scripts and style? 404 preempt?
+// @todo enqueue scripts and style? 404 preempt?
 trait ModifiesResponseHtml
 {
     protected array $modifiesResponseHtmlData = [
+        'body' => null,
         'bodyClasses' => [],
         'title' => null,
         'template' => null,
     ];
+
+    public function withBody(string $body): self
+    {
+        $this->modifiesResponseHtmlData['body'] = $body;
+
+        return $this;
+    }
 
     public function withBodyClass(string $bodyClass): self
     {
@@ -62,11 +70,34 @@ trait ModifiesResponseHtml
         });
 
         $this->addFilter('template_include', function ($template) {
-            if (is_string($this->modifiesResponseHtmlData['template'])) {
-                return $this->modifiesResponseHtmlData['template'];
+            if (! is_string($this->modifiesResponseHtmlData['template'])) {
+                return $template;
             }
 
-            return $template;
+            return $this->modifiesResponseHtmlData['template'];
+        });
+
+        // @todo Merge all template_include functionality?
+        $this->addFilter('template_include', function ($template) {
+            if (! is_string($this->modifiesResponseHtmlData['body'])) {
+                return $template;
+            }
+
+            echo $this->modifiesResponseHtmlData['body'];
+
+            return dirname(__DIR__, 3) . '/templates/blank.php';
+        });
+
+        $this->addConflictCheck(function () {
+            // template and json? redirect?
+            // body and json? redirect?
+
+            if (
+                is_string($this->modifiesResponseHtmlData['body'])
+                && is_string($this->modifiesResponseHtmlData['template'])
+            ) {
+                return 'Cannot set both response body and template';
+            }
         });
     }
 
