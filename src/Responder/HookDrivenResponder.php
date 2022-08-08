@@ -42,7 +42,7 @@ class HookDrivenResponder implements ResponderInterface
     {
         $this->actions = [];
 
-        foreach ($actions as $tag => $$actionList) {
+        foreach ($actions as $tag => $actionList) {
             foreach ($actionList as [$callback, $priority]) {
                 $this->addAction($tag, $callback, $priority);
             }
