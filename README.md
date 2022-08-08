@@ -102,18 +102,20 @@ $routes->get('api/products', function () {
 
 Responses are sent using `wp_send_json_success` or `wp_send_json_error` depending on the status code, so data will be available at `response.data`.
 
-### ToyWpRouting\Responder\NotFoundResponder
+### ToyWpRouting\Responder\QueryResponder
 ```php
-$routes->get('api/products/{product}', function ($attrs) {
-  $product = getProductById($attrs['product']);
+$routes->get('products/random[/{count}]', function ($attrs) {
+  $count = min(max((int) ($attrs['count'] ?? 5), 1), 10);
 
-  if (! $product) {
-    return new NotFoundResponder();
-  }
-
-  return new JsonResponder($product);
+  return new QueryResponder([
+    'post_type' => 'pfx_product',
+    'orderby' => 'rand',
+    'posts_per_page' => $count,
+  ]);
 });
 ```
+
+Query variables are applied on the `parse_request` hook, before the main query is run.
 
 ### ToyWpRouting\Responder\RedirectResponder
 ```php
