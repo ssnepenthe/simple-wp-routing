@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ToyWpRouting\Responder\Concerns;
 
 trait SendsDirectResponses
@@ -33,7 +35,10 @@ trait SendsDirectResponses
                 return;
             }
 
-            if (method_exists($this, 'isModifyingResponseHtmlTemplate') && $this->isModifyingResponseHtmlTemplate()) {
+            if (
+                method_exists($this, 'isModifyingResponseHtmlTemplate')
+                && $this->isModifyingResponseHtmlTemplate()
+            ) {
                 return 'Cannot set both response body and template';
             }
         });
