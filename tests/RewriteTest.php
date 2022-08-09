@@ -95,7 +95,7 @@ class RewriteTest extends TestCase
     public function testWithInvalidMethods()
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('@todo');
+        $this->expectExceptionMessage('Invalid rewrite methods list');
 
         new Rewrite(
             ['GET', 'BADMETHOD'],
