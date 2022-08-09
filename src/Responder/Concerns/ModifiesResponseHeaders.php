@@ -51,7 +51,7 @@ trait ModifiesResponseHeaders
     public function withStatusCode(int $status): self
     {
         if ($status < 100 || $status >= 600) {
-            throw new InvalidArgumentException('@todo');
+            throw new InvalidArgumentException('Invalid status code - must be between 100 and 599');
         }
 
         $this->modifiesResponseHeadersData['status'] = $status;
