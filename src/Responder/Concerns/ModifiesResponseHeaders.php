@@ -48,7 +48,7 @@ trait ModifiesResponseHeaders
         return $this;
     }
 
-    public function withStatus(int $status): self
+    public function withStatusCode(int $status): self
     {
         if ($status < 100 || $status >= 600) {
             throw new InvalidArgumentException('@todo');
