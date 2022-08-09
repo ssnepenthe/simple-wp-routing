@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Responder\Concerns;
 
-// @todo status?
+use InvalidArgumentException;
+
 trait ModifiesResponseHeaders
 {
     protected array $modifiesResponseHeadersData = [
         'headers' => [],
+        'status' => null,
     ];
 
     public function withHeader(string $key, $values, bool $replace = true): self
@@ -46,6 +48,17 @@ trait ModifiesResponseHeaders
         return $this;
     }
 
+    public function withStatus(int $status): self
+    {
+        if ($status < 100 || $status >= 600) {
+            throw new InvalidArgumentException('@todo');
+        }
+
+        $this->modifiesResponseHeadersData['status'] = $status;
+
+        return $this;
+    }
+
     protected function initializeModifiesResponseHeaders(): void
     {
         $this->addAction('send_headers', function () {
@@ -61,6 +74,28 @@ trait ModifiesResponseHeaders
                     header("{$key}: {$value}", false);
                 }
             }
+        });
+
+        $this->addAction('template_redirect', function () {
+            if (! is_int($this->modifiesResponseHeadersData['status'])) {
+                return;
+            }
+
+            if (headers_sent()) {
+                return;
+            }
+
+            $status = $this->modifiesResponseHeadersData['status'];
+            $description = get_status_header_desc($status);
+
+            if (empty($description)) {
+                // @todo Throw?
+                return;
+            }
+
+            $protocol = wp_get_server_protocol();
+
+            header("{$protocol} {$status} {$description}", true, $status);
         });
     }
 }
