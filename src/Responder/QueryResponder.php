@@ -10,7 +10,6 @@ class QueryResponder extends HookDrivenResponder
 {
     use ModifiesWpParameters;
 
-    // @todo Should overwrite be true by default?
     public function __construct(array $queryVariables, bool $overwriteExisting = false)
     {
         $this->withPreLoopQueryVariables($queryVariables);

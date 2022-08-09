@@ -81,7 +81,7 @@ trait ModifiesWpQueryParameters
     public function withQueryFlag(string $key, bool $value): self
     {
         if (! array_key_exists($key, $this->modifiesWpQueryParametersData['flagsInitialState'])) {
-            throw new InvalidArgumentException('@todo');
+            throw new InvalidArgumentException("Cannot set unrecognized query flag \"{$key}\"");
         }
 
         $this->modifiesWpQueryParametersData['flags'][$key] = $value;
