@@ -11,23 +11,9 @@ use ToyWpRouting\Responder\HookDrivenResponder;
 // @todo bring in brain/monkey
 class HookDrivenResponderTest extends TestCase
 {
-    public function testInitializeTraits()
-    {
-        $responder = new class extends HookDrivenResponder
-        {
-            use One;
-            use Two;
-        };
-        $responder->respond();
-
-        $this->assertSame(1, $responder->oneCount);
-        $this->assertSame(1, $responder->twoCount);
-    }
-
     public function testCheckForConflicts()
     {
-        $responder = new class extends HookDrivenResponder
-        {
+        $responder = new class () extends HookDrivenResponder {
             use One;
             use Three;
         };
@@ -41,19 +27,30 @@ class HookDrivenResponderTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('test-conflict-message');
 
-        $responder = new class extends HookDrivenResponder
-        {
+        $responder = new class () extends HookDrivenResponder {
             use Two;
             use Three;
         };
         $responder->respond();
     }
+
+    public function testInitializeTraits()
+    {
+        $responder = new class () extends HookDrivenResponder {
+            use One;
+            use Two;
+        };
+        $responder->respond();
+
+        $this->assertSame(1, $responder->oneCount);
+        $this->assertSame(1, $responder->twoCount);
+    }
 }
 
 trait One
 {
-    public $oneCount = 0;
     public $conflictCount = 0;
+    public $oneCount = 0;
 
     protected function initializeOne(): void
     {
