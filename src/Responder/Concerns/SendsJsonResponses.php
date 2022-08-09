@@ -6,7 +6,6 @@ namespace ToyWpRouting\Responder\Concerns;
 
 use InvalidArgumentException;
 
-// @todo Conflicts - status
 trait SendsJsonResponses
 {
     protected array $sendsJsonResponsesData = [
@@ -71,8 +70,16 @@ trait SendsJsonResponses
         });
 
         $this->addConflictCheck(function () {
-            if (!$this->isSendingJsonResponse()) {
+            if (! $this->isSendingJsonResponse()) {
                 return;
+            }
+
+            if (
+                method_exists($this, 'isModifyingResponseStatus')
+                && $this->isModifyingResponseStatus()
+            ) {
+                return 'Cannot set status code on JSON response via "withStatusCode" method'
+                    . ' - must use "withJsonStatusCode" method';
             }
 
             if (

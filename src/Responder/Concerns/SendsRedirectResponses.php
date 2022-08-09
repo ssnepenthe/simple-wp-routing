@@ -6,7 +6,7 @@ namespace ToyWpRouting\Responder\Concerns;
 
 use InvalidArgumentException;
 
-// @todo Conflicts - headers contain x-redirect-by, status,
+// @todo Conflicts - headers contain x-redirect-by
 trait SendsRedirectResponses
 {
     protected array $sendsRedirectResponsesData = [
@@ -77,6 +77,14 @@ trait SendsRedirectResponses
         $this->addConflictCheck(function () {
             if (! $this->isSendingRedirectResponse()) {
                 return;
+            }
+
+            if (
+                method_exists($this, 'isModifyingResponseStatus')
+                && $this->isModifyingResponseStatus()
+            ) {
+                return 'Cannot set status code on redirect response via "withStatusCode" method'
+                    . ' - must use "withRedirectStatusCode" method';
             }
 
             if (

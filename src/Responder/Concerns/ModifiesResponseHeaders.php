@@ -77,7 +77,7 @@ trait ModifiesResponseHeaders
         });
 
         $this->addAction('template_redirect', function () {
-            if (! is_int($this->modifiesResponseHeadersData['status'])) {
+            if (! $this->isModifyingResponseStatus()) {
                 return;
             }
 
@@ -97,5 +97,29 @@ trait ModifiesResponseHeaders
 
             header("{$protocol} {$status} {$description}", true, $status);
         });
+
+        $this->addConflictCheck(function () {
+            if (! $this->isModifyingResponseStatus()) {
+                return;
+            }
+
+            if (method_exists($this, 'isSendingJsonResponse') && $this->isSendingJsonResponse()) {
+                return 'Cannot set status code on JSON response via "withStatusCode" method'
+                    . ' - must use "withJsonStatusCode" method';
+            }
+
+            if (
+                method_exists($this, 'isSendingRedirectResponse')
+                && $this->isSendingRedirectResponse()
+            ) {
+                return 'Cannot set status code on JSON response via "withStatusCode" method'
+                    . ' - must use "withRedirectStatusCode" method';
+            }
+        });
+    }
+
+    protected function isModifyingResponseStatus(): bool
+    {
+        return is_int($this->modifiesResponseHeadersData['status']);
     }
 }
