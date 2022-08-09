@@ -10,7 +10,7 @@ use InvalidArgumentException;
 trait SendsRedirectResponses
 {
     protected array $sendsRedirectResponsesData = [
-        'location' => '',
+        'location' => null,
         'redirectBy' => 'WordPress',
         'safe' => true,
         'status' => 302,
@@ -109,7 +109,6 @@ trait SendsRedirectResponses
 
     protected function isSendingRedirectResponse(): bool
     {
-        return is_string($this->sendsRedirectResponsesData['location'])
-            && '' !== $this->sendsRedirectResponsesData['location'];
+        return is_string($this->sendsRedirectResponsesData['location']);
     }
 }
