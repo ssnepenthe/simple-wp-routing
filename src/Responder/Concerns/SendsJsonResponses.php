@@ -77,14 +77,14 @@ trait SendsJsonResponses
                 method_exists($this, 'isModifyingResponseHtmlTemplate')
                 && $this->isModifyingResponseHtmlTemplate()
             ) {
-                return '@todo';
+                return 'Cannot set JSON response and template response at the same time';
             }
 
             if (
                 method_exists($this, 'isSendingRedirectResponse')
                 && $this->isSendingRedirectResponse()
             ) {
-                return '@todo';
+                return 'Cannot set JSON response and redirect response at the same time';
             }
         });
     }

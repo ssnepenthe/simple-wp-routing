@@ -83,11 +83,11 @@ trait SendsRedirectResponses
                 method_exists($this, 'isModifyingResponseHtmlTemplate')
                 && $this->isModifyingResponseHtmlTemplate()
             ) {
-                return '@todo';
+                return 'Cannot set redirect response and template response at the same time';
             }
 
             if (method_exists($this, 'isSendingJsonResponse') && $this->isSendingJsonResponse()) {
-                return '@todo';
+                return 'Cannot set redirect response and JSON response at the same time';
             }
         });
     }

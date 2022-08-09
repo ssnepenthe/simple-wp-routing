@@ -39,7 +39,7 @@ trait SendsDirectResponses
                 method_exists($this, 'isModifyingResponseHtmlTemplate')
                 && $this->isModifyingResponseHtmlTemplate()
             ) {
-                return 'Cannot set both response body and template';
+                return 'Cannot set custom response body and with template response';
             }
         });
     }
