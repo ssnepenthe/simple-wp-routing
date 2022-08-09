@@ -30,17 +30,32 @@ trait SendsDirectResponses
         });
 
         $this->addConflictCheck(function () {
-            // @todo json? redirect?
-            if (! is_string($this->sendsDirectResponses['body'])) {
+            if (! $this->isSendingDirectResponse()) {
                 return;
             }
 
             if (
-                method_exists($this, 'isModifyingResponseHtmlTemplate')
-                && $this->isModifyingResponseHtmlTemplate()
+                method_exists($this, 'isModifyingResponseHtml')
+                && $this->isModifyingResponseHtml()
             ) {
-                return 'Cannot set custom response body and with template response';
+                return 'Cannot send direct response and modify response HTML at the same time';
+            }
+
+            if (method_exists($this, 'isSendingJsonResponse') && $this->isSendingJsonResponse()) {
+                return 'Cannot send direct response and JSON response at the same time';
+            }
+
+            if (
+                method_exists($this, 'isSendingRedirectResponse')
+                && $this->isSendingRedirectResponse()
+            ) {
+                return 'Cannot send direct response and redirect response at the same time';
             }
         });
+    }
+
+    protected function isSendingDirectResponse(): bool
+    {
+        return is_string($this->sendsDirectResponses['body']);
     }
 }

@@ -131,11 +131,37 @@ trait ModifiesResponseHtml
             return $this->modifiesResponseHtmlData['template'];
         });
 
-        // @todo All conflict with json? redirect? body?
+        $this->addConflictCheck(function () {
+            if (! $this->isModifyingResponseHtml()) {
+                return;
+            }
+
+            if (method_exists($this, 'isSendingJsonResponse') && $this->isSendingJsonResponse()) {
+                return 'Cannot modify response HTML and send JSON response at the same time';
+            }
+
+            if (
+                method_exists($this, 'isSendingDirectResponse')
+                && $this->isSendingDirectResponse()
+            ) {
+                return 'Cannot modify response HTML and send direct response at the same time';
+            }
+
+            if (
+                method_exists($this, 'isSendingRedirectResponse')
+                && $this->isSendingRedirectResponse()
+            ) {
+                return 'Cannot modify response HTML and send redirect response at the same time';
+            }
+        });
     }
 
-    protected function isModifyingResponseHtmlTemplate(): bool
+    protected function isModifyingResponseHtml(): bool
     {
-        return is_string($this->modifiesResponseHtmlData['template']);
+        return ! empty($this->modifiesResponseHtmlData['bodyClasses'])
+            || ! empty($this->modifiesResponseHtmlData['enqueuedScripts'])
+            || ! empty($this->modifiesResponseHtmlData['enqueuedStyles'])
+            || is_string($this->modifiesResponseHtmlData['title'])
+            || is_string($this->modifiesResponseHtmlData['template']);
     }
 }

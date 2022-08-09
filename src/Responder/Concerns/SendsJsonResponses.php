@@ -76,17 +76,24 @@ trait SendsJsonResponses
             }
 
             if (
-                method_exists($this, 'isModifyingResponseHtmlTemplate')
-                && $this->isModifyingResponseHtmlTemplate()
+                method_exists($this, 'isModifyingResponseHtml')
+                && $this->isModifyingResponseHtml()
             ) {
-                return 'Cannot set JSON response and template response at the same time';
+                return 'Cannot send JSON response and modify response HTML at the same time';
+            }
+
+            if (
+                method_exists($this, 'isSendingDirectResponse')
+                && $this->isSendingDirectResponse()
+            ) {
+                return 'Cannot send JSON response and direct response at the same time';
             }
 
             if (
                 method_exists($this, 'isSendingRedirectResponse')
                 && $this->isSendingRedirectResponse()
             ) {
-                return 'Cannot set JSON response and redirect response at the same time';
+                return 'Cannot send JSON response and redirect response at the same time';
             }
         });
     }

@@ -80,14 +80,21 @@ trait SendsRedirectResponses
             }
 
             if (
-                method_exists($this, 'isModifyingResponseHtmlTemplate')
-                && $this->isModifyingResponseHtmlTemplate()
+                method_exists($this, 'isModifyingResponseHtml')
+                && $this->isModifyingResponseHtml()
             ) {
-                return 'Cannot set redirect response and template response at the same time';
+                return 'Cannot send redirect response and modify response HTML at the same time';
+            }
+
+            if (
+                method_exists($this, 'isSendingDirectResponse')
+                && $this->isSendingDirectResponse()
+            ) {
+                return 'Cannot send redirect response and direct response at the same time';
             }
 
             if (method_exists($this, 'isSendingJsonResponse') && $this->isSendingJsonResponse()) {
-                return 'Cannot set redirect response and JSON response at the same time';
+                return 'Cannot send redirect response and JSON response at the same time';
             }
         });
     }
