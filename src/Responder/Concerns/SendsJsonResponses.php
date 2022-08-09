@@ -35,7 +35,9 @@ trait SendsJsonResponses
     {
         // 1xx responses shouldn't have a body - should we allow them here anyway?
         if ($statusCode < 200 || ($statusCode >= 300 && $statusCode < 400) || $statusCode >= 600) {
-            throw new InvalidArgumentException('@todo');
+            throw new InvalidArgumentException(
+                'JSON response code must be between 200 and 299 or between 400 and 599'
+            );
         }
 
         $this->sendsJsonResponsesData['status'] = $statusCode;

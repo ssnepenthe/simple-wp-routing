@@ -41,7 +41,7 @@ class Rewrite implements RewriteInterface
     public function __construct(array $methods, array $rules, $handler, $isActiveCallback = null)
     {
         if (! Support::isValidMethodsList($methods)) {
-            throw new InvalidArgumentException('@todo');
+            throw new InvalidArgumentException('Invalid rewrite methods list');
         }
 
         $this->methods = $methods;

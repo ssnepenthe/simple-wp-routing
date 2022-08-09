@@ -33,7 +33,7 @@ trait SendsRedirectResponses
     public function withRedirectStatusCode(int $statusCode): self
     {
         if (! ($statusCode >= 300 && $statusCode < 400)) {
-            throw new InvalidArgumentException('@todo');
+            throw new InvalidArgumentException('Redirect status code must be between 300 and 399');
         }
 
         $this->sendsRedirectResponsesData['status'] = $statusCode;
