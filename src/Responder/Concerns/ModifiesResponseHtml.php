@@ -4,14 +4,34 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Responder\Concerns;
 
-// @todo enqueue scripts and style? 404 preempt?
+// @todo 404 preempt?
 trait ModifiesResponseHtml
 {
     protected array $modifiesResponseHtmlData = [
         'bodyClasses' => [],
+        'enqueuedScripts' => [],
+        'enqueuedStyles' => [],
         'title' => null,
         'template' => null,
     ];
+
+    public function withAdditionalEnqueuedScripts(array $handles): self
+    {
+        foreach ($handles as $handle) {
+            $this->withEnqueuedScript($handle);
+        }
+
+        return $this;
+    }
+
+    public function withAdditionalEnqueuedStyles(array $handles): self
+    {
+        foreach ($handles as $handle) {
+            $this->withEnqueuedStyle($handle);
+        }
+
+        return $this;
+    }
 
     public function withBodyClass(string $bodyClass): self
     {
@@ -24,6 +44,38 @@ trait ModifiesResponseHtml
     {
         $this->modifiesResponseHtmlData['bodyClasses'] = array_values(
             (fn (string ...$bodyClasses) => $bodyClasses)(...$bodyClasses)
+        );
+
+        return $this;
+    }
+
+    public function withEnqueuedScript(string $handle): self
+    {
+        $this->modifiesResponseHtmlData['enqueuedScripts'][] = $handle;
+
+        return $this;
+    }
+
+    public function withEnqueuedScripts(array $handles): self
+    {
+        $this->modifiesResponseHtmlData['enqueuedScripts'] = array_values(
+            (fn (string ...$handles) => $handles)(...$handles)
+        );
+
+        return $this;
+    }
+
+    public function withEnqueuedStyle(string $handle): self
+    {
+        $this->modifiesResponseHtmlData['enqueuedStyles'][] = $handle;
+
+        return $this;
+    }
+
+    public function withEnqueuedStyles(array $handles): self
+    {
+        $this->modifiesResponseHtmlData['enqueuedStyles'] = array_values(
+            (fn (string ...$handles) => $handles)(...$handles)
         );
 
         return $this;
@@ -45,6 +97,16 @@ trait ModifiesResponseHtml
 
     protected function initializeModifiesResponseHtml(): void
     {
+        $this->addAction('wp_enqueue_scripts', function () {
+            foreach ($this->modifiesResponseHtmlData['enqueuedScripts'] as $handle) {
+                wp_enqueue_script($handle);
+            }
+
+            foreach ($this->modifiesResponseHtmlData['enqueuedStyles'] as $handle) {
+                wp_enqueue_style($handle);
+            }
+        });
+
         $this->addFilter('body_class', function ($classes) {
             if (is_array($classes) && ! empty($this->modifiesResponseHtmlData['bodyClasses'])) {
                 $classes = array_merge($classes, $this->modifiesResponseHtmlData['bodyClasses']);
@@ -69,7 +131,7 @@ trait ModifiesResponseHtml
             return $this->modifiesResponseHtmlData['template'];
         });
 
-        // @todo All conflict with json? redirect?
+        // @todo All conflict with json? redirect? body?
     }
 
     protected function isModifyingResponseHtmlTemplate(): bool
