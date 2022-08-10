@@ -12,10 +12,10 @@ class QueryResponder extends HookDrivenResponder
 
     public function __construct(array $queryVariables, bool $overwriteExisting = false)
     {
-        $this->withPreLoopQueryVariables($queryVariables);
+        $this->withRequestVariables($queryVariables);
 
         if ($overwriteExisting) {
-            $this->withExistingPreLoopQueryVariablesOverwritten();
+            $this->withExistingRequestVariablesOverwritten();
         }
     }
 }

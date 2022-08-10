@@ -13,35 +13,35 @@ trait ModifiesWpParameters
         'overwrite' => false,
     ];
 
-    public function withAdditionalPreLoopQueryVariables(array $queryVariables): self
+    public function withAdditionalRequestVariables(array $queryVariables): self
     {
         foreach ($queryVariables as $key => $value) {
-            $this->withPreLoopQueryVariable($key, $value);
+            $this->withRequestVariable($key, $value);
         }
 
         return $this;
     }
 
-    public function withExistingPreLoopQueryVariablesOverwritten(): self
+    public function withExistingRequestVariablesOverwritten(): self
     {
         $this->modifiesWpParametersData['overwrite'] = true;
 
         return $this;
     }
 
-    public function withPreLoopQueryVariable(string $key, $value): self
+    public function withRequestVariable(string $key, $value): self
     {
         $this->modifiesWpParametersData['queryVariables'][$key] = $value;
 
         return $this;
     }
 
-    public function withPreLoopQueryVariables(array $queryVariables): self
+    public function withRequestVariables(array $queryVariables): self
     {
         $this->modifiesWpParametersData['queryVariables'] = [];
 
         foreach ($queryVariables as $key => $value) {
-            $this->withPreLoopQueryVariable($key, $value);
+            $this->withRequestVariable($key, $value);
         }
 
         return $this;
