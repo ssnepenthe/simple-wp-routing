@@ -234,12 +234,10 @@ class RewriteCollection
         $this->rewriteRules = [];
 
         foreach ($this->rewrites as $rewrite) {
-            $isActive = $this->invocationStrategy->invokeIsActiveCallback($rewrite);
-
             foreach ($rewrite->getRules() as $rule) {
                 $this->rewriteRules[$rule->getRegex()] = $rule->getQuery();
 
-                if ($isActive) {
+                if ($rewrite->isActive()) {
                     $this->activeRewriteRules[$rule->getRegex()] = $rule->getQuery();
 
                     foreach ($rule->getQueryVariables() as $prefixed => $unprefixed) {
