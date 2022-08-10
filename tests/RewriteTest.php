@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Tests;
 
+use Closure;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ToyWpRouting\DefaultInvocationStrategy;
@@ -40,6 +41,7 @@ class RewriteTest extends TestCase
 
     public function testHandle()
     {
+        // @todo test with prefixed qv?
         $rewrite = new Rewrite(
             ['GET'],
             [new RewriteRule('someregex', 'some=query')],
@@ -48,16 +50,12 @@ class RewriteTest extends TestCase
 
         $invocationStrategy = $this->createMock(InvocationStrategyInterface::class);
         $invocationStrategy->expects($this->once())
-            ->method('withAdditionalContext')
-            ->with(['queryVars' => ['varone' => 'valone', 'vartwo' => 'valtwo']])
-            ->willReturn($invocationStrategy);
-        $invocationStrategy->expects($this->once())
-            ->method('invokeHandler')
-            ->with($rewrite);
+            ->method('invoke')
+            ->with('somehandler', ['some' => 'valtwo']);
 
         $rewrite->setInvocationStrategy($invocationStrategy);
 
-        $rewrite->handle(['varone' => 'valone', 'vartwo' => 'valtwo']);
+        $rewrite->handle(['varone' => 'valone', 'some' => 'valtwo']);
     }
 
     public function testIsActive()
@@ -66,13 +64,48 @@ class RewriteTest extends TestCase
             ['GET'],
             [new RewriteRule('someregex', 'some=query')],
             'somehandler',
+            fn () => true
         );
 
         $invocationStrategy = $this->createMock(InvocationStrategyInterface::class);
         $invocationStrategy->expects($this->once())
-            ->method('invokeIsActiveCallback')
-            ->with($rewrite)
-            ->willReturn(true);
+            ->method('invoke')
+            ->with($this->isInstanceOf(Closure::class))
+            ->willReturnCallback(fn ($cb) => $cb());
+
+        $rewrite->setInvocationStrategy($invocationStrategy);
+
+        $this->assertTrue($rewrite->isActive());
+
+        $rewrite = new Rewrite(
+            ['GET'],
+            [new RewriteRule('someregex', 'some=query')],
+            'somehandler',
+            fn () => false
+        );
+
+        $invocationStrategy = $this->createMock(InvocationStrategyInterface::class);
+        $invocationStrategy->expects($this->once())
+            ->method('invoke')
+            ->with($this->isInstanceOf(Closure::class))
+            ->willReturnCallback(fn ($cb) => $cb());
+
+        $rewrite->setInvocationStrategy($invocationStrategy);
+
+        $this->assertFalse($rewrite->isActive());
+    }
+
+    public function testIsActiveWithNoCallbackSet()
+    {
+        $rewrite = new Rewrite(
+            ['GET'],
+            [new RewriteRule('someregex', 'some=query')],
+            'somehandler',
+        );
+
+        $invocationStrategy = $this->createMock(InvocationStrategyInterface::class);
+        $invocationStrategy->expects($this->never())
+            ->method('invoke');
 
         $rewrite->setInvocationStrategy($invocationStrategy);
 

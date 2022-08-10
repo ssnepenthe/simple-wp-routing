@@ -6,23 +6,8 @@ namespace ToyWpRouting;
 
 class DefaultInvocationStrategy extends AbstractInvocationStrategy
 {
-    public function invokeHandler(RewriteInterface $rewrite)
+    public function invoke($callable, array $context = [])
     {
-        // @todo Should this receive full additional context as second param?
-        return ($this->resolveCallable($rewrite->getHandler()))(
-            $this->resolveRelevantQueryVariablesFromContext($rewrite)
-        );
-    }
-
-    public function invokeIsActiveCallback(RewriteInterface $rewrite)
-    {
-        $callback = $rewrite->getIsActiveCallback();
-
-        if (null === $callback) {
-            return true;
-        }
-
-        // @todo Should this get any additional context?
-        return (bool) ($this->resolveCallable($callback))();
+        return ($this->resolveCallable($callable))($context);
     }
 }
