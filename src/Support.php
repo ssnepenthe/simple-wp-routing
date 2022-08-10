@@ -6,9 +6,6 @@ namespace ToyWpRouting;
 
 use InvalidArgumentException;
 
-// @todo Generate rewrite hash?
-// @todo Get hash from rewrite?
-// @todo Get global matched rewrite hash?
 class Support
 {
     public static function applyPrefix(string $value, string $prefix): string
