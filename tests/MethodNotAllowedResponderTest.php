@@ -7,7 +7,7 @@ namespace ToyWpRouting\Tests;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
-use ToyWpRouting\MethodNotAllowedResponder;
+use ToyWpRouting\Responder\MethodNotAllowedResponder;
 
 use function Brain\Monkey\Functions\expect;
 use function Brain\Monkey\setUp;

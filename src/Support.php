@@ -50,6 +50,21 @@ class Support
         ));
     }
 
+    public static function classBaseName(string $fqcn): string
+    {
+        return basename(str_replace('\\', '/', $fqcn));
+    }
+    public static function classUsesRecursive(string $class): array
+    {
+        $traits = [];
+
+        foreach (array_reverse(class_parents($class)) + [$class => $class] as $class) {
+            $traits += static::traitUsesRecursive($class);
+        }
+
+        return $traits;
+    }
+
     public static function isValidMethodsList(array $methods): bool
     {
         if ([] === $methods) {
@@ -71,5 +86,16 @@ class Support
         parse_str($query, $result);
 
         return $result;
+    }
+
+    public static function traitUsesRecursive(string $class): array
+    {
+        $traits = class_uses($class) ?: [];
+
+        foreach ($traits as $trait) {
+            $traits += static::traitUsesRecursive($trait);
+        }
+
+        return $traits;
     }
 }

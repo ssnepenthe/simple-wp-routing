@@ -21,6 +21,7 @@ return (new Config())
 			->in(__DIR__)
 			->exclude([
 				'bin',
+				'scratch',
 				'templates',
 				'tests/fixtures',
 			])

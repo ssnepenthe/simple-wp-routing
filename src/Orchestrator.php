@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace ToyWpRouting;
 
 use RuntimeException;
+use ToyWpRouting\Responder\MethodNotAllowedResponder;
+use ToyWpRouting\Responder\ResponderInterface;
 
 class Orchestrator
 {

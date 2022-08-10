@@ -84,6 +84,63 @@ $rewrites = (new \ToyWpRouting\RouteConverter())->convertCollection($routes);
 (new \ToyWpRouting\Orchestrator($rewrites))->initialize();
 ```
 
+## Responders
+Rewrite handlers can optionally return an instance of `ToyWpRouting\Responder\ResponderInterface`. The `respond` method on the returned responder will automatically be invoked on the `request` filter.
+
+This allows common behavior to easily be wrapped up for reuse.
+
+The following basic responder implementations are included:
+
+### ToyWpRouting\Responder\JsonResponder
+```php
+$routes->get('api/products', function () {
+  $products = getAllProducts();
+
+  return new JsonResponder(['products' => $products]);
+});
+```
+
+Responses are sent using `wp_send_json_success` or `wp_send_json_error` depending on the status code, so data will be available at `response.data`.
+
+### ToyWpRouting\Responder\QueryResponder
+```php
+$routes->get('products/random[/{count}]', function ($attrs) {
+  $count = min(max((int) ($attrs['count'] ?? 5), 1), 10);
+
+  return new QueryResponder([
+    'post_type' => 'pfx_product',
+    'orderby' => 'rand',
+    'posts_per_page' => $count,
+  ]);
+});
+```
+
+Query variables are applied on the `parse_request` hook, before the main query is run.
+
+### ToyWpRouting\Responder\RedirectResponder
+```php
+$routes->get('r/{redirect}', function ($attrs) {
+  $location = getRedirectLocationById($attrs['redirect']);
+
+  return new RedirectResponder($location);
+});
+```
+
+Redirects are sent using `wp_safe_redirect` by default. You can optionally chain a call to the `withUnsafeRedirectsAllowed` method to use `wp_redirect` instead.
+
+```php
+return (new RedirectResponder($location))->withUnsafeRedirectsAllowed();
+```
+
+### ToyWpRouting\Responder\TemplateResponder
+```php
+$routes->get('thank-you', function () {
+  return new TemplateResponder(__DIR__ . '/templates/thank-you.php');
+});
+```
+
+Templates are loaded via the `template_include` filter.
+
 ## Caching
 If you have opcache enabled, you may see improved performance by enabling rewrite caching.
 
