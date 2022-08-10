@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace ToyWpRouting;
 
-use InvalidArgumentException;
-
 class Rewrite implements RewriteInterface
 {
     /**
@@ -40,9 +38,7 @@ class Rewrite implements RewriteInterface
      */
     public function __construct(array $methods, array $rules, $handler, $isActiveCallback = null)
     {
-        if (! Support::isValidMethodsList($methods)) {
-            throw new InvalidArgumentException('Invalid rewrite methods list');
-        }
+        Support::assertValidMethodsList($methods);
 
         $this->methods = $methods;
         $this->rules = (fn (RewriteRuleInterface ...$rules) => $rules)(...$rules);

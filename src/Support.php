@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ToyWpRouting;
 
+use InvalidArgumentException;
+
 // @todo Generate rewrite hash?
 // @todo Get hash from rewrite?
 // @todo Get global matched rewrite hash?
@@ -37,6 +39,33 @@ class Support
         return $newArray;
     }
 
+    public static function assertValidMethodsList(array $methods): void
+    {
+        if (! static::isValidMethodsList($methods)) {
+            if (empty($methods)) {
+                throw new InvalidArgumentException('Invalid methods list - cannot be empty');
+            }
+
+            if (! empty(array_filter($methods, fn ($method) => ! is_string($method)))) {
+                throw new InvalidArgumentException(
+                    'Invalid methods list - must contain only strings'
+                );
+            }
+
+            $invalid = array_diff(
+                $methods,
+                ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
+            );
+
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Invalid methods list - the following values are not allowed: %s',
+                    implode(', ', array_map(fn ($v) => var_export($v, true), $invalid))
+                )
+            );
+        }
+    }
+
     public static function buildQuery(array $queryArray): string
     {
         if (empty($queryArray)) {
@@ -54,6 +83,7 @@ class Support
     {
         return basename(str_replace('\\', '/', $fqcn));
     }
+
     public static function classUsesRecursive(string $class): array
     {
         $traits = [];
@@ -68,6 +98,10 @@ class Support
     public static function isValidMethodsList(array $methods): bool
     {
         if ([] === $methods) {
+            return false;
+        }
+
+        if ($methods !== array_filter($methods, fn ($method) => is_string($method))) {
             return false;
         }
 

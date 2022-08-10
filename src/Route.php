@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace ToyWpRouting;
 
-use InvalidArgumentException;
-
 class Route
 {
     /**
@@ -38,9 +36,7 @@ class Route
      */
     public function __construct(array $methods, string $route, $handler)
     {
-        if (! Support::isValidMethodsList($methods)) {
-            throw new InvalidArgumentException('Invalid route methods list');
-        }
+        Support::assertValidMethodsList($methods);
 
         $this->methods = $methods;
         $this->route = $route;

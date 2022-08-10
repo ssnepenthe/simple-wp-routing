@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Tests;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ToyWpRouting\Support;
 
@@ -52,6 +53,30 @@ class SupportTest extends TestCase
         $prefix = '';
 
         $this->assertSame($value, Support::applyPrefix($value, $prefix));
+    }
+
+    public function testAssertValidMethodsListWithEmptyMethods()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('cannot be empty');
+
+        Support::assertValidMethodsList([]);
+    }
+
+    public function testAssertValidMethodsListWithInvalidMethods()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('the following values are not allowed: \'get\', \'INVALID\'');
+
+        Support::assertValidMethodsList(['GET', 'get', 'INVALID']);
+    }
+
+    public function testAssertValidMethodsListWithInvalidTypes()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('must contain only strings');
+
+        Support::assertValidMethodsList(['GET', 1, []]);
     }
 
     // @todo test with empty input

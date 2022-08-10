@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Tests;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ToyWpRouting\Route;
 
@@ -37,5 +38,14 @@ class RouteTest extends TestCase
         });
 
         $this->assertFalse(($route->getIsActiveCallback())());
+    }
+
+    public function testWithInvalidMethods()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid methods list');
+
+        new Route(['GET', 'BADMETHOD'], 'someroutestring', function () {
+        });
     }
 }
