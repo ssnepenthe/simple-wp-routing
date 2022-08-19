@@ -16,24 +16,8 @@ class InvokerBackedInvocationStrategy extends AbstractInvocationStrategy
         $this->invoker = $invoker ?: new Invoker();
     }
 
-    public function invokeHandler(RewriteInterface $rewrite)
+    public function invoke($callable, array $context = [])
     {
-        // @todo Should this also receive full additional context as second param?
-        return $this->invoker->call(
-            $this->resolveCallable($rewrite->getHandler()),
-            $this->resolveRelevantQueryVariablesFromContext($rewrite)
-        );
-    }
-
-    public function invokeIsActiveCallback(RewriteInterface $rewrite)
-    {
-        $callback = $rewrite->getIsActiveCallback();
-
-        if (null === $callback) {
-            return true;
-        }
-
-        // @todo Should this get additional context?
-        return (bool) $this->invoker->call($this->resolveCallable($callback));
+        return $this->invoker->call($this->resolveCallable($callable), $context);
     }
 }

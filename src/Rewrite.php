@@ -87,16 +87,32 @@ class Rewrite implements RewriteInterface
         return $this->rules;
     }
 
+    // @todo also in snake case?
+    // @todo Test with optional params.
+    // @todo Include all query vars?
+    // @todo Include prefixed query vars as well?
     public function handle(array $queryVariables = [])
     {
-        return $this->getInvocationStrategy()
-            ->withAdditionalContext(['queryVars' => $queryVariables])
-            ->invokeHandler($this);
+        $context = [];
+
+        foreach ($queryVariables as $key => $value) {
+            if (is_string($newKey = $this->mapQueryVariable($key))) {
+                $context[$newKey] = $value;
+            }
+        }
+
+        return $this->getInvocationStrategy()->invoke($this->getHandler(), $context);
     }
 
     public function isActive(): bool
     {
-        return $this->getInvocationStrategy()->invokeIsActiveCallback($this);
+        $callback = $this->getIsActiveCallback();
+
+        if (null === $callback) {
+            return true;
+        }
+
+        return $this->getInvocationStrategy()->invoke($callback);
     }
 
     public function mapQueryVariable(string $queryVariable): ?string
