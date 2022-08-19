@@ -2,15 +2,13 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder;
+namespace ToyWpRouting\Exception;
 
+use ToyWpRouting\Responder\HttpExceptionResponder;
 use WP_Query;
 
-class MethodNotAllowedResponder implements ResponderInterface
+class MethodNotAllowedHttpException extends HttpException
 {
-    /**
-     * @var string[]
-     */
     protected array $allowedMethods;
 
     public function __construct(array $allowedMethods)
@@ -18,22 +16,15 @@ class MethodNotAllowedResponder implements ResponderInterface
         $this->allowedMethods = $allowedMethods;
     }
 
-    public function onBodyClass($classes)
+    public function prepareResponse(HttpExceptionResponder $responder): void
     {
-        if (is_array($classes)) {
-            $classes[] = 'error405';
-        }
+        $responder->withBodyClass('error405');
+        $responder->withTitle('Method not allowed');
+        $responder->withHeader('Allow', strtoupper(implode(', ', $this->allowedMethods)));
 
-        return $classes;
-    }
-
-    public function onDocumentTitleParts($parts)
-    {
-        if (is_array($parts)) {
-            $parts['title'] = 'Method not allowed';
-        }
-
-        return $parts;
+        // @todo Can existing responder traits be adapted to handle these?
+        $responder->withAction('parse_query', [$this, 'onParseQuery']);
+        $responder->withFilter('template_include', [$this, 'onTemplateInclude']);
     }
 
     /**
@@ -66,23 +57,5 @@ class MethodNotAllowedResponder implements ResponderInterface
         }
 
         return $errorTemplate;
-    }
-
-    public function onWpHeaders($headers)
-    {
-        if (is_array($headers)) {
-            $headers['Allow'] = strtoupper(implode(', ', $this->allowedMethods));
-        }
-
-        return $headers;
-    }
-
-    public function respond(): void
-    {
-        add_filter('body_class', [$this, 'onBodyClass']);
-        add_filter('document_title_parts', [$this, 'onDocumentTitleParts']);
-        add_action('parse_query', [$this, 'onParseQuery']);
-        add_filter('template_include', [$this, 'onTemplateInclude']);
-        add_filter('wp_headers', [$this, 'onWpHeaders']);
     }
 }

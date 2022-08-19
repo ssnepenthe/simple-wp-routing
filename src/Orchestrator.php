@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace ToyWpRouting;
 
 use RuntimeException;
-use ToyWpRouting\Responder\MethodNotAllowedResponder;
+use ToyWpRouting\Exception\HttpExceptionInterface;
+use ToyWpRouting\Exception\MethodNotAllowedHttpException;
+use ToyWpRouting\Responder\HttpExceptionResponder;
 use ToyWpRouting\Responder\ResponderInterface;
 
 class Orchestrator
@@ -138,10 +140,14 @@ class Orchestrator
             return;
         }
 
-        if (! array_key_exists($method, $candidates)) {
-            $responder = new MethodNotAllowedResponder(array_keys($candidates));
-        } else {
+        try {
+            if (! array_key_exists($method, $candidates)) {
+                throw new MethodNotAllowedHttpException(array_keys($candidates));
+            }
+
             $responder = $candidates[$method]->handle($queryVars);
+        } catch (HttpExceptionInterface $e) {
+            $responder = new HttpExceptionResponder($e);
         }
 
         if ($responder instanceof ResponderInterface) {
