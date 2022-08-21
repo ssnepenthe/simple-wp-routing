@@ -141,6 +141,22 @@ $routes->get('thank-you', function () {
 
 Templates are loaded via the `template_include` filter.
 
+## HTTP exceptions
+HTTP exceptions can be used as a convenient escape hatch from handlers.
+
+### ToyWpRouting\Exception\NotFoundHttpException
+Sets the main query to 404 status and sends 404 status header and nocache headers.
+
+```php
+$routes->get('books/{book}', function ($attrs) {
+  if (! $book = getBookById($attrs['book'])) {
+    throw new NotFoundHttpException();
+  }
+
+  // ...
+});
+```
+
 ## Caching
 If you have opcache enabled, you may see improved performance by enabling rewrite caching.
 
