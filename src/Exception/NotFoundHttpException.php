@@ -24,13 +24,10 @@ class NotFoundHttpException extends HttpException
         $wpQuery->set_404();
     }
 
-    public function onSendHeaders(): void
-    {
-        nocache_headers();
-    }
-
     protected function doPrepareResponse(HttpExceptionResponder $responder): void
     {
+        $responder->withNocacheHeaders();
+
         $responder
             ->withAction('parse_query', [$this, 'onParseQuery'])
             ->withAction('send_headers', [$this, 'onSendHeaders']);
