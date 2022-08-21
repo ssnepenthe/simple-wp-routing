@@ -32,8 +32,11 @@ class HttpException extends RuntimeException implements HttpExceptionInterface
             ->withStatusCode($this->statusCode)
             ->withHeaders($this->headers);
 
-        if (method_exists($this, 'doPrepareResponse')) {
-            $this->doPrepareResponse($responder);
-        }
+        $this->doPrepareResponse($responder);
+    }
+
+    protected function doPrepareResponse(HttpExceptionResponder $responder): void
+    {
+        // Nothing by default...
     }
 }
