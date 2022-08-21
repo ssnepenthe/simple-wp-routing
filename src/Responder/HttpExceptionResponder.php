@@ -21,12 +21,8 @@ class HttpExceptionResponder extends HookDrivenResponder
     use SendsJsonResponses;
     use SendsRedirectResponses;
 
-    protected HttpExceptionInterface $exception;
-
     public function __construct(HttpExceptionInterface $exception)
     {
-        $this->exception = $exception;
-
         $exception->prepareResponse($this);
     }
 }
