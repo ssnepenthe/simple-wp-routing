@@ -22,19 +22,6 @@ class MethodNotAllowedHttpException extends HttpException
         parent::__construct(405, $message, $previous, $headers, $code);
     }
 
-    /**
-     * @param mixed $wpQuery
-     */
-    public function onParseQuery($wpQuery): void
-    {
-        if ($wpQuery instanceof WP_Query) {
-            // Is this necessary or would it be sufficient just to set $wpQuery->is_home = false?
-            // Or would it be better to use the 'parse_request' filter and unset all query variables
-            // before they ever get to $wpQuery?
-            $wpQuery->init_query_flags();
-        }
-    }
-
     public function onTemplateInclude(): string
     {
         // Alternatively we can allow wordpress to handle status header for us by setting the
@@ -54,13 +41,11 @@ class MethodNotAllowedHttpException extends HttpException
     protected function doPrepareResponse(HttpExceptionResponder $responder): void
     {
         $responder
+            ->withAllQueryFlagsReset()
             ->withBodyClass('error405')
-            ->withTitle('Method not allowed')
-            ->withNocacheHeaders();
+            ->withNocacheHeaders()
+            ->withTitle('Method not allowed');
 
-        // @todo Can existing responder traits be adapted to handle these?
-        $responder
-            ->withAction('parse_query', [$this, 'onParseQuery'])
-            ->withFilter('template_include', [$this, 'onTemplateInclude']);
+        $responder->withFilter('template_include', [$this, 'onTemplateInclude']);
     }
 }
