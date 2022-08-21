@@ -35,11 +35,6 @@ class MethodNotAllowedHttpException extends HttpException
         }
     }
 
-    public function onSendHeaders(): void
-    {
-        nocache_headers();
-    }
-
     public function onTemplateInclude(): string
     {
         // Alternatively we can allow wordpress to handle status header for us by setting the
@@ -60,12 +55,12 @@ class MethodNotAllowedHttpException extends HttpException
     {
         $responder
             ->withBodyClass('error405')
-            ->withTitle('Method not allowed');
+            ->withTitle('Method not allowed')
+            ->withNocacheHeaders();
 
         // @todo Can existing responder traits be adapted to handle these?
         $responder
             ->withAction('parse_query', [$this, 'onParseQuery'])
-            ->withAction('send_headers', [$this, 'onSendHeaders'])
             ->withFilter('template_include', [$this, 'onTemplateInclude']);
     }
 }
