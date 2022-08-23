@@ -157,6 +157,11 @@ $routes->get('books/{book}', function ($attrs) {
 });
 ```
 
+## Templates
+A basic 405 template is included with styling loosely modeled after the twentytwentytwo 404 template.
+
+This can be overridden in themes by creating a `405.php` template or `405.html` block template.
+
 ## Caching
 If you have opcache enabled, you may see improved performance by enabling rewrite caching.
 
