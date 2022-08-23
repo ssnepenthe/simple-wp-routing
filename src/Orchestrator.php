@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace ToyWpRouting;
 
 use RuntimeException;
-use ToyWpRouting\Responder\MethodNotAllowedResponder;
+use ToyWpRouting\Exception\HttpExceptionInterface;
+use ToyWpRouting\Responder\HttpExceptionResponder;
 use ToyWpRouting\Responder\ResponderInterface;
 
 class Orchestrator
@@ -117,31 +118,29 @@ class Orchestrator
 
         $matchedRuleKey = "{$this->rewriteCollection->getPrefix()}matchedRule";
 
-        if (! array_key_exists($matchedRuleKey, $queryVars)) {
-            return;
-        }
-
-        if (! is_string($queryVars[$matchedRuleKey])) {
-            return;
-        }
-
-        $candidates = $this->rewriteCollection
-            ->getActiveRewritesByRegexHash($queryVars[$matchedRuleKey]);
-
-        if (empty($candidates)) {
+        if (
+            ! array_key_exists($matchedRuleKey, $queryVars)
+            || ! is_string($queryVars[$matchedRuleKey])
+        ) {
             return;
         }
 
         try {
-            $method = $this->getRequestContext()->getIntendedMethod();
-        } catch (RuntimeException $e) {
-            return;
-        }
+            $rewrite = $this->rewriteCollection->findActiveRewriteByHashAndMethod(
+                $queryVars[$matchedRuleKey],
+                $this->getRequestContext()->getIntendedMethod()
+            );
 
-        if (! array_key_exists($method, $candidates)) {
-            $responder = new MethodNotAllowedResponder(array_keys($candidates));
-        } else {
-            $responder = $candidates[$method]->handle($queryVars);
+            if (! $rewrite instanceof RewriteInterface) {
+                return;
+            }
+
+            $responder = $rewrite->handle($queryVars);
+        } catch (HttpExceptionInterface $e) {
+            $responder = new HttpExceptionResponder($e);
+        } catch (RuntimeException $e) {
+            // Invalid method override
+            return;
         }
 
         if ($responder instanceof ResponderInterface) {

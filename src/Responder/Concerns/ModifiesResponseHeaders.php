@@ -10,6 +10,7 @@ trait ModifiesResponseHeaders
 {
     protected array $modifiesResponseHeadersData = [
         'headers' => [],
+        'nocacheHeaders' => false,
         'status' => null,
     ];
 
@@ -48,6 +49,13 @@ trait ModifiesResponseHeaders
         return $this;
     }
 
+    public function withNocacheHeaders(): self
+    {
+        $this->modifiesResponseHeadersData['nocacheHeaders'] = true;
+
+        return $this;
+    }
+
     public function withStatusCode(int $status): self
     {
         if ($status < 100 || $status >= 600) {
@@ -64,6 +72,10 @@ trait ModifiesResponseHeaders
         $this->addAction('send_headers', function () {
             if (headers_sent()) {
                 return;
+            }
+
+            if ($this->modifiesResponseHeadersData['nocacheHeaders']) {
+                nocache_headers();
             }
 
             foreach ($this->modifiesResponseHeadersData['headers'] as $key => $values) {

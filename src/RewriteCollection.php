@@ -6,6 +6,7 @@ namespace ToyWpRouting;
 
 use RuntimeException;
 use SplObjectStorage;
+use ToyWpRouting\Exception\MethodNotAllowedHttpException;
 
 class RewriteCollection
 {
@@ -88,6 +89,25 @@ class RewriteCollection
         );
     }
 
+    public function findActiveRewriteByHashAndMethod(string $hash, string $method): ?RewriteInterface
+    {
+        if (null === $this->activeRewritesByRegexHashAndMethod) {
+            $this->prepareComputedProperties();
+        }
+
+        if (! array_key_exists($hash, $this->activeRewritesByRegexHashAndMethod)) {
+            return null;
+        }
+
+        $candidates = $this->activeRewritesByRegexHashAndMethod[$hash];
+
+        if (! array_key_exists($method, $candidates)) {
+            throw new MethodNotAllowedHttpException(array_keys($candidates));
+        }
+
+        return $candidates[$method];
+    }
+
     /**
      * @param mixed $handler
      */
@@ -120,22 +140,6 @@ class RewriteCollection
         }
 
         return $this->activeRewriteRules;
-    }
-
-    /**
-     * @return array<"GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS", RewriteInterface>
-     */
-    public function getActiveRewritesByRegexHash(string $regexHash): array
-    {
-        if (null === $this->activeRewritesByRegexHashAndMethod) {
-            $this->prepareComputedProperties();
-        }
-
-        if (! array_key_exists($regexHash, $this->activeRewritesByRegexHashAndMethod)) {
-            return [];
-        }
-
-        return $this->activeRewritesByRegexHashAndMethod[$regexHash];
     }
 
     public function getPrefix(): string

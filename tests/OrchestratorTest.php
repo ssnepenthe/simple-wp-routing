@@ -8,12 +8,8 @@ use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use ToyWpRouting\Orchestrator;
 use ToyWpRouting\RequestContext;
-use ToyWpRouting\Responder\MethodNotAllowedResponder;
 use ToyWpRouting\Responder\ResponderInterface;
 use ToyWpRouting\RewriteCollection;
-
-use function Brain\Monkey\setUp;
-use function Brain\Monkey\tearDown;
 
 // @todo Test custom prefix? Test custom invoker?
 class OrchestratorTest extends TestCase
@@ -24,7 +20,6 @@ class OrchestratorTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        setUp();
 
         $this->regex = 'someregex';
         $this->hash = md5($this->regex);
@@ -32,7 +27,6 @@ class OrchestratorTest extends TestCase
 
     protected function tearDown(): void
     {
-        tearDown();
         parent::tearDown();
 
         $this->regex = null;
@@ -203,52 +197,6 @@ class OrchestratorTest extends TestCase
         $orchestrator->onRequest(['matchedRule' => $this->hash]);
 
         $this->assertSame(1, $count);
-    }
-
-    public function testOnRequestMatchedRewriteButNotMatchedMethod()
-    {
-        $rewrites = new RewriteCollection();
-        $rewrites->get($this->regex, 'index.php?var=value', function () {
-            throw new RuntimeException('This should not happen');
-        });
-
-        $orchestrator = new Orchestrator($rewrites, new RequestContext('POST', []));
-
-        $orchestrator->onRequest(['matchedRule' => $this->hash]);
-
-        $fqcn = MethodNotAllowedResponder::class;
-
-        $this->assertNotFalse(has_filter('body_class', "{$fqcn}->onBodyClass()"));
-        $this->assertNotFalse(
-            has_filter('document_title_parts', "{$fqcn}->onDocumentTitleParts()")
-        );
-        $this->assertNotFalse(has_action('parse_query', "{$fqcn}->onParseQuery()"));
-        $this->assertNotFalse(has_filter('template_include', "{$fqcn}->onTemplateInclude()"));
-        $this->assertNotFalse(has_filter('wp_headers', "{$fqcn}->onWpHeaders()"));
-    }
-
-    public function testOnRequestMatchedRewriteInvalidRequestMethodOverride()
-    {
-        $rewrites = new RewriteCollection();
-        $rewrites->get($this->regex, 'index.php?var=value', function () {
-            throw new RuntimeException('This should not happen');
-        });
-
-        $orchestrator = new Orchestrator($rewrites, null, new RequestContext(
-            'POST',
-            ['X-HTTP-METHOD-OVERRIDE' => 'BADMETHOD']
-        ));
-
-        $orchestrator->onRequest(['matchedRule' => $this->hash]);
-        $fqcn = MethodNotAllowedResponder::class;
-
-        $this->assertFalse(has_filter('body_class', "{$fqcn}->onBodyClass()"));
-        $this->assertFalse(
-            has_filter('document_title_parts', "{$fqcn}->onDocumentTitleParts()")
-        );
-        $this->assertFalse(has_action('parse_query', "{$fqcn}->onParseQuery()"));
-        $this->assertFalse(has_filter('template_include', "{$fqcn}->onTemplateInclude()"));
-        $this->assertFalse(has_filter('wp_headers', "{$fqcn}->onWpHeaders()"));
     }
 
     public function testOnRequestMatchedRewriteWithResponderReturnedFromHandler()
