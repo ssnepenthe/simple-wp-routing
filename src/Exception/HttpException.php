@@ -26,6 +26,16 @@ class HttpException extends RuntimeException implements HttpExceptionInterface
         parent::__construct($message, $code, $previous);
     }
 
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
+
+    public function getStatusCode(): int
+    {
+        return $this->statusCode;
+    }
+
     public function prepareResponse(HttpExceptionResponder $responder): void
     {
         $responder

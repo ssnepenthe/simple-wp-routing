@@ -6,6 +6,7 @@ namespace ToyWpRouting\Tests;
 
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use ToyWpRouting\Exception\MethodNotAllowedHttpException;
 use ToyWpRouting\Rewrite;
 use ToyWpRouting\RewriteCollection;
 use ToyWpRouting\RewriteRule;
@@ -75,69 +76,86 @@ class RewriteCollectionTest extends TestCase
         ], $collection->getRewriteRules());
     }
 
-    public function testGetActiveRewritesByRegexHash()
+    public function testFindActiveRewriteByHashAndMethod()
     {
         $rewriteCollection = new RewriteCollection();
 
-        $hash = md5('someregex');
-
         // Multiple methods, single rule.
-        $one = new Rewrite(
-            ['GET', 'POST'],
-            [new RewriteRule('someregex', 'index.php?var=value')],
-            'somehandler'
-        );
+        $ruleOne = new RewriteRule('someregex', 'index.php?var=value');
+        $rewriteOne = new Rewrite(['GET', 'POST'], [$ruleOne], 'somehandler');
 
-        // Same regex, different method.
-        $two = new Rewrite(
-            ['PUT'],
-            [new RewriteRule('someregex', 'index.php?var=value')],
-            'somehandler'
-        );
+        // Same rule, additional method.
+        $rewriteTwo = new Rewrite(['PUT'], [$ruleOne], 'somehandler');
 
-        // Single method, multiple rules - one regex is the same as previous.
-        $three = new Rewrite(
-            ['DELETE'],
-            [
-                new RewriteRule('someregex', 'index.php?var=value'),
-                new RewriteRule('anotherregex', 'index.php?anothervar=anothervalue'),
-            ],
-            'somehandler'
-        );
+        // Single method, multiple rules with one same as previous.
+        $ruleThree = new RewriteRule('anotherregex', 'index.php?anothervar=anothervalue');
+        $rewriteThree = new Rewrite(['DELETE'], [$ruleOne, $ruleThree], 'somehandler');
 
-        // Different rule, same method as previous.
-        $four = new Rewrite(
-            ['GET'],
-            [new RewriteRule('anotherregex', 'index.php?variable=value')],
-            'somehandler'
-        );
+        // Same rule, additional method.
+        $rewriteFour = new Rewrite(['GET'], [$ruleThree], 'somehandler');
 
-        $rewriteCollection->add($one);
-        $rewriteCollection->add($two);
-        $rewriteCollection->add($three);
-        $rewriteCollection->add($four);
+        $rewriteCollection->add($rewriteOne);
+        $rewriteCollection->add($rewriteTwo);
+        $rewriteCollection->add($rewriteThree);
+        $rewriteCollection->add($rewriteFour);
 
         $this->assertSame(
-            ['GET' => $one, 'POST' => $one, 'PUT' => $two, 'DELETE' => $three],
-            $rewriteCollection->getActiveRewritesByRegexHash($hash)
+            $rewriteOne,
+            $rewriteCollection->findActiveRewriteByHashAndMethod($ruleOne->getHash(), 'GET')
+        );
+        $this->assertSame(
+            $rewriteOne,
+            $rewriteCollection->findActiveRewriteByHashAndMethod($ruleOne->getHash(), 'POST')
+        );
+        $this->assertSame(
+            $rewriteTwo,
+            $rewriteCollection->findActiveRewriteByHashAndMethod($ruleOne->getHash(), 'PUT')
+        );
+        $this->assertSame(
+            $rewriteThree,
+            $rewriteCollection->findActiveRewriteByHashAndMethod($ruleOne->getHash(), 'DELETE')
+        );
+        $this->assertSame(
+            $rewriteThree,
+            $rewriteCollection->findActiveRewriteByHashAndMethod($ruleThree->getHash(), 'DELETE')
+        );
+        $this->assertSame(
+            $rewriteFour,
+            $rewriteCollection->findActiveRewriteByHashAndMethod($ruleThree->getHash(), 'GET')
         );
     }
 
-    public function testGetActiveRewritesByRegexHashNotFound()
+    public function testFindActiveRewriteByHashAndMethodWhenMethodIsNotAllowed()
+    {
+        $exception = null;
+
+        $rewriteCollection = new RewriteCollection();
+
+        $rule = new RewriteRule('someregex', 'index.php?var=value');
+        $rewrite = new Rewrite(['GET', 'POST'], [$rule], 'somehandler');
+
+        $rewriteCollection->add($rewrite);
+
+        try {
+            $rewriteCollection->findActiveRewriteByHashAndMethod($rule->getHash(), 'PUT');
+        } catch (MethodNotAllowedHttpException $e) {
+            $exception = $e;
+        }
+
+        $this->assertInstanceOf(MethodNotAllowedHttpException::class, $exception);
+        $this->assertSame(['Allow' => 'GET, POST'], $exception->getHeaders());
+    }
+
+    public function testFindActiveRewriteByHashAndMethodWhenRewriteDoesntExist()
     {
         $rewriteCollection = new RewriteCollection();
 
-        $hash = md5('anotherregex');
+        $rule = new RewriteRule('someregex', 'index.php?var=value');
+        $rewrite = new Rewrite(['GET'], [$rule], 'somehandler');
 
-        $rewriteCollection->add(
-            new Rewrite(
-                ['GET'],
-                [new RewriteRule('someregex', 'index.php?var=value')],
-                'somehandler'
-            )
-        );
+        $rewriteCollection->add($rewrite);
 
-        $this->assertSame([], $rewriteCollection->getActiveRewritesByRegexHash($hash));
+        $this->assertNull($rewriteCollection->findActiveRewriteByHashAndMethod('badhash', 'GET'));
     }
 
     public function testGetters()
