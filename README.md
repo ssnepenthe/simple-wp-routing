@@ -84,14 +84,14 @@ $rewrites = (new \ToyWpRouting\RouteConverter())->convertCollection($routes);
 (new \ToyWpRouting\Orchestrator($rewrites))->initialize();
 ```
 
-## Responders
+### Responders
 Rewrite handlers can optionally return an instance of `ToyWpRouting\Responder\ResponderInterface`. The `respond` method on the returned responder will automatically be invoked on the `request` filter.
 
 This allows common behavior to easily be wrapped up for reuse.
 
 The following basic responder implementations are included:
 
-### ToyWpRouting\Responder\JsonResponder
+#### ToyWpRouting\Responder\JsonResponder
 ```php
 $routes->get('api/products', function () {
   $products = getAllProducts();
@@ -102,7 +102,7 @@ $routes->get('api/products', function () {
 
 Responses are sent using `wp_send_json_success` or `wp_send_json_error` depending on the status code, so data will be available at `response.data`.
 
-### ToyWpRouting\Responder\QueryResponder
+#### ToyWpRouting\Responder\QueryResponder
 ```php
 $routes->get('products/random[/{count}]', function ($attrs) {
   $count = min(max((int) ($attrs['count'] ?? 5), 1), 10);
@@ -117,7 +117,7 @@ $routes->get('products/random[/{count}]', function ($attrs) {
 
 Query variables are applied on the `parse_request` hook, before the main query is run.
 
-### ToyWpRouting\Responder\RedirectResponder
+#### ToyWpRouting\Responder\RedirectResponder
 ```php
 $routes->get('r/{redirect}', function ($attrs) {
   $location = getRedirectLocationById($attrs['redirect']);
@@ -132,7 +132,7 @@ Redirects are sent using `wp_safe_redirect` by default. You can optionally chain
 return (new RedirectResponder($location))->withUnsafeRedirectsAllowed();
 ```
 
-### ToyWpRouting\Responder\TemplateResponder
+#### ToyWpRouting\Responder\TemplateResponder
 ```php
 $routes->get('thank-you', function () {
   return new TemplateResponder(__DIR__ . '/templates/thank-you.php');
@@ -141,10 +141,10 @@ $routes->get('thank-you', function () {
 
 Templates are loaded via the `template_include` filter.
 
-## HTTP exceptions
+### HTTP exceptions
 HTTP exceptions can be used as a convenient escape hatch from handlers.
 
-### ToyWpRouting\Exception\NotFoundHttpException
+#### ToyWpRouting\Exception\NotFoundHttpException
 Sets the main query to 404 status and sends 404 status header and nocache headers.
 
 ```php
@@ -157,12 +157,12 @@ $routes->get('books/{book}', function ($attrs) {
 });
 ```
 
-## Templates
+### Templates
 A basic 405 template is included with styling loosely modeled after the twentytwentytwo 404 template.
 
 This can be overridden in themes by creating a `405.php` template or `405.html` block template.
 
-## Caching
+### Caching
 If you have opcache enabled, you may see improved performance by enabling rewrite caching.
 
 ```php
