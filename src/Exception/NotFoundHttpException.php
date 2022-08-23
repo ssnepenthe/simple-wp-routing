@@ -29,7 +29,6 @@ class NotFoundHttpException extends HttpException
         $responder->withNocacheHeaders();
 
         $responder
-            ->withAction('parse_query', [$this, 'onParseQuery'])
-            ->withAction('send_headers', [$this, 'onSendHeaders']);
+            ->withAction('parse_query', [$this, 'onParseQuery']);
     }
 }
