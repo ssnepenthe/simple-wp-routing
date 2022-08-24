@@ -43,15 +43,8 @@ class Orchestrator
     public function initialize(): self
     {
         // @todo adjust priorities.
-
-        /**
-         * @psalm-suppress HookNotFound
-         */
         add_filter('option_rewrite_rules', [$this, 'onOptionRewriteRules']);
         add_filter('rewrite_rules_array', [$this, 'onRewriteRulesArray']);
-        /**
-         * @psalm-suppress HookNotFound
-         */
         add_filter('pre_update_option_rewrite_rules', [$this, 'onPreUpdateOptionRewriteRules']);
         add_filter('query_vars', [$this, 'onQueryVars']);
         add_filter('request', [$this, 'onRequest']);

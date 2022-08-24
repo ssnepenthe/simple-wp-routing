@@ -13,7 +13,7 @@
         </ignoreFiles>
     </projectFiles>
 
-    <plugins>
-        <pluginClass class="PsalmWordPress\Plugin"/>
-    </plugins>
+    <stubs>
+        <file name="vendor/php-stubs/wordpress-stubs/wordpress-stubs.php" />
+    </stubs>
 </psalm>
