@@ -18,7 +18,7 @@ class RewriteRuleListCompiler
         $this->rules = (fn (RewriteRuleInterface ...$rules) => $rules)(...$rules);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->compile();
     }
@@ -31,7 +31,7 @@ class RewriteRuleListCompiler
         ));
     }
 
-    private function prepareTemplate()
+    private function prepareTemplate(): string
     {
         return preg_replace(
             '/\'%s\'/',

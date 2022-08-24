@@ -11,7 +11,7 @@ class RequestContext
     /**
      * @var array<string, string>
      */
-    protected array $headers;
+    protected array $headers = [];
 
     protected string $method;
 
@@ -48,24 +48,24 @@ class RequestContext
         return $headers;
     }
 
-    public static function fromGlobals()
+    public static function fromGlobals(): RequestContext
     {
         return new self($_SERVER['REQUEST_METHOD'], self::extractHeaders($_SERVER));
     }
 
-    public function getHeader($key, $default = null)
+    public function getHeader(string $key, ?string $default = null): ?string
     {
         $key = strtolower(str_replace('_', '-', $key));
 
         return $this->headers[$key] ?? $default;
     }
 
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }
 
-    public function getIntendedMethod()
+    public function getIntendedMethod(): string
     {
         $method = $this->getMethod();
 
@@ -106,12 +106,12 @@ class RequestContext
         return $override;
     }
 
-    public function getMethod()
+    public function getMethod(): string
     {
         return $this->method;
     }
 
-    protected function setHeader(string $key, string $value)
+    protected function setHeader(string $key, string $value): void
     {
         $this->headers[strtolower(str_replace('_', '-', $key))] = $value;
     }

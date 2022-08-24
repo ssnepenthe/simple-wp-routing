@@ -18,7 +18,7 @@ class RewriteListDefinitionsCompiler
         $this->rewrites = (fn (RewriteInterface ...$rewrites) => $rewrites)(...$rewrites);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->compile();
     }

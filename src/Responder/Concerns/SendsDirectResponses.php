@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Responder\Concerns;
 
+/**
+ * @psalm-require-extends \ToyWpRouting\Responder\HookDrivenResponder
+ */
 trait SendsDirectResponses
 {
     protected array $sendsDirectResponses = [

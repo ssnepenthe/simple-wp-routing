@@ -6,6 +6,9 @@ namespace ToyWpRouting\Responder\Concerns;
 
 use WP;
 
+/**
+ * @psalm-require-extends \ToyWpRouting\Responder\HookDrivenResponder
+ */
 trait ModifiesWpParameters
 {
     protected array $modifiesWpParametersData = [
@@ -29,6 +32,9 @@ trait ModifiesWpParameters
         return $this;
     }
 
+    /**
+     * @param mixed $value
+     */
     public function withRequestVariable(string $key, $value): self
     {
         $this->modifiesWpParametersData['queryVariables'][$key] = $value;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ToyWpRouting;
 
+use Closure;
 use ToyWpRouting\Compiler\RewriteCollectionCompiler;
 
 class RewriteCollectionCache
@@ -40,7 +41,11 @@ class RewriteCollectionCache
 
     public function get(): RewriteCollection
     {
-        $factory = (static fn ($dir, $file) => include "{$dir}/{$file}")($this->dir, $this->file);
+        /**
+         * @psalm-suppress UnresolvableInclude
+         */
+        $loader = static fn (string $dir, string $file): Closure => include "{$dir}/{$file}";
+        $factory = $loader($this->dir, $this->file);
 
         return $factory($this->getInvocationStrategy());
     }

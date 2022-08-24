@@ -17,7 +17,7 @@ class ClosureCompiler
         $this->closure = $closure;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->compile();
     }

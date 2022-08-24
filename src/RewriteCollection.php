@@ -11,31 +11,28 @@ use ToyWpRouting\Exception\MethodNotAllowedHttpException;
 class RewriteCollection
 {
     /**
-     * @var array<string, string>
+     * @var ?array<string, string>
      */
     protected $activeQueryVariables;
 
     /**
-     * @var array<string, string>
+     * @var ?array<string, string>
      */
     protected $activeRewriteRules;
 
     /**
-     * @var array<string, array<"GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS", RewriteInterface>>
+     * @var ?array<string, array<"GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS", RewriteInterface>>
      */
     protected $activeRewritesByRegexHashAndMethod;
 
-    /**
-     * @var InvocationStrategyInterface
-     */
-    protected $invocationStrategy;
+    protected InvocationStrategyInterface $invocationStrategy;
 
     protected bool $locked = false;
 
     protected string $prefix;
 
     /**
-     * @var array<string, string>
+     * @var ?array<string, string>
      */
     protected $rewriteRules;
 
@@ -91,7 +88,7 @@ class RewriteCollection
 
     public function findActiveRewriteByHashAndMethod(string $hash, string $method): ?RewriteInterface
     {
-        if (null === $this->activeRewritesByRegexHashAndMethod) {
+        if (! is_array($this->activeRewritesByRegexHashAndMethod)) {
             $this->prepareComputedProperties();
         }
 
@@ -123,7 +120,7 @@ class RewriteCollection
      */
     public function getActiveQueryVariables(): array
     {
-        if (null === $this->activeQueryVariables) {
+        if (! is_array($this->activeQueryVariables)) {
             $this->prepareComputedProperties();
         }
 
@@ -135,7 +132,7 @@ class RewriteCollection
      */
     public function getActiveRewriteRules(): array
     {
-        if (null === $this->activeRewriteRules) {
+        if (! is_array($this->activeRewriteRules)) {
             $this->prepareComputedProperties();
         }
 
@@ -152,7 +149,7 @@ class RewriteCollection
      */
     public function getRewriteRules(): array
     {
-        if (null === $this->rewriteRules) {
+        if (! is_array($this->rewriteRules)) {
             $this->prepareComputedProperties();
         }
 
@@ -179,6 +176,9 @@ class RewriteCollection
         return $this;
     }
 
+    /**
+     * @param mixed $handler
+     */
     public function options(string $regex, string $query, $handler): RewriteInterface
     {
         return $this->add(
@@ -186,6 +186,9 @@ class RewriteCollection
         );
     }
 
+    /**
+     * @param mixed $handler
+     */
     public function patch(string $regex, string $query, $handler): RewriteInterface
     {
         return $this->add(
@@ -193,6 +196,9 @@ class RewriteCollection
         );
     }
 
+    /**
+     * @param mixed $handler
+     */
     public function post(string $regex, string $query, $handler): RewriteInterface
     {
         return $this->add(
@@ -200,6 +206,9 @@ class RewriteCollection
         );
     }
 
+    /**
+     * @param mixed $handler
+     */
     public function put(string $regex, string $query, $handler): RewriteInterface
     {
         return $this->add(
@@ -224,7 +233,13 @@ class RewriteCollection
         return $rewrite;
     }
 
-    protected function prepareComputedProperties()
+    /**
+     * @psalm-assert array<string, string> $this->activeQueryVariables
+     * @psalm-assert array<string, string> $this->activeRewriteRules
+     * @psalm-assert array<string, array<"GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS", RewriteInterface>> $this->activeRewritesByRegexHashAndMethod
+     * @psalm-assert array<string, string> $this->rewriteRules
+     */
+    protected function prepareComputedProperties(): void
     {
         if (is_array($this->activeQueryVariables)) {
             return;

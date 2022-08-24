@@ -16,6 +16,11 @@ class InvokerBackedInvocationStrategy extends AbstractInvocationStrategy
         $this->invoker = $invoker ?: new Invoker();
     }
 
+    /**
+     * @param mixed $callable
+     *
+     * @return mixed
+     */
     public function invoke($callable, array $context = [])
     {
         return $this->invoker->call($this->resolveCallable($callable), $context);

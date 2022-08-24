@@ -6,6 +6,9 @@ namespace ToyWpRouting\Responder\Concerns;
 
 use InvalidArgumentException;
 
+/**
+ * @psalm-require-extends \ToyWpRouting\Responder\HookDrivenResponder
+ */
 trait SendsJsonResponses
 {
     protected array $sendsJsonResponsesData = [
@@ -15,6 +18,9 @@ trait SendsJsonResponses
         'status' => 200,
     ];
 
+    /**
+     * @param mixed $data
+     */
     public function withJsonData($data): self
     {
         $this->sendsJsonResponsesData['hasData'] = true;

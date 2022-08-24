@@ -19,7 +19,7 @@ class RewriteCompiler
         $this->rewrite = $rewrite;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->compile();
     }
@@ -36,6 +36,9 @@ class RewriteCompiler
         );
     }
 
+    /**
+     * @param mixed $value
+     */
     private function compileCallbackIfSupported($value): string
     {
         if ($value instanceof Closure) {
