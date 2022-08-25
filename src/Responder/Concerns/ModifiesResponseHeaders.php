@@ -6,6 +6,9 @@ namespace ToyWpRouting\Responder\Concerns;
 
 use InvalidArgumentException;
 
+/**
+ * @psalm-require-extends \ToyWpRouting\Responder\HookDrivenResponder
+ */
 trait ModifiesResponseHeaders
 {
     protected array $modifiesResponseHeadersData = [
@@ -14,6 +17,9 @@ trait ModifiesResponseHeaders
         'status' => null,
     ];
 
+    /**
+     * @param string|string[] $values
+     */
     public function withHeader(string $key, $values, bool $replace = true): self
     {
         if (is_array($values)) {

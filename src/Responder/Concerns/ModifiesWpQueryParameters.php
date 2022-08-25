@@ -7,6 +7,9 @@ namespace ToyWpRouting\Responder\Concerns;
 use InvalidArgumentException;
 use WP_Query;
 
+/**
+ * @psalm-require-extends \ToyWpRouting\Responder\HookDrivenResponder
+ */
 trait ModifiesWpQueryParameters
 {
     protected array $modifiesWpQueryParametersData = [
@@ -100,6 +103,9 @@ trait ModifiesWpQueryParameters
         return $this;
     }
 
+    /**
+     * @param mixed $value
+     */
     public function withQueryVariable(string $key, $value): self
     {
         $this->modifiesWpQueryParametersData['queryVariables'][$key] = $value;

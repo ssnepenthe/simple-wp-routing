@@ -25,6 +25,9 @@ class MethodNotAllowedHttpException extends HttpException
     {
         $errorTemplate = get_query_template('405');
 
+        /**
+         * @psalm-suppress DocblockTypeContradiction
+         */
         if (! \is_string($errorTemplate) || '' === $errorTemplate) {
             $errorTemplate = realpath(__DIR__ . '/../../templates/405.php');
         }

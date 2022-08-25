@@ -6,7 +6,11 @@ namespace ToyWpRouting\Responder\Concerns;
 
 use InvalidArgumentException;
 
-// @todo Conflicts - headers contain x-redirect-by
+/**
+ * @psalm-require-extends \ToyWpRouting\Responder\HookDrivenResponder
+ *
+ * @todo Conflicts - headers contain x-redirect-by?
+ */
 trait SendsRedirectResponses
 {
     protected array $sendsRedirectResponsesData = [
@@ -48,7 +52,7 @@ trait SendsRedirectResponses
         return $this;
     }
 
-    protected function initializeSendsRedirectResponses()
+    protected function initializeSendsRedirectResponses(): void
     {
         $this->addAction('template_redirect', function () {
             if (! $this->isSendingRedirectResponse()) {

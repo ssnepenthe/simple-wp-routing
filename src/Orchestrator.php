@@ -43,15 +43,8 @@ class Orchestrator
     public function initialize(): self
     {
         // @todo adjust priorities.
-
-        /**
-         * @psalm-suppress HookNotFound
-         */
         add_filter('option_rewrite_rules', [$this, 'onOptionRewriteRules']);
         add_filter('rewrite_rules_array', [$this, 'onRewriteRulesArray']);
-        /**
-         * @psalm-suppress HookNotFound
-         */
         add_filter('pre_update_option_rewrite_rules', [$this, 'onPreUpdateOptionRewriteRules']);
         add_filter('query_vars', [$this, 'onQueryVars']);
         add_filter('request', [$this, 'onRequest']);
@@ -59,6 +52,13 @@ class Orchestrator
         return $this;
     }
 
+    /**
+     * @template T
+     *
+     * @psalm-param T $rules
+     *
+     * @psalm-return T|array
+     */
     public function onOptionRewriteRules($rules)
     {
         if (! $this->shouldModifyRules($rules)) {
@@ -68,6 +68,13 @@ class Orchestrator
         return $this->mergeActiveRewriteRules($rules);
     }
 
+    /**
+     * @template T
+     *
+     * @psalm-param T $rules
+     *
+     * @psalm-return T|array
+     */
     public function onPreUpdateOptionRewriteRules($rules)
     {
         if (! $this->shouldModifyRules($rules)) {
@@ -77,6 +84,13 @@ class Orchestrator
         return array_diff_key($rules, $this->rewriteCollection->getRewriteRules());
     }
 
+    /**
+     * @template T
+     *
+     * @psalm-param T $vars
+     *
+     * @psalm-return T|array
+     */
     public function onQueryVars($vars)
     {
         if (! is_array($vars)) {
@@ -86,6 +100,13 @@ class Orchestrator
         return array_merge($this->rewriteCollection->getActiveQueryVariables(), $vars);
     }
 
+    /**
+     * @template T
+     *
+     * @psalm-param T $queryVars
+     *
+     * @psalm-return T
+     */
     public function onRequest($queryVars)
     {
         $this->respondToMatchedRuleHash($queryVars);
@@ -93,6 +114,13 @@ class Orchestrator
         return $queryVars;
     }
 
+    /**
+     * @template T
+     *
+     * @psalm-param T $rules
+     *
+     * @psalm-return T|array
+     */
     public function onRewriteRulesArray($rules)
     {
         if (! $this->shouldModifyRules($rules)) {

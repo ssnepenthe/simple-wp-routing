@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Responder\Concerns;
 
-// @todo 404 preempt?
+/**
+ * @psalm-require-extends \ToyWpRouting\Responder\HookDrivenResponder
+ *
+ * @todo 404 preempt?
+ */
 trait ModifiesResponseHtml
 {
     protected array $modifiesResponseHtmlData = [
@@ -107,29 +111,53 @@ trait ModifiesResponseHtml
             }
         });
 
-        $this->addFilter('body_class', function ($classes) {
-            if (is_array($classes) && ! empty($this->modifiesResponseHtmlData['bodyClasses'])) {
-                $classes = array_merge($classes, $this->modifiesResponseHtmlData['bodyClasses']);
+        $this->addFilter(
+            'body_class',
+            /**
+             * @param mixed $classes
+             *
+             * @return mixed
+             */
+            function ($classes) {
+                if (is_array($classes) && ! empty($this->modifiesResponseHtmlData['bodyClasses'])) {
+                    $classes = array_merge($classes, $this->modifiesResponseHtmlData['bodyClasses']);
+                }
+
+                return $classes;
             }
+        );
 
-            return $classes;
-        });
+        $this->addFilter(
+            'document_title_parts',
+            /**
+             * @param mixed $parts
+             *
+             * @return mixed
+             */
+            function ($parts) {
+                if (is_array($parts) && is_string($this->modifiesResponseHtmlData['title'])) {
+                    $parts['title'] = $this->modifiesResponseHtmlData['title'];
+                }
 
-        $this->addFilter('document_title_parts', function ($parts) {
-            if (is_array($parts) && is_string($this->modifiesResponseHtmlData['title'])) {
-                $parts['title'] = $this->modifiesResponseHtmlData['title'];
+                return $parts;
             }
+        );
 
-            return $parts;
-        });
+        $this->addFilter(
+            'template_include',
+            /**
+             * @param mixed $template
+             *
+             * @return mixed
+             */
+            function ($template) {
+                if (! is_string($this->modifiesResponseHtmlData['template'])) {
+                    return $template;
+                }
 
-        $this->addFilter('template_include', function ($template) {
-            if (! is_string($this->modifiesResponseHtmlData['template'])) {
-                return $template;
+                return $this->modifiesResponseHtmlData['template'];
             }
-
-            return $this->modifiesResponseHtmlData['template'];
-        });
+        );
 
         $this->addConflictCheck(function () {
             if (! $this->isModifyingResponseHtml()) {

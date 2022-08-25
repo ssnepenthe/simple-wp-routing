@@ -36,7 +36,7 @@ class RewriteCollectionCompiler
         $this->rewriteCollection = $rewriteCollection;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->compile();
     }

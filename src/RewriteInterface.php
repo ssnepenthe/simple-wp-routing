@@ -26,6 +26,9 @@ interface RewriteInterface
      */
     public function getRules(): array;
 
+    /**
+     * @return mixed
+     */
     public function handle(array $queryVariables = []);
 
     public function isActive(): bool;

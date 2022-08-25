@@ -15,6 +15,13 @@ class OptimizedRewrite extends Rewrite
      */
     protected array $queryVariables;
 
+    /**
+     * @param array<int, "GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS"> $methods
+     * @param \ToyWpRouting\RewriteRuleInterface[] $rules
+     * @param array<string, string> $queryVariables
+     * @param mixed $handler
+     * @param mixed $isActiveCallback
+     */
     public function __construct(
         array $methods,
         array $rules,

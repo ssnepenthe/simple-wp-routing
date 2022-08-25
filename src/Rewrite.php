@@ -12,7 +12,7 @@ class Rewrite implements RewriteInterface
     protected $handler;
 
     /**
-     * @var InvocationStrategyInterface
+     * @var ?InvocationStrategyInterface
      */
     protected $invocationStrategy;
 
@@ -35,6 +35,7 @@ class Rewrite implements RewriteInterface
      * @param array<int, "GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS"> $methods
      * @param RewriteRuleInterface[] $rules
      * @param mixed $handler
+     * @param mixed $isActiveCallback
      */
     public function __construct(array $methods, array $rules, $handler, $isActiveCallback = null)
     {
@@ -54,7 +55,7 @@ class Rewrite implements RewriteInterface
         return $this->handler;
     }
 
-    public function getInvocationStrategy()
+    public function getInvocationStrategy(): InvocationStrategyInterface
     {
         if (! $this->invocationStrategy instanceof InvocationStrategyInterface) {
             $this->invocationStrategy = new DefaultInvocationStrategy();
