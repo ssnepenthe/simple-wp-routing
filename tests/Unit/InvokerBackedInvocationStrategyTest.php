@@ -2,23 +2,24 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests;
+namespace ToyWpRouting\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use ToyWpRouting\DefaultInvocationStrategy;
+use ToyWpRouting\InvokerBackedInvocationStrategy;
 
-class DefaultInvocationStrategyTest extends TestCase
+// @todo Test with custom resolver set on Invoker instance?
+class InvokerBackedInvocationStrategyTest extends TestCase
 {
     public function testInvoke()
     {
-        $invocationStrategy = new DefaultInvocationStrategy();
+        $invocationStrategy = new InvokerBackedInvocationStrategy();
 
         $this->assertSame('testreturnval', $invocationStrategy->invoke(fn () => 'testreturnval'));
     }
 
     public function testInvokeWithCallableResolver()
     {
-        $invocationStrategy = new DefaultInvocationStrategy();
+        $invocationStrategy = new InvokerBackedInvocationStrategy();
         $invocationStrategy->setCallableResolver(function ($potentialCallable) {
             if ('handler' === $potentialCallable) {
                 return fn () => 'modified';
@@ -32,14 +33,11 @@ class DefaultInvocationStrategyTest extends TestCase
 
     public function testInvokeWithContext()
     {
-        $invocationStrategy = new DefaultInvocationStrategy();
+        $invocationStrategy = new InvokerBackedInvocationStrategy();
 
         $this->assertSame(
             'testreturnval',
-            $invocationStrategy->invoke(
-                fn ($params) => 'test' . $params['append'],
-                ['append' => 'returnval']
-            )
+            $invocationStrategy->invoke(fn ($append) => 'test' . $append, ['returnval'])
         );
     }
 }

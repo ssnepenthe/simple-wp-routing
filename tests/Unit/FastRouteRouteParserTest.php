@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests;
+namespace ToyWpRouting\Tests\Unit;
 
 use FastRoute\BadRouteException;
 use PHPUnit\Framework\TestCase;

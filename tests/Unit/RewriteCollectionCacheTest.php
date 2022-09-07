@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests;
+namespace ToyWpRouting\Tests\Unit;
 
 use Closure;
 use org\bovigo\vfs\vfsStream;
@@ -46,7 +46,7 @@ class RewriteCollectionCacheTest extends TestCase
 
     public function testGet()
     {
-        $cache = new RewriteCollectionCache(__DIR__ . '/fixtures');
+        $cache = new RewriteCollectionCache(__DIR__ . '/../fixtures');
 
         $rewriteCollection = $cache->get();
 
@@ -76,7 +76,7 @@ class RewriteCollectionCacheTest extends TestCase
     public function testGetWithSerializedClosures()
     {
         $cache = new RewriteCollectionCache(
-            __DIR__ . '/fixtures',
+            __DIR__ . '/../fixtures',
             'rewrite-cache-serialized-closures.php'
         );
 
