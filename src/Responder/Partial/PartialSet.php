@@ -32,7 +32,7 @@ final class PartialSet implements HierarchicalResponderInterface, IteratorAggreg
     public function add(PartialInterface ...$partials): void
     {
         foreach ($partials as $partial) {
-            $partial->setPartialSet($this);
+            $partial->setParent($this);
 
             if ($partial instanceof RegistersConflictsInterface) {
                 $partial->registerConflicts($this);

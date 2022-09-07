@@ -8,19 +8,14 @@ use ToyWpRouting\Responder\ResponderInterface;
 
 trait PartialTrait
 {
-    protected ?PartialSet $partialSet = null;
+    private ?PartialSet $partialSet = null;
 
     public function getParent(): ?ResponderInterface
     {
         return $this->partialSet;
     }
 
-    public function getPartialSet(): ?PartialSet
-    {
-        return $this->partialSet;
-    }
-
-    public function setPartialSet(PartialSet $partialSet): void
+    public function setParent(PartialSet $partialSet): void
     {
         $this->partialSet = $partialSet;
     }

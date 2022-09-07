@@ -8,5 +8,5 @@ use ToyWpRouting\Responder\HierarchicalResponderInterface;
 
 interface PartialInterface extends HierarchicalResponderInterface
 {
-    public function setPartialSet(PartialSet $partialSet): void;
+    public function setParent(PartialSet $partialSet): void;
 }
