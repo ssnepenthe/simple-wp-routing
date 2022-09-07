@@ -14,6 +14,7 @@ final class JsonPartial implements PartialInterface, RegistersConflictsInterface
      * @var mixed
      */
     private $data;
+    private bool $envelopeResponse = true;
     private bool $hasData = false;
     private int $options = 0;
     /**
@@ -21,6 +22,20 @@ final class JsonPartial implements PartialInterface, RegistersConflictsInterface
      */
     private $responseFunction = null;
     private int $statusCode = 200;
+
+    public function dontEnvelopeResponse(): self
+    {
+        $this->envelopeResponse = false;
+
+        return $this;
+    }
+
+    public function envelopeResponse(): self
+    {
+        $this->envelopeResponse = true;
+
+        return $this;
+    }
 
     public function hasData(): bool
     {
@@ -38,6 +53,8 @@ final class JsonPartial implements PartialInterface, RegistersConflictsInterface
 
         if (is_callable($this->responseFunction)) {
             ($this->responseFunction)($this->data, $this->statusCode, $this->options);
+        } elseif (! $this->envelopeResponse) {
+            wp_send_json($this->data, $this->statusCode, $this->options);
         } elseif ($this->statusCode >= 200 && $this->statusCode < 300) {
             wp_send_json_success($this->data, $this->statusCode, $this->options);
         } else {
