@@ -94,27 +94,6 @@ class SupportTest extends TestCase
         );
     }
 
-    public function testClassBaseName()
-    {
-        $this->assertSame('Baz', Support::classBaseName('Baz'));
-        $this->assertSame('Baz', Support::classBaseName('Bar\\Baz'));
-        $this->assertSame('Baz', Support::classBaseName('Foo\\Bar\\Baz'));
-    }
-
-    public function testClassUsesRecursive()
-    {
-        $this->assertSame([
-            TraitTwo::class => TraitTwo::class,
-            TraitOne::class => TraitOne::class,
-        ], Support::classUsesRecursive(ClassTwo::class));
-
-        $this->assertSame([
-            TraitTwo::class => TraitTwo::class,
-            TraitOne::class => TraitOne::class,
-            TraitThree::class => TraitThree::class,
-        ], Support::classUsesRecursive(ClassThree::class));
-    }
-
     public function testIsValidMethodsList()
     {
         // False for empty array.

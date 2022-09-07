@@ -26,9 +26,8 @@ class NotFoundHttpException extends HttpException
 
     protected function doPrepareResponse(HttpExceptionResponder $responder): void
     {
-        $responder->withNocacheHeaders();
+        $responder->headers()->includeNocacheHeaders();
 
-        $responder
-            ->withAction('parse_query', [$this, 'onParseQuery']);
+        add_action('parse_query', [$this, 'onParseQuery']);
     }
 }

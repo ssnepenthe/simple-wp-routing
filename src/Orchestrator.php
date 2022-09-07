@@ -6,6 +6,7 @@ namespace ToyWpRouting;
 
 use RuntimeException;
 use ToyWpRouting\Exception\HttpExceptionInterface;
+use ToyWpRouting\Responder\HierarchicalResponderInterface;
 use ToyWpRouting\Responder\HttpExceptionResponder;
 use ToyWpRouting\Responder\ResponderInterface;
 
@@ -169,6 +170,13 @@ class Orchestrator
         } catch (RuntimeException $e) {
             // Invalid method override
             return;
+        }
+
+        while (
+            $responder instanceof HierarchicalResponderInterface
+            && $responder->getParent() instanceof ResponderInterface
+        ) {
+            $responder = $responder->getParent();
         }
 
         if ($responder instanceof ResponderInterface) {
