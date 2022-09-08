@@ -105,7 +105,7 @@ final class WpQueryPartial implements PartialInterface
      */
     public function onParseQuery(WP_Query $wpQuery): void
     {
-        if ([] === $this->flags && [] === $this->queryVariables) {
+        if (! $wpQuery->is_main_query() || ([] === $this->flags && [] === $this->queryVariables)) {
             return;
         }
 
