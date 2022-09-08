@@ -113,8 +113,8 @@ final class WpQueryPartial implements PartialInterface
             return;
         }
 
-        $this->transferFlagsToWpQuery($wpQuery);
-        $this->transferQueryVariablesToWpQuery($wpQuery);
+        $this->applyFlags($wpQuery);
+        $this->applyQueryVariables($wpQuery);
     }
 
     public function overwriteQueryVariables(): self
@@ -161,7 +161,7 @@ final class WpQueryPartial implements PartialInterface
         return $this;
     }
 
-    private function transferFlagsToWpQuery(WP_Query $wpQuery): void
+    private function applyFlags(WP_Query $wpQuery): void
     {
         if ($this->resetFlags) {
             foreach ($this->defaultFlags as $flag => $value) {
@@ -174,7 +174,7 @@ final class WpQueryPartial implements PartialInterface
         }
     }
 
-    private function transferQueryVariablesToWpQuery(WP_Query $wpQuery): void
+    private function applyQueryVariables(WP_Query $wpQuery): void
     {
         if ($this->overwriteQueryVariables) {
             $wpQuery->query_vars = $this->queryVariables;
