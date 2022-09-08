@@ -28,6 +28,41 @@ add_action('wp_footer', function () {
     echo '</div>';
 }, 999);
 
+add_action('twr_test_data', function () {
+    printf('<span class="twr-rewrites">%s</span>', json_encode(get_option('rewrite_rules')));
+});
+
+add_action('twr_test_data', function () {
+    global $wp;
+
+    printf('<span class="twr-query-vars">%s</span>', json_encode($wp->public_query_vars));
+});
+
+(function () {
+    // Orchestrator tests.
+    $routes = new RouteCollection('orchestrator_');
+
+    $routes->get('orchestrator/active/{activeVar}', function () {});
+    $routes->get('orchestrator/inactive/{inactiveVar}', function () {
+        add_action('twr_test_data', function () {
+            echo '<span class="twr-orchestrator-inactive"></span>';
+        });
+    })->when('__return_false');
+    $routes->get('orchestrator/responder', function () {
+        return new JsonResponder('hello from the orchestrator responder route');
+    });
+    $routes->get('orchestrator/hierarchical-responder', function () {
+        $responder = new JsonResponder('hello from the orchestrator hierarchical responder route');
+
+        // We return the headers partial - expectation is that orchestrator traverses back up to the JsonResponder.
+        return $responder->headers();
+    });
+
+    $rewrites = (new RouteConverter())->convertCollection($routes);
+
+    (new Orchestrator($rewrites))->initialize();
+})();
+
 (function () {
     // Responder tests.
     $routes = new RouteCollection('responders_');
