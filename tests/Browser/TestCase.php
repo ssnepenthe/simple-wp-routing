@@ -12,6 +12,7 @@ class TestCase extends FrameworkTestCase
     {
         $browser = new HttpBrowser();
         $browser->setServerParameter('HTTP_HOST', 'one.wordpress.test');
+        $browser->followRedirects(false);
 
         return $browser;
     }

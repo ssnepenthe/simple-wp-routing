@@ -9,7 +9,6 @@ class RedirectResponderTest extends TestCase
     public function testLocationOnly()
     {
         $browser = $this->getBrowser();
-        $browser->followRedirects(false);
 
         $crawler = $browser->request('GET', '/responders/redirect/');
 
