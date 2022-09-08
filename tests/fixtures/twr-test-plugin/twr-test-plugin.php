@@ -20,6 +20,14 @@ use ToyWpRouting\RouteConverter;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
+add_action('wp_footer', function () {
+    echo '<div class="twr-test-data">';
+
+    do_action('twr_test_data');
+
+    echo '</div>';
+}, 999);
+
 (function () {
     // Responder tests.
     $routes = new RouteCollection('responders_');
@@ -41,7 +49,7 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 
     $routes->get('responders/query', function () {
         // @todo overwrite query variables
-        add_action('wp_footer', function () {
+        add_action('twr_test_data', function () {
             global $wp;
 
             printf('<span class="query-responder-dump">%s</span>', json_encode($wp->query_vars));
