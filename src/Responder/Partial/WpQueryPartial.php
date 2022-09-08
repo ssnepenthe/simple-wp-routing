@@ -105,7 +105,11 @@ final class WpQueryPartial implements PartialInterface
      */
     public function onParseQuery(WP_Query $wpQuery): void
     {
-        if (! $wpQuery->is_main_query() || ([] === $this->flags && [] === $this->queryVariables)) {
+        if (! $wpQuery->is_main_query() || (
+            [] === $this->flags
+            && [] === $this->queryVariables
+            && false === $this->resetFlags
+        )) {
             return;
         }
 
@@ -159,27 +163,19 @@ final class WpQueryPartial implements PartialInterface
 
     private function transferFlagsToWpQuery(WP_Query $wpQuery): void
     {
-        if ([] === $this->flags) {
-            return;
-        }
-
-        $flags = $this->flags;
-
         if ($this->resetFlags) {
-            $flags = array_merge($this->defaultFlags, $flags);
+            foreach ($this->defaultFlags as $flag => $value) {
+                $wpQuery->{$flag} = $value;
+            }
         }
 
-        foreach ($flags as $flag => $value) {
+        foreach ($this->flags as $flag => $value) {
             $wpQuery->{$flag} = $value;
         }
     }
 
     private function transferQueryVariablesToWpQuery(WP_Query $wpQuery): void
     {
-        if ([] === $this->queryVariables) {
-            return;
-        }
-
         if ($this->overwriteQueryVariables) {
             $wpQuery->query_vars = $this->queryVariables;
         } else {
