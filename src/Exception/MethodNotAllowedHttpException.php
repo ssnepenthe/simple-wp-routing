@@ -37,12 +37,14 @@ class MethodNotAllowedHttpException extends HttpException
 
     protected function doPrepareResponse(HttpExceptionResponder $responder): void
     {
-        $responder
-            ->withAllQueryFlagsReset()
-            ->withBodyClass('error405')
-            ->withNocacheHeaders()
-            ->withTitle('Method not allowed');
+        $responder->headers()->includeNocacheHeaders();
 
-        $responder->withFilter('template_include', [$this, 'onTemplateInclude']);
+        $responder->theme()
+            ->addBodyClass('error405')
+            ->setTitle('Method not allowed');
+
+        $responder->wpQuery()->resetFlags();
+
+        add_filter('template_include', [$this, 'onTemplateInclude']);
     }
 }

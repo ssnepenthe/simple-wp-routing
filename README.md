@@ -126,10 +126,16 @@ $routes->get('r/{redirect}', function ($attrs) {
 });
 ```
 
-Redirects are sent using `wp_safe_redirect` by default. You can optionally chain a call to the `withUnsafeRedirectsAllowed` method to use `wp_redirect` instead.
+Redirects are sent using `wp_safe_redirect` by default. You can pass `false` as the 4th constructor argument to use `wp_redirect` instead:
 
 ```php
-return (new RedirectResponder($location))->withUnsafeRedirectsAllowed();
+return new RedirectResponder($location, 302, 'WordPress', false);
+```
+
+Or call `allowUnsafeRedirects` on the underlying redirect partial:
+
+```php
+return (new RedirectResponder($location))->redirect()->allowUnsafeRedirects();
 ```
 
 #### ToyWpRouting\Responder\TemplateResponder

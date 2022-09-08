@@ -4,18 +4,27 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Responder;
 
-use ToyWpRouting\Responder\Concerns\ModifiesWpParameters;
+use ToyWpRouting\Responder\Partial\WpPartial;
 
-class QueryResponder extends HookDrivenResponder
+class QueryResponder extends ComposableResponder
 {
-    use ModifiesWpParameters;
-
     public function __construct(array $queryVariables, bool $overwriteExisting = false)
     {
-        $this->withRequestVariables($queryVariables);
+        $this->wp()->setQueryVariables($queryVariables);
 
         if ($overwriteExisting) {
-            $this->withExistingRequestVariablesOverwritten();
+            $this->wp()->overwriteQueryVariables();
         }
+    }
+
+    public function wp(): WpPartial
+    {
+        return $this->getPartialSet()->get(WpPartial::class);
+    }
+
+    protected function createPartials(): array
+    {
+        // @todo WpQueryPartial?
+        return [new WpPartial()];
     }
 }
