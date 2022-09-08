@@ -15,4 +15,15 @@ class TestCase extends FrameworkTestCase
 
         return $browser;
     }
+
+    protected function setUp(): void
+    {
+        $testData = $this->getBrowser()
+            ->request('GET', '/')
+            ->filter('.twr-test-data');
+
+        if (! $testData->count()) {
+            $this->markTestSkipped('The test plugin does not appear to be active');
+        }
+    }
 }
