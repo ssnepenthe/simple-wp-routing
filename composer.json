@@ -15,11 +15,11 @@
         "php-stubs/wordpress-stubs": "^6.0",
         "phpunit/phpunit": "^9.5",
         "spatie/phpunit-snapshot-assertions": "^4.2",
-        "symfony/browser-kit": "^5.2",
+        "symfony/browser-kit": "^5.4",
         "symfony/css-selector": "^5.4",
         "symfony/http-client": "^5.4",
-        "symfony/var-dumper": "^5.0",
-        "vimeo/psalm": "^4.23"
+        "symfony/var-dumper": "^5.4",
+        "vimeo/psalm": "^4.0"
     },
     "suggest": {
         "nikic/fast-route": "Required to use default route syntax",
