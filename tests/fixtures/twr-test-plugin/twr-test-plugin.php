@@ -39,6 +39,23 @@ add_action('twr_test_data', function () {
 });
 
 (function () {
+    // HTTP method tests.
+    $routes = new RouteCollection('httpmethod_');
+
+    $routes->any('http-method/any', function () {});
+    $routes->delete('http-method/delete', function () {});
+    $routes->get('http-method/get', function () {});
+    $routes->options('http-method/options', function () {});
+    $routes->patch('http-method/patch', function () {});
+    $routes->post('http-method/post', function () {});
+    $routes->put('http-method/put', function () {});
+
+    $rewrites = (new RouteConverter())->convertCollection($routes);
+
+    (new Orchestrator($rewrites))->initialize();
+})();
+
+(function () {
     // Orchestrator tests.
     $routes = new RouteCollection('orchestrator_');
 
