@@ -47,5 +47,9 @@
             "indent-size": 4,
             "indent-style": "space"
         }
+    },
+    "scripts": {
+        "btest": "vendor/bin/phpunit --testsuite browser",
+        "utest": "vendor/bin/phpunit --testsuite unit"
     }
 }
