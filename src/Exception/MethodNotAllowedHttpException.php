@@ -35,6 +35,15 @@ class MethodNotAllowedHttpException extends HttpException
         return $errorTemplate;
     }
 
+    public function onWpRobots($robots)
+    {
+        $robots['noindex'] = true;
+        $robots['nofollow'] = true;
+        $robots['noarchive'] = true;
+
+        return $robots;
+    }
+
     protected function doPrepareResponse(HttpExceptionResponder $responder): void
     {
         $responder->headers()->includeNocacheHeaders();
@@ -46,5 +55,6 @@ class MethodNotAllowedHttpException extends HttpException
         $responder->wpQuery()->resetFlags();
 
         add_filter('template_include', [$this, 'onTemplateInclude']);
+        add_filter('wp_robots', [$this, 'onWpRobots']);
     }
 }
