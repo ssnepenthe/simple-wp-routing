@@ -5,11 +5,12 @@
  * @todo twentytwentytwo uses Source Serif Pro font family for h2 - worth bundling?
  */
 ?><!DOCTYPE html>
-<html>
+<html <?php language_attributes(); ?>>
 	<head>
-		<meta charset="UTF-8" />
-		<meta name="robots" content="noindex,nofollow,noarchive" />
-		<title>An Error Occurred: Method Not Allowed</title>
+		<meta charset="<?php bloginfo( 'charset' ); ?>" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<?php wp_head(); ?>
+
 		<style>
 			body {
 				background-color: #FFF;
@@ -43,7 +44,8 @@
 		</style>
 	</head>
 
-	<body>
+	<body <?php body_class(); ?>>
+		<?php wp_body_open(); ?>
 		<div>
 			<main>
 				<h2>
@@ -55,5 +57,6 @@
 				</p>
 			</main>
 		</div>
+		<?php wp_footer(); ?>
 	</body>
 </html>
