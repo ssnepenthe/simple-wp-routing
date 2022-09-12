@@ -18,7 +18,7 @@ class QueryResponderTest extends TestCase
             $crawler->filter('.query-responder-dump')->text(),
             true,
             512,
-            \JSON_THROW_ON_ERROR
+            JSON_THROW_ON_ERROR
         );
 
         $this->assertSame(200, $response->getStatusCode());

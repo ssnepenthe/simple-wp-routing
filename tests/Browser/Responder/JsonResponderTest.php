@@ -18,6 +18,6 @@ class JsonResponderTest extends TestCase
         $this->assertSame([
             'success' => true,
             'data' => 'hello from the json responder route',
-        ], json_decode($response->getContent(), true, 512, \JSON_THROW_ON_ERROR));
+        ], json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR));
     }
 }
