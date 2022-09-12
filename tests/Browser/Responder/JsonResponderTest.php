@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ToyWpRouting\Tests\Browser\Responder;
 
 use ToyWpRouting\Tests\Browser\TestCase;

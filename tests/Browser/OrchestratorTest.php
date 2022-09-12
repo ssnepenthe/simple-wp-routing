@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ToyWpRouting\Tests\Browser;
 
 class OrchestratorTest extends TestCase
