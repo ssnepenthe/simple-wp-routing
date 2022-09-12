@@ -23,6 +23,9 @@ class MethodNotAllowedHttpException extends HttpException
 
     public function onTemplateInclude(): string
     {
+        // Our template already has the viewport meta tag - let's prevent duplicates in FSE themes.
+        remove_action('wp_head', '_block_template_viewport_meta_tag', 0);
+
         $errorTemplate = get_query_template('405');
 
         /**
