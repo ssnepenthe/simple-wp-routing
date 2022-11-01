@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy = null) {
+return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy = null): \ToyWpRouting\RewriteCollection {
     return new class($invocationStrategy) extends \ToyWpRouting\RewriteCollection
     {
         protected bool $locked = true;
