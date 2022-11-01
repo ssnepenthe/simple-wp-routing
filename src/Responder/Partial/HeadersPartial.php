@@ -116,6 +116,10 @@ final class HeadersPartial implements PartialInterface, RegistersConflictsInterf
      */
     public function onTemplateRedirect(): void
     {
+        if (headers_sent()) {
+            return;
+        }
+
         if (is_int($this->statusCode)) {
             if (is_string($this->statusDescription)) {
                 $description = $this->statusDescription;
