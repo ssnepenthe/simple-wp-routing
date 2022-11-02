@@ -74,7 +74,7 @@ class OrchestratorTest extends TestCase
 
         $this->assertContains('orchestrator_activeVar', $queryVars);
         $this->assertContains('orchestrator_matchedRule', $queryVars);
-        $this->assertNotContains('orchestrator_inactiveVar', $queryVars);
+        $this->assertContains('orchestrator_inactiveVar', $queryVars);
     }
 
     public function testRewritesAreMerged()
@@ -89,6 +89,6 @@ class OrchestratorTest extends TestCase
         );
 
         $this->assertArrayHasKey('^orchestrator/active/([^/]+)$', $rewrites);
-        $this->assertArrayNotHasKey('^orchestrator/inactive/([^/]+)$', $rewrites);
+        $this->assertArrayHasKey('^orchestrator/inactive/([^/]+)$', $rewrites);
     }
 }

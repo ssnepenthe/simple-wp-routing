@@ -98,7 +98,7 @@ class Orchestrator
             return $vars;
         }
 
-        return array_merge($this->rewriteCollection->getActiveQueryVariables(), $vars);
+        return array_merge($this->rewriteCollection->getQueryVariables(), $vars);
     }
 
     /**
@@ -133,7 +133,7 @@ class Orchestrator
 
     protected function mergeActiveRewriteRules(array $rules): array
     {
-        return array_merge($this->rewriteCollection->getActiveRewriteRules(), $rules);
+        return array_merge($this->rewriteCollection->getRewriteRules(), $rules);
     }
 
     /**

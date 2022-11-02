@@ -69,7 +69,8 @@ class OrchestratorTest extends TestCase
         $orchestrator = new Orchestrator($rewrites);
 
         $threeHash = md5('three');
-        $newRules = ['three' => "index.php?three=value&matchedRule={$threeHash}"];
+        $fourHash = md5('four');
+        $newRules = ['three' => "index.php?three=value&matchedRule={$threeHash}", 'four' => "index.php?four=value&matchedRule={$fourHash}"];
         $existingRules = ['one' => 'index.php?one=value', 'two' => 'index.php?two=value'];
 
         $expectedResult = array_merge($newRules, $existingRules);

@@ -39,12 +39,12 @@ class RewriteCollectionTest extends TestCase
         // Rewrites are only added once.
         $this->assertCount(1, $rewriteCollection->getRewrites());
 
-        // But rewrite rules and query variables are unique.
+        // Rewrite rules and query variables are unique.
         $this->assertSame([
             'someregex' => "index.php?var=value&matchedRule={$rule->getHash()}"
         ], $rewriteCollection->getRewriteRules());
 
-        $this->assertSame(['var', 'matchedRule'], $rewriteCollection->getActiveQueryVariables());
+        $this->assertSame(['var', 'matchedRule'], $rewriteCollection->getQueryVariables());
     }
 
     public function testAddWhenLocked()
@@ -186,8 +186,8 @@ class RewriteCollectionTest extends TestCase
         $rewriteCollection->add($three);
 
         $this->assertSame(
-            ['first', 'matchedRule', 'third', 'fourth'],
-            $rewriteCollection->getActiveQueryVariables()
+            ['first', 'matchedRule', 'second', 'third', 'fourth'],
+            $rewriteCollection->getQueryVariables()
         );
         $this->assertSame([
             'first' => "index.php?first=first&matchedRule={$rOne->getHash()}",
@@ -195,11 +195,6 @@ class RewriteCollectionTest extends TestCase
             'third' => "index.php?third=third&matchedRule={$rThree->getHash()}",
             'fourth' => "index.php?fourth=fourth&matchedRule={$rFour->getHash()}",
         ], $rewriteCollection->getRewriteRules());
-        $this->assertSame([
-            'first' => "index.php?first=first&matchedRule={$rOne->getHash()}",
-            'third' => "index.php?third=third&matchedRule={$rThree->getHash()}",
-            'fourth' => "index.php?fourth=fourth&matchedRule={$rFour->getHash()}",
-        ], $rewriteCollection->getActiveRewriteRules());
         $this->assertSame(
             [$one, $two, $three],
             iterator_to_array($rewriteCollection->getRewrites())
@@ -236,8 +231,8 @@ class RewriteCollectionTest extends TestCase
         $rewriteCollection->add($three);
 
         $this->assertSame(
-            ['pfx_first', 'pfx_matchedRule', 'pfx_third', 'pfx_fourth'],
-            $rewriteCollection->getActiveQueryVariables()
+            ['pfx_first', 'pfx_matchedRule', 'pfx_second', 'pfx_third', 'pfx_fourth'],
+            $rewriteCollection->getQueryVariables()
         );
         $this->assertSame([
             'first' => "index.php?pfx_first=first&pfx_matchedRule={$rOne->getHash()}",
@@ -245,11 +240,6 @@ class RewriteCollectionTest extends TestCase
             'third' => "index.php?pfx_third=third&pfx_matchedRule={$rThree->getHash()}",
             'fourth' => "index.php?pfx_fourth=fourth&pfx_matchedRule={$rFour->getHash()}",
         ], $rewriteCollection->getRewriteRules());
-        $this->assertSame([
-            'first' => "index.php?pfx_first=first&pfx_matchedRule={$rOne->getHash()}",
-            'third' => "index.php?pfx_third=third&pfx_matchedRule={$rThree->getHash()}",
-            'fourth' => "index.php?pfx_fourth=fourth&pfx_matchedRule={$rFour->getHash()}",
-        ], $rewriteCollection->getActiveRewriteRules());
         $this->assertSame(
             [$one, $two, $three],
             iterator_to_array($rewriteCollection->getRewrites())

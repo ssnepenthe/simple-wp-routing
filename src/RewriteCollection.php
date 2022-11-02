@@ -7,24 +7,10 @@ namespace ToyWpRouting;
 use RuntimeException;
 use SplObjectStorage;
 use ToyWpRouting\Exception\MethodNotAllowedHttpException;
+use ToyWpRouting\Exception\NotFoundHttpException;
 
 class RewriteCollection
 {
-    /**
-     * @var ?array<string, string>
-     */
-    protected $activeQueryVariables;
-
-    /**
-     * @var ?array<string, string>
-     */
-    protected $activeRewriteRules;
-
-    /**
-     * @var ?array<string, array<"GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS", RewriteInterface>>
-     */
-    protected $activeRewritesByRegexHashAndMethod;
-
     protected InvocationStrategyInterface $invocationStrategy;
 
     protected bool $locked = false;
@@ -32,14 +18,24 @@ class RewriteCollection
     protected string $prefix;
 
     /**
-     * @var ?array<string, string>
+     * @var array<string, string>
      */
-    protected $rewriteRules;
+    protected array $queryVariables = [];
+
+    /**
+     * @var array<string, string>
+     */
+    protected array $rewriteRules = [];
 
     /**
      * @var SplObjectStorage<RewriteInterface, null>
      */
-    protected $rewrites;
+    protected SplObjectStorage $rewrites;
+
+    /**
+     * @var array<string, array<"GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS", RewriteInterface>>
+     */
+    protected array $rewritesByHashAndMethod = [];
 
     public function __construct(
         string $prefix = '',
@@ -57,6 +53,24 @@ class RewriteCollection
         }
 
         $this->rewrites->attach($rewrite);
+
+        foreach ($rewrite->getRules() as $rule) {
+            $this->rewriteRules[$rule->getRegex()] = $rule->getQuery();
+
+            foreach ($rule->getQueryVariables() as $prefixed => $unprefixed) {
+                $this->queryVariables[$prefixed] = $unprefixed;
+            }
+
+            $hash = $rule->getHash();
+
+            if (! array_key_exists($hash, $this->rewritesByHashAndMethod)) {
+                $this->rewritesByHashAndMethod[$hash] = [];
+            }
+
+            foreach ($rewrite->getMethods() as $method) {
+                $this->rewritesByHashAndMethod[$hash][$method] = $rewrite;
+            }
+        }
 
         return $rewrite;
     }
@@ -86,23 +100,31 @@ class RewriteCollection
         );
     }
 
-    public function findActiveRewriteByHashAndMethod(string $hash, string $method): ?RewriteInterface
+    public function findRewriteByHashAndMethod(string $hash, string $method): ?RewriteInterface
     {
-        if (! is_array($this->activeRewritesByRegexHashAndMethod)) {
-            $this->prepareComputedProperties();
-        }
-
-        if (! array_key_exists($hash, $this->activeRewritesByRegexHashAndMethod)) {
+        if (! array_key_exists($hash, $this->rewritesByHashAndMethod)) {
             return null;
         }
 
-        $candidates = $this->activeRewritesByRegexHashAndMethod[$hash];
+        $candidates = $this->rewritesByHashAndMethod[$hash];
 
         if (! array_key_exists($method, $candidates)) {
             throw new MethodNotAllowedHttpException(array_keys($candidates));
         }
 
         return $candidates[$method];
+    }
+
+    public function findActiveRewriteByHashAndMethod(string $hash, string $method): ?RewriteInterface
+    {
+        $rewrite = $this->findRewriteByHashAndMethod($hash, $method);
+
+        if ($rewrite instanceof RewriteInterface && ! $rewrite->isActive()) {
+            // @todo custom exception type?
+            throw new NotFoundHttpException();
+        }
+
+        return $rewrite;
     }
 
     /**
@@ -118,25 +140,9 @@ class RewriteCollection
     /**
      * @return string[]
      */
-    public function getActiveQueryVariables(): array
+    public function getQueryVariables(): array
     {
-        if (! is_array($this->activeQueryVariables)) {
-            $this->prepareComputedProperties();
-        }
-
-        return array_keys($this->activeQueryVariables);
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    public function getActiveRewriteRules(): array
-    {
-        if (! is_array($this->activeRewriteRules)) {
-            $this->prepareComputedProperties();
-        }
-
-        return $this->activeRewriteRules;
+        return array_keys($this->queryVariables);
     }
 
     public function getPrefix(): string
@@ -149,10 +155,6 @@ class RewriteCollection
      */
     public function getRewriteRules(): array
     {
-        if (! is_array($this->rewriteRules)) {
-            $this->prepareComputedProperties();
-        }
-
         return $this->rewriteRules;
     }
 
@@ -231,49 +233,5 @@ class RewriteCollection
         $rewrite->setInvocationStrategy($this->invocationStrategy);
 
         return $rewrite;
-    }
-
-    /**
-     * @psalm-assert array<string, string> $this->activeQueryVariables
-     * @psalm-assert array<string, string> $this->activeRewriteRules
-     * @psalm-assert array<string, array<"GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS", RewriteInterface>> $this->activeRewritesByRegexHashAndMethod
-     * @psalm-assert array<string, string> $this->rewriteRules
-     */
-    protected function prepareComputedProperties(): void
-    {
-        if (is_array($this->activeQueryVariables)) {
-            return;
-        }
-
-        $this->lock();
-
-        $this->activeQueryVariables = [];
-        $this->activeRewriteRules = [];
-        $this->activeRewritesByRegexHashAndMethod = [];
-        $this->rewriteRules = [];
-
-        foreach ($this->rewrites as $rewrite) {
-            foreach ($rewrite->getRules() as $rule) {
-                $this->rewriteRules[$rule->getRegex()] = $rule->getQuery();
-
-                if ($rewrite->isActive()) {
-                    $this->activeRewriteRules[$rule->getRegex()] = $rule->getQuery();
-
-                    foreach ($rule->getQueryVariables() as $prefixed => $unprefixed) {
-                        $this->activeQueryVariables[$prefixed] = $unprefixed;
-                    }
-
-                    $hash = $rule->getHash();
-
-                    if (! array_key_exists($hash, $this->activeRewritesByRegexHashAndMethod)) {
-                        $this->activeRewritesByRegexHashAndMethod[$hash] = [];
-                    }
-
-                    foreach ($rewrite->getMethods() as $method) {
-                        $this->activeRewritesByRegexHashAndMethod[$hash][$method] = $rewrite;
-                    }
-                }
-            }
-        }
     }
 }
