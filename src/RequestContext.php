@@ -50,7 +50,7 @@ class RequestContext
 
     public static function fromGlobals(): RequestContext
     {
-        return new self($_SERVER['REQUEST_METHOD'], self::extractHeaders($_SERVER));
+        return new self($_SERVER['REQUEST_METHOD'] ?? 'GET', self::extractHeaders($_SERVER));
     }
 
     public function getHeader(string $key, ?string $default = null): ?string

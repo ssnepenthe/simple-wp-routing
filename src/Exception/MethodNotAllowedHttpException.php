@@ -38,6 +38,10 @@ class MethodNotAllowedHttpException extends HttpException
         return $errorTemplate;
     }
 
+    /**
+     * @param array $robots
+     * @return array
+     */
     public function onWpRobots($robots)
     {
         $robots['noindex'] = true;
