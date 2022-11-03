@@ -6,6 +6,7 @@ namespace ToyWpRouting;
 
 use RuntimeException;
 use ToyWpRouting\Exception\HttpExceptionInterface;
+use ToyWpRouting\Exception\RewriteDisabledException;
 use ToyWpRouting\Responder\HierarchicalResponderInterface;
 use ToyWpRouting\Responder\HttpExceptionResponder;
 use ToyWpRouting\Responder\ResponderInterface;
@@ -167,6 +168,8 @@ class Orchestrator
             $responder = $rewrite->handle($queryVars);
         } catch (HttpExceptionInterface $e) {
             $responder = new HttpExceptionResponder($e);
+        } catch (RewriteDisabledException $e) {
+            $responder = new HttpExceptionResponder($e->toHttpException());
         } catch (RuntimeException $e) {
             // Invalid method override
             return;

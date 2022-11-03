@@ -7,7 +7,7 @@ namespace ToyWpRouting;
 use RuntimeException;
 use SplObjectStorage;
 use ToyWpRouting\Exception\MethodNotAllowedHttpException;
-use ToyWpRouting\Exception\NotFoundHttpException;
+use ToyWpRouting\Exception\RewriteDisabledException;
 
 class RewriteCollection
 {
@@ -120,8 +120,7 @@ class RewriteCollection
         $rewrite = $this->findRewriteByHashAndMethod($hash, $method);
 
         if ($rewrite instanceof RewriteInterface && ! $rewrite->isActive()) {
-            // @todo custom exception type?
-            throw new NotFoundHttpException();
+            throw new RewriteDisabledException();
         }
 
         return $rewrite;
