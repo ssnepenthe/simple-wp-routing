@@ -29,4 +29,19 @@ class TestCase extends FrameworkTestCase
 
         return $browser;
     }
+
+    protected function testUri(string $uri): string
+    {
+        // @todo Some sort of output indicating that we are using cache?
+        return $this->shouldUseRewriteCache() ? "{$uri}?twr_enable_cache=1" : $uri;
+    }
+
+    protected function shouldUseRewriteCache(): bool
+    {
+        if (in_array('--use-rewrite-cache', $_SERVER['argv'], true)) {
+            return true;
+        }
+
+        return filter_var(getenv('USE_REWRITE_CACHE'), FILTER_VALIDATE_BOOL);
+    }
 }

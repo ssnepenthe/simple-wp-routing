@@ -12,7 +12,7 @@ class JsonResponderTest extends TestCase
     {
         $browser = $this->getBrowser();
 
-        $browser->request('GET', '/responders/json/');
+        $browser->request('GET', $this->testUri('/responders/json/'));
 
         $response = $browser->getResponse();
 

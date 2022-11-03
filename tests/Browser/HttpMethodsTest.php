@@ -26,13 +26,13 @@ class HttpMethodsTest extends TestCase
         $browser = $this->getBrowser();
 
         foreach ($allowedMethods as $method) {
-            $browser->request($method, $uri);
+            $browser->request($method, $this->testUri($uri));
 
             $this->assertSame(200, $browser->getResponse()->getStatusCode());
         }
 
         foreach ($unallowedMethods as $method) {
-            $browser->request($method, $uri);
+            $browser->request($method, $this->testUri($uri));
 
             $this->assertSame(405, $browser->getResponse()->getStatusCode());
         }
@@ -45,7 +45,7 @@ class HttpMethodsTest extends TestCase
         $browser = $this->getBrowser();
 
         foreach ($allowedMethods as $method) {
-            $browser->request('POST', $uri, [], [], [
+            $browser->request('POST', $this->testUri($uri), [], [], [
                 'HTTP_X_HTTP_METHOD_OVERRIDE' => $method,
             ]);
 
@@ -53,7 +53,7 @@ class HttpMethodsTest extends TestCase
         }
 
         foreach ($unallowedMethods as $method) {
-            $browser->request('POST', $uri, [], [], [
+            $browser->request('POST', $this->testUri($uri), [], [], [
                 'HTTP_X_HTTP_METHOD_OVERRIDE' => $method
             ]);
 

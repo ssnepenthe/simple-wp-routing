@@ -12,7 +12,7 @@ class HttpExceptionResponderTest extends TestCase
     {
         $browser = $this->getBrowser();
 
-        $browser->request('GET', '/responders/http-exception/method-not-allowed/');
+        $browser->request('GET', $this->testUri('/responders/http-exception/method-not-allowed/'));
 
         $response = $browser->getResponse();
 
@@ -29,7 +29,7 @@ class HttpExceptionResponderTest extends TestCase
     {
         $browser = $this->getBrowser();
 
-        $browser->request('GET', '/responders/http-exception/not-found/');
+        $browser->request('GET', $this->testUri('/responders/http-exception/not-found/'));
 
         $response = $browser->getResponse();
 
