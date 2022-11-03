@@ -23,11 +23,6 @@ return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy 
   0 => 'GET',
   1 => 'HEAD',
 ), array (
-  0 => new \ToyWpRouting\Compiler\OptimizedRewriteRule('e8362b7488c4e1a7eee5ff88b032f6eb', 'index.php?pfx_var=val&pfx_matchedRule=e8362b7488c4e1a7eee5ff88b032f6eb', array (
-  'pfx_var' => 'var',
-  'pfx_matchedRule' => 'matchedRule',
-), '^regex$'),
-), array (
   'pfx_var' => 'var',
   'pfx_matchedRule' => 'matchedRule',
 ), $this->invocationStrategy, static function () {}, static function () {});
