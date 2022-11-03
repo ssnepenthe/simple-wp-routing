@@ -33,9 +33,29 @@ class RewriteListDefinitionsCompiler
 
     private function prepareTemplate(): string
     {
-        return implode(PHP_EOL, array_map(
-            fn ($_) => '$this->rewrites->attach(%s);',
-            $this->rewrites
+        $definitions = $assignments = $byHashAndMethod = [];
+
+        foreach ($this->rewrites as $i => $rewrite) {
+            $definitions[] = "\$rewrite{$i} = %s;";
+            $assignments[] = "\$this->rewrites->attach(\$rewrite{$i});";
+
+            foreach ($rewrite->getRules() as $rule) {
+                $byHashAndMethod[$rule->getHash()] = $byHashAndMethod[$rule->getHash()] ?? [];
+
+                foreach ($rewrite->getMethods() as $method) {
+                    $byHashAndMethod[$rule->getHash()][$method] = "\$rewrite{$i}";
+                }
+            }
+        }
+
+        $definitionsTemplate = implode(PHP_EOL, $definitions);
+        $assignmentsTemplate = implode(PHP_EOL, $assignments);
+        $byHashAndMethodTemplate = sprintf('$this->rewritesByHashAndMethod = %s;', preg_replace(
+            '/\'\$rewrite(\d+)\'/',
+            '\$rewrite\1',
+            var_export($byHashAndMethod, true)
         ));
+
+        return $definitionsTemplate . PHP_EOL . $assignmentsTemplate . PHP_EOL . $byHashAndMethodTemplate;
     }
 }

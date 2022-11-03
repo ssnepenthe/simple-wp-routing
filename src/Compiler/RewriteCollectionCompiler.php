@@ -22,6 +22,9 @@ class RewriteCollectionCompiler
             {
                 parent::__construct(%s, $invocationStrategy);
 
+                $this->queryVariables = %s;
+                $this->rewriteRules = %s;
+
                 %s
             }
         };
@@ -43,12 +46,46 @@ class RewriteCollectionCompiler
 
     public function compile(): string
     {
-        return sprintf(self::TEMPLATE, $this->prefix(), $this->rewrites());
+        return sprintf(
+            self::TEMPLATE,
+            $this->prefix(),
+            $this->queryVariables(),
+            $this->rewriteRules(),
+            $this->rewrites()
+        );
     }
 
     private function prefix(): string
     {
         return var_export($this->rewriteCollection->getPrefix(), true);
+    }
+
+    private function queryVariables(): string
+    {
+        $queryVariables = [];
+
+        foreach ($this->rewriteCollection->getRewrites() as $rewrite) {
+            foreach ($rewrite->getRules() as $rule) {
+                foreach ($rule->getQueryVariables() as $prefixed => $unprefixed) {
+                    $queryVariables[$prefixed] = $unprefixed;
+                }
+            }
+        }
+
+        return var_export($queryVariables, true);
+    }
+
+    private function rewriteRules(): string
+    {
+        $rewriteRules = [];
+
+        foreach ($this->rewriteCollection->getRewrites() as $rewrite) {
+            foreach ($rewrite->getRules() as $rule) {
+                $rewriteRules[$rule->getRegex()] = $rule->getQuery();
+            }
+        }
+
+        return var_export($rewriteRules, true);
     }
 
     private function rewrites(): string
