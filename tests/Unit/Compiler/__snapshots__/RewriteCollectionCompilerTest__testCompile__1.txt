@@ -22,11 +22,6 @@ return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy 
             $rewrite0 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'POST',
 ), array (
-  0 => new \ToyWpRouting\Compiler\OptimizedRewriteRule('e8362b7488c4e1a7eee5ff88b032f6eb', 'index.php?some=var&matchedRule=e8362b7488c4e1a7eee5ff88b032f6eb', array (
-  'some' => 'some',
-  'matchedRule' => 'matchedRule',
-), '^regex$'),
-), array (
   'some' => 'some',
   'matchedRule' => 'matchedRule',
 ), $this->invocationStrategy, static function () {

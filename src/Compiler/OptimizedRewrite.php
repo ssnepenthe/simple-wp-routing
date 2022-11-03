@@ -17,23 +17,27 @@ class OptimizedRewrite extends Rewrite
 
     /**
      * @param array<int, "GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS"> $methods
-     * @param \ToyWpRouting\RewriteRuleInterface[] $rules
      * @param array<string, string> $queryVariables
      * @param mixed $handler
      * @param mixed $isActiveCallback
      */
     public function __construct(
         array $methods,
-        array $rules,
         array $queryVariables,
         InvocationStrategyInterface $invocationStrategy,
         $handler,
         $isActiveCallback = null
     ) {
-        parent::__construct($methods, $rules, $handler, $isActiveCallback);
+        parent::__construct($methods, [], $handler, $isActiveCallback);
 
         $this->queryVariables = $queryVariables;
         $this->invocationStrategy = $invocationStrategy;
+    }
+
+    public function getRules(): array
+    {
+        // @todo should we really throw or just allow return of empty array? Throwing technically breaks our interface...
+        throw new RuntimeException('Rules list on OptimizedRewrite instance is always empty');
     }
 
     public function mapQueryVariable(string $queryVariable): ?string

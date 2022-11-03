@@ -16,7 +16,6 @@ class OptimizedRewriteTest extends TestCase
     {
         $rewrite = new OptimizedRewrite(
             ['GET'],
-            $rules = [new RewriteRule('someregex', 'index.php?var=value', 'pfx_')],
             ['pfx_var' => 'var'],
             $this->createStub(InvocationStrategyInterface::class),
             'somehandler',
@@ -26,17 +25,12 @@ class OptimizedRewriteTest extends TestCase
         $this->assertSame('somehandler', $rewrite->getHandler());
         $this->assertSame('isActiveCallback', $rewrite->getIsActiveCallback());
         $this->assertSame(['GET'], $rewrite->getMethods());
-        $this->assertSame($rules, $rewrite->getRules());
     }
 
     public function testMapQueryVariable()
     {
         $rewrite = new OptimizedRewrite(
             ['GET'],
-            [
-                new RewriteRule('someregex', 'some=query'),
-                new RewriteRule('anotherregex', 'another=query', 'pfx_')
-            ],
             [
                 'some' => 'some',
                 'pfx_another' => 'another',
@@ -59,7 +53,6 @@ class OptimizedRewriteTest extends TestCase
 
         $rewrite = new OptimizedRewrite(
             ['GET'],
-            [new RewriteRule('someregex', 'some=query')],
             ['some' => 'some'],
             $this->createStub(InvocationStrategyInterface::class),
             'somehandler'
@@ -74,7 +67,6 @@ class OptimizedRewriteTest extends TestCase
 
         $rewrite = new OptimizedRewrite(
             ['GET'],
-            [new RewriteRule('someregex', 'some=query')],
             ['some' => 'some'],
             $this->createStub(InvocationStrategyInterface::class),
             'somehandler'
