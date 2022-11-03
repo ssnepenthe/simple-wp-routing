@@ -12,7 +12,7 @@ class QueryResponderTest extends TestCase
     {
         $browser = $this->getBrowser();
 
-        $crawler = $browser->request('GET', '/responders/query/');
+        $crawler = $browser->request('GET', $this->testUri('/responders/query/'));
 
         $response = $browser->getResponse();
 

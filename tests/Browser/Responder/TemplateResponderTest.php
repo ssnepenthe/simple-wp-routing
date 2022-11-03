@@ -12,7 +12,7 @@ class TemplateResponderTest extends TestCase
     {
         $browser = $this->getBrowser();
 
-        $browser->request('GET', '/responders/template/');
+        $browser->request('GET', $this->testUri('/responders/template/'));
 
         $response = $browser->getResponse();
 

@@ -9,7 +9,7 @@ class OrchestratorTest extends TestCase
     public function testHandlerReturnsHierarchicalResponder()
     {
         $browser = $this->getBrowser();
-        $browser->request('GET', '/orchestrator/hierarchical-responder/');
+        $browser->request('GET', $this->testUri('/orchestrator/hierarchical-responder/'));
 
         $content = json_decode(
             $browser->getResponse()->getContent(),
@@ -28,7 +28,7 @@ class OrchestratorTest extends TestCase
     public function testHandlerReturnsResponder()
     {
         $browser = $this->getBrowser();
-        $browser->request('GET', '/orchestrator/responder/');
+        $browser->request('GET', $this->testUri('/orchestrator/responder/'));
 
         $content = json_decode(
             $browser->getResponse()->getContent(),
@@ -47,7 +47,7 @@ class OrchestratorTest extends TestCase
     public function testInactiveRouteHandlersAreNotCalled()
     {
         $browser = $this->getBrowser();
-        $crawler = $browser->request('GET', '/orchestrator/inactive/irrelevant');
+        $crawler = $browser->request('GET', $this->testUri('/orchestrator/inactive/irrelevant'));
 
         $this->assertSame(404, $browser->getResponse()->getStatusCode());
         $this->assertSame(0, $crawler->filter('.twr-orchestrator-inactive')->count());
@@ -56,7 +56,7 @@ class OrchestratorTest extends TestCase
     public function testMethodNotAllowed()
     {
         $browser = $this->getBrowser();
-        $browser->request('POST', '/orchestrator/active/irrelevant');
+        $browser->request('POST', $this->testUri('/orchestrator/active/irrelevant'));
 
         $this->assertSame(405, $browser->getResponse()->getStatusCode());
     }
@@ -64,7 +64,7 @@ class OrchestratorTest extends TestCase
     public function testQueryVariablesAreMerged()
     {
         $browser = $this->getBrowser();
-        $crawler = $browser->request('GET', '/');
+        $crawler = $browser->request('GET', $this->testUri('/'));
         $queryVars = json_decode(
             $crawler->filter('.twr-query-vars')->text(),
             true,
@@ -80,7 +80,7 @@ class OrchestratorTest extends TestCase
     public function testRewritesAreMerged()
     {
         $browser = $this->getBrowser();
-        $crawler = $browser->request('GET', '/');
+        $crawler = $browser->request('GET', $this->testUri('/'));
         $rewrites = json_decode(
             $crawler->filter('.twr-rewrites')->text(),
             true,
