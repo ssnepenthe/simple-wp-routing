@@ -57,10 +57,10 @@ $rewrite3 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   'responders_matchedRule' => 'matchedRule',
 ), $this->invocationStrategy, static function () {
             // @todo overwrite query variables
-            \add_action('twr_test_data', function () {
+            add_action('twr_test_data', function () {
                 global $wp;
 
-                \printf('<span class="query-responder-dump">%s</span>', \json_encode($wp->query_vars));
+                printf('<span class="query-responder-dump">%s</span>', json_encode($wp->query_vars));
             });
 
             return new \ToyWpRouting\Responder\QueryResponder(['custom-query-variable' => 'from-the-query-route']);
