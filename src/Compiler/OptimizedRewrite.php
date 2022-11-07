@@ -34,12 +34,6 @@ class OptimizedRewrite extends Rewrite
         $this->invocationStrategy = $invocationStrategy;
     }
 
-    public function getRules(): array
-    {
-        // @todo should we really throw or just allow return of empty array? Throwing technically breaks our interface...
-        throw new RuntimeException('Rules list on OptimizedRewrite instance is always empty');
-    }
-
     public function mapQueryVariable(string $queryVariable): ?string
     {
         return $this->queryVariables[$queryVariable] ?? null;
