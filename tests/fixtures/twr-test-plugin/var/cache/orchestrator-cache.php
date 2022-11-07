@@ -37,7 +37,7 @@ $rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   'orchestrator_inactiveVar' => 'inactiveVar',
   'orchestrator_matchedRule' => 'matchedRule',
 ), $this->invocationStrategy, static function () {
-            \add_action('twr_test_data', function () {
+            add_action('twr_test_data', function () {
                 echo '<span class="twr-orchestrator-inactive"></span>';
             });
         }, '__return_false');
