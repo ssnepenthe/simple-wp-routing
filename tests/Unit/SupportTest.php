@@ -141,33 +141,3 @@ class SupportTest extends TestCase
         ], Support::parseQuery($query));
     }
 }
-
-trait TraitOne
-{
-    //
-}
-
-trait TraitTwo
-{
-    use TraitOne;
-}
-
-trait TraitThree
-{
-    //
-}
-
-class ClassOne
-{
-    use TraitTwo;
-}
-
-class ClassTwo extends ClassOne
-{
-    //
-}
-
-class ClassThree extends ClassTwo
-{
-    use TraitThree;
-}
