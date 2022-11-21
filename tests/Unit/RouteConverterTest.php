@@ -6,7 +6,6 @@ namespace ToyWpRouting\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use ToyWpRouting\RewriteCollection;
-use ToyWpRouting\RewriteInterface;
 use ToyWpRouting\Route;
 use ToyWpRouting\RouteCollection;
 use ToyWpRouting\RouteConverter;
@@ -18,9 +17,6 @@ class RouteConverterTest extends TestCase
         $route = new Route(['GET'], 'someroutestring', 'somehandler');
 
         $rewrite = (new RouteConverter())->convert($route);
-
-        // Redundant due to typing in RewriteCollection...
-        $this->assertInstanceOf(RewriteInterface::class, $rewrite);
 
         $this->assertSame(['GET'], $rewrite->getMethods());
         $this->assertSame('somehandler', $rewrite->getHandler());

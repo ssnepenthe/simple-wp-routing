@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ToyWpRouting;
 
-class RewriteRule implements RewriteRuleInterface
+class RewriteRule
 {
     protected string $prefix = '';
 

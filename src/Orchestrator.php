@@ -161,7 +161,7 @@ class Orchestrator
                 $this->getRequestContext()->getIntendedMethod()
             );
 
-            if (! $rewrite instanceof RewriteInterface) {
+            if (! $rewrite instanceof Rewrite) {
                 return;
             }
 

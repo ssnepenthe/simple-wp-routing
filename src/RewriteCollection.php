@@ -28,12 +28,12 @@ class RewriteCollection
     protected array $rewriteRules = [];
 
     /**
-     * @var SplObjectStorage<RewriteInterface, null>
+     * @var SplObjectStorage<Rewrite, null>
      */
     protected SplObjectStorage $rewrites;
 
     /**
-     * @var array<string, array<"GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS", RewriteInterface>>
+     * @var array<string, array<"GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS", Rewrite>>
      */
     protected array $rewritesByHashAndMethod = [];
 
@@ -46,7 +46,7 @@ class RewriteCollection
         $this->rewrites = new SplObjectStorage();
     }
 
-    public function add(RewriteInterface $rewrite): RewriteInterface
+    public function add(Rewrite $rewrite): Rewrite
     {
         if ($this->locked) {
             throw new RuntimeException('Cannot add rewrites when rewrite collection is locked');
@@ -78,7 +78,7 @@ class RewriteCollection
     /**
      * @param mixed $handler
      */
-    public function any(string $regex, string $query, $handler): RewriteInterface
+    public function any(string $regex, string $query, $handler): Rewrite
     {
         return $this->add(
             $this->create(
@@ -93,14 +93,14 @@ class RewriteCollection
     /**
      * @param mixed $handler
      */
-    public function delete(string $regex, string $query, $handler): RewriteInterface
+    public function delete(string $regex, string $query, $handler): Rewrite
     {
         return $this->add(
             $this->create(['DELETE'], $regex, $query, $handler)
         );
     }
 
-    public function findRewriteByHashAndMethod(string $hash, string $method): ?RewriteInterface
+    public function findRewriteByHashAndMethod(string $hash, string $method): ?Rewrite
     {
         if (! array_key_exists($hash, $this->rewritesByHashAndMethod)) {
             return null;
@@ -115,11 +115,11 @@ class RewriteCollection
         return $candidates[$method];
     }
 
-    public function findActiveRewriteByHashAndMethod(string $hash, string $method): ?RewriteInterface
+    public function findActiveRewriteByHashAndMethod(string $hash, string $method): ?Rewrite
     {
         $rewrite = $this->findRewriteByHashAndMethod($hash, $method);
 
-        if ($rewrite instanceof RewriteInterface && ! $rewrite->isActive()) {
+        if ($rewrite instanceof Rewrite && ! $rewrite->isActive()) {
             throw new RewriteDisabledException();
         }
 
@@ -129,7 +129,7 @@ class RewriteCollection
     /**
      * @param mixed $handler
      */
-    public function get(string $regex, string $query, $handler): RewriteInterface
+    public function get(string $regex, string $query, $handler): Rewrite
     {
         return $this->add(
             $this->create(['GET', 'HEAD'], $regex, $query, $handler)
@@ -158,7 +158,7 @@ class RewriteCollection
     }
 
     /**
-     * @return SplObjectStorage<RewriteInterface, null>
+     * @return SplObjectStorage<Rewrite, null>
      */
     public function getRewrites(): SplObjectStorage
     {
@@ -180,7 +180,7 @@ class RewriteCollection
     /**
      * @param mixed $handler
      */
-    public function options(string $regex, string $query, $handler): RewriteInterface
+    public function options(string $regex, string $query, $handler): Rewrite
     {
         return $this->add(
             $this->create(['OPTIONS'], $regex, $query, $handler)
@@ -190,7 +190,7 @@ class RewriteCollection
     /**
      * @param mixed $handler
      */
-    public function patch(string $regex, string $query, $handler): RewriteInterface
+    public function patch(string $regex, string $query, $handler): Rewrite
     {
         return $this->add(
             $this->create(['PATCH'], $regex, $query, $handler)
@@ -200,7 +200,7 @@ class RewriteCollection
     /**
      * @param mixed $handler
      */
-    public function post(string $regex, string $query, $handler): RewriteInterface
+    public function post(string $regex, string $query, $handler): Rewrite
     {
         return $this->add(
             $this->create(['POST'], $regex, $query, $handler)
@@ -210,7 +210,7 @@ class RewriteCollection
     /**
      * @param mixed $handler
      */
-    public function put(string $regex, string $query, $handler): RewriteInterface
+    public function put(string $regex, string $query, $handler): Rewrite
     {
         return $this->add(
             $this->create(['PUT'], $regex, $query, $handler)

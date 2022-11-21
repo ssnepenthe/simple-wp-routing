@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ToyWpRouting;
 
-class Rewrite implements RewriteInterface
+class Rewrite
 {
     /**
      * @var mixed
@@ -27,13 +27,13 @@ class Rewrite implements RewriteInterface
     protected array $methods;
 
     /**
-     * @var RewriteRuleInterface[]
+     * @var RewriteRule[]
      */
     protected array $rules;
 
     /**
      * @param array<int, "GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS"> $methods
-     * @param RewriteRuleInterface[] $rules
+     * @param RewriteRule[] $rules
      * @param mixed $handler
      * @param mixed $isActiveCallback
      */
@@ -42,7 +42,7 @@ class Rewrite implements RewriteInterface
         Support::assertValidMethodsList($methods);
 
         $this->methods = $methods;
-        $this->rules = (fn (RewriteRuleInterface ...$rules) => $rules)(...$rules);
+        $this->rules = (fn (RewriteRule ...$rules) => $rules)(...$rules);
         $this->handler = $handler;
         $this->isActiveCallback = $isActiveCallback;
     }
@@ -81,7 +81,7 @@ class Rewrite implements RewriteInterface
     }
 
     /**
-     * @return RewriteRuleInterface[]
+     * @return RewriteRule[]
      */
     public function getRules(): array
     {

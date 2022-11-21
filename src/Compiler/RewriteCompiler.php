@@ -6,15 +6,15 @@ namespace ToyWpRouting\Compiler;
 
 use Closure;
 use RuntimeException;
-use ToyWpRouting\RewriteInterface;
+use ToyWpRouting\Rewrite;
 
 class RewriteCompiler
 {
     private const TEMPLATE = 'new \\ToyWpRouting\\Compiler\\OptimizedRewrite(%s, %s, $this->invocationStrategy, %s, %s)';
 
-    private RewriteInterface $rewrite;
+    private Rewrite $rewrite;
 
-    public function __construct(RewriteInterface $rewrite)
+    public function __construct(Rewrite $rewrite)
     {
         $this->rewrite = $rewrite;
     }

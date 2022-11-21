@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Compiler;
 
-use ToyWpRouting\RewriteInterface;
+use ToyWpRouting\Rewrite;
 
 class RewriteListDefinitionsCompiler
 {
     /**
-     * @var RewriteInterface[]
+     * @var Rewrite[]
      */
     private array $rewrites;
 
     public function __construct(array $rewrites)
     {
-        $this->rewrites = (fn (RewriteInterface ...$rewrites) => $rewrites)(...$rewrites);
+        $this->rewrites = (fn (Rewrite ...$rewrites) => $rewrites)(...$rewrites);
     }
 
     public function __toString(): string
@@ -26,7 +26,7 @@ class RewriteListDefinitionsCompiler
     public function compile(): string
     {
         return vsprintf($this->prepareTemplate(), array_map(
-            fn (RewriteInterface $rewrite) => (string) (new RewriteCompiler($rewrite)),
+            fn (Rewrite $rewrite) => (string) (new RewriteCompiler($rewrite)),
             $this->rewrites
         ));
     }
