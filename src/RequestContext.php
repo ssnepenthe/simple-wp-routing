@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ToyWpRouting;
 
-use RuntimeException;
+use ToyWpRouting\Exception\InvalidMethodOverrideException;
 
 class RequestContext
 {
@@ -94,13 +94,12 @@ class RequestContext
             'TRACE',
         ];
 
-        if (! in_array($override, $allowedOverrides, true)) {
-            // @todo Looser override validation? See symfony/http-foundation Request->getMethod().
-            // @todo maybe shouldn't throw?
-            throw new RuntimeException(sprintf(
-                'Invalid request method - must be one of %s',
-                implode(', ', $allowedOverrides)
-            ));
+        if (in_array($override, $allowedOverrides, true)) {
+            return $override;
+        }
+
+        if (1 !== preg_match('/^[A-Z]++$/D', $override)) {
+            throw new InvalidMethodOverrideException("Invalid request method override {$override}");
         }
 
         return $override;

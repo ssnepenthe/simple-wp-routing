@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ToyWpRouting\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
+use ToyWpRouting\Exception\InvalidMethodOverrideException;
 use ToyWpRouting\RequestContext;
 
 class RequestContextTest extends TestCase
@@ -104,12 +104,19 @@ class RequestContextTest extends TestCase
         $this->assertSame('PUT', $request->getIntendedMethod());
     }
 
+    public function testGetIntendedMethodWithUnknownBuValidOverride()
+    {
+        $request = new RequestContext('POST', ['X-HTTP-METHOD-OVERRIDE' => 'UNKNOWNBUTVALID']);
+
+        $this->assertSame('UNKNOWNBUTVALID', $request->getIntendedMethod());
+    }
+
     public function testGetIntendedMethodWithInvalidOverride()
     {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Invalid request method - must be one of');
+        $this->expectException(InvalidMethodOverrideException::class);
+        $this->expectExceptionMessage('Invalid request method override INVALID1');
 
-        $request = new RequestContext('POST', ['X-HTTP-METHOD-OVERRIDE' => 'INVALID']);
+        $request = new RequestContext('POST', ['X-HTTP-METHOD-OVERRIDE' => 'INVALID1']);
 
         $request->getIntendedMethod();
     }
