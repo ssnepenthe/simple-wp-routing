@@ -44,12 +44,11 @@ class Orchestrator
 
     public function initialize(): self
     {
-        // @todo adjust priorities.
-        add_filter('option_rewrite_rules', [$this, 'onOptionRewriteRules']);
-        add_filter('rewrite_rules_array', [$this, 'onRewriteRulesArray']);
-        add_filter('pre_update_option_rewrite_rules', [$this, 'onPreUpdateOptionRewriteRules']);
-        add_filter('query_vars', [$this, 'onQueryVars']);
-        add_filter('request', [$this, 'onRequest']);
+        add_filter('option_rewrite_rules', [$this, 'onOptionRewriteRules'], 99);
+        add_filter('rewrite_rules_array', [$this, 'onRewriteRulesArray'], 99);
+        add_filter('pre_update_option_rewrite_rules', [$this, 'onPreUpdateOptionRewriteRules'], -99);
+        add_filter('query_vars', [$this, 'onQueryVars'], 99);
+        add_filter('request', [$this, 'onRequest'], -99);
 
         return $this;
     }
