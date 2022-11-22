@@ -16,15 +16,21 @@ class RouteConverter
     public function convert(Route $route): Rewrite
     {
         $rules = $this->parser->parse($route->getRoute());
+        $requiredQueryVariables = [];
 
         $rewrite = new Rewrite(
             $route->getMethods(),
             array_map(
-                fn (string $regex, string $query) => new RewriteRule(
-                    $regex,
-                    $query,
-                    $route->getPrefix()
-                ),
+                function (string $regex, string $query) use ($route, &$requiredQueryVariables) {
+                    $rule = new RewriteRule($regex, $query, $route->getPrefix());
+
+                    if ([] === $requiredQueryVariables) {
+                        $requiredQueryVariables = array_keys($rule->getQueryVariables());
+                        $rule->setRequiredQueryVariables($requiredQueryVariables);
+                    }
+
+                    return $rule;
+                },
                 array_keys($rules),
                 $rules
             ),

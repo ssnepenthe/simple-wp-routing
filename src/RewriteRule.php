@@ -19,6 +19,11 @@ class RewriteRule
 
     protected string $regex;
 
+    /**
+     * @var string[]
+     */
+    protected array $requiredQueryVariables = [];
+
     public function __construct(string $regex, string $query, string $prefix = '')
     {
         $this->regex = $regex;
@@ -46,6 +51,24 @@ class RewriteRule
     public function getRegex(): string
     {
         return $this->regex;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getRequiredQueryVariables(): array
+    {
+        return $this->requiredQueryVariables;
+    }
+
+    /**
+     * @param string[] $requiredQueryVariables
+     */
+    public function setRequiredQueryVariables(array $requiredQueryVariables): self
+    {
+        $this->requiredQueryVariables = $requiredQueryVariables;
+
+        return $this;
     }
 
     protected function parseQuery(): void

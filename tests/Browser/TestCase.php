@@ -30,10 +30,14 @@ class TestCase extends FrameworkTestCase
         return $browser;
     }
 
-    protected function testUri(string $uri): string
+    protected function testUri(string $uri, array $query = []): string
     {
+        if ($this->shouldUseRewriteCache()) {
+            $query['twr_enable_cache'] = '1';
+        }
+
         // @todo Some sort of output indicating that we are using cache?
-        return $this->shouldUseRewriteCache() ? "{$uri}?twr_enable_cache=1" : $uri;
+        return [] === $query ? $uri : $uri . '?' . http_build_query($query);
     }
 
     protected function shouldUseRewriteCache(): bool

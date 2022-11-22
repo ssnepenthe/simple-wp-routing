@@ -8,6 +8,7 @@ use Closure;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ToyWpRouting\DefaultInvocationStrategy;
+use ToyWpRouting\Exception\RequiredQueryVariablesMissingException;
 use ToyWpRouting\InvocationStrategyInterface;
 use ToyWpRouting\Rewrite;
 use ToyWpRouting\RewriteRule;
@@ -27,6 +28,44 @@ class RewriteTest extends TestCase
             $rewrite->getInvocationStrategy()
         );
     }
+
+    public function testGetRequiredQueryVariables()
+    {
+        $one = new RewriteRule('oneregex', 'one=query');
+
+        $two = new RewriteRule('tworegex', 'two=query');
+        $two->setRequiredQueryVariables(['two']);
+
+        $three = new RewriteRule('threeregex', 'three=query&four=query');
+        $three->setRequiredQueryVariables(['three', 'four']);
+
+        $four = new RewriteRule('threeregex', 'one=query&two=query');
+        $four->setRequiredQueryVariables(['one', 'two']);
+
+
+        $this->assertSame(
+            [],
+            (new Rewrite(['GET'], [$one], 'somehandler'))->getRequiredQueryVariables()
+        );
+
+        $this->assertSame(
+            ['two'],
+            (new Rewrite(['GET'], [$one, $two], 'somehandler'))->getRequiredQueryVariables()
+        );
+
+        // Handles multiple from a single rule.
+        $this->assertSame(
+            ['two', 'three', 'four'],
+            (new Rewrite(['GET'], [$one, $two, $three], 'somehandler'))->getRequiredQueryVariables()
+        );
+
+        // Prevents duplicates.
+        $this->assertSame(
+            ['two', 'one'],
+            (new Rewrite(['GET'], [$one, $two, $four], 'somehandler'))->getRequiredQueryVariables()
+        );
+    }
+
     public function testGetters()
     {
         $rules = [new RewriteRule('someregex', 'index.php?var=value')];
@@ -123,6 +162,43 @@ class RewriteTest extends TestCase
         $this->assertSame('two', $rewrite->mapQueryVariable('pfx_two'));
         $this->assertNull($rewrite->mapQueryVariable('two'));
         $this->assertNull($rewrite->mapQueryVariable('three'));
+    }
+
+    public function testValidate()
+    {
+        $one = new RewriteRule('regexone', 'one=valone');
+        $one->setRequiredQueryVariables(['one']);
+
+        $two = new RewriteRule('regextwo', 'two=valtwo');
+        $two->setRequiredQueryVariables(['two']);
+
+        $rewrite = new Rewrite(['GET'], [$one, $two], 'somehandler');
+
+        $this->assertSame(
+            ['one' => 'valone', 'two' => 'valtwo'],
+            $rewrite->validate(['one' => 'valone', 'two' => 'valtwo'])
+        );
+
+        // Only checking for required vars - extras are untouched.
+        $this->assertSame(
+            ['one' => 'valone', 'two' => 'valtwo', 'three' => 'valthree'],
+            $rewrite->validate(['one' => 'valone', 'two' => 'valtwo', 'three' => 'valthree'])
+        );
+    }
+
+    public function testValidateThrowsForMissingRequiredQueryVariables()
+    {
+        $this->expectException(RequiredQueryVariablesMissingException::class);
+
+        $one = new RewriteRule('regexone', 'one=valone');
+        $one->setRequiredQueryVariables(['one']);
+
+        $two = new RewriteRule('regextwo', 'two=valtwo');
+        $two->setRequiredQueryVariables(['two']);
+
+        $rewrite = new Rewrite(['GET'], [$one, $two], 'somehandler');
+
+        $rewrite->validate(['one' => 'valone']);
     }
 
     public function testWithInvalidMethods()

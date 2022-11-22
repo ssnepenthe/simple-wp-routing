@@ -18,7 +18,7 @@ class RewriteListDefinitionsCompilerTest extends TestCase
     {
         $one = new Rewrite(
             ['GET', 'HEAD'],
-            [new RewriteRule('^getregex$', 'index.php?var=get', 'pfx_')],
+            [(new RewriteRule('^getregex$', 'index.php?var=get', 'pfx_'))->setRequiredQueryVariables(['pfx_var', 'pfx_matchedRule'])],
             function () {
             }
         );
@@ -27,7 +27,7 @@ class RewriteListDefinitionsCompilerTest extends TestCase
 
         $two = new Rewrite(
             ['POST'],
-            [new RewriteRule('^postregex$', 'index.php?var=post', 'pfx_')],
+            [(new RewriteRule('^postregex$', 'index.php?var=post', 'pfx_'))->setRequiredQueryVariables(['pfx_var', 'pfx_matchedRule'])],
             function () {
             }
         );

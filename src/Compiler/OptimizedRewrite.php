@@ -16,6 +16,11 @@ class OptimizedRewrite extends Rewrite
     protected array $queryVariables;
 
     /**
+     * @var string[]
+     */
+    protected array $requiredQueryVariables;
+
+    /**
      * @param array<int, "GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS"> $methods
      * @param array<string, string> $queryVariables
      * @param mixed $handler
@@ -24,6 +29,7 @@ class OptimizedRewrite extends Rewrite
     public function __construct(
         array $methods,
         array $queryVariables,
+        array $requiredQueryVariables,
         InvocationStrategyInterface $invocationStrategy,
         $handler,
         $isActiveCallback = null
@@ -31,7 +37,13 @@ class OptimizedRewrite extends Rewrite
         parent::__construct($methods, [], $handler, $isActiveCallback);
 
         $this->queryVariables = $queryVariables;
+        $this->requiredQueryVariables = $requiredQueryVariables;
         $this->invocationStrategy = $invocationStrategy;
+    }
+
+    public function getRequiredQueryVariables(): array
+    {
+        return $this->requiredQueryVariables;
     }
 
     public function mapQueryVariable(string $queryVariable): ?string

@@ -34,37 +34,51 @@ return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy 
   6 => 'OPTIONS',
 ), array (
   'httpmethod_matchedRule' => 'matchedRule',
+), array (
+  0 => 'httpmethod_matchedRule',
 ), $this->invocationStrategy, static function () {}, NULL);
 $rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'DELETE',
 ), array (
   'httpmethod_matchedRule' => 'matchedRule',
+), array (
+  0 => 'httpmethod_matchedRule',
 ), $this->invocationStrategy, static function () {}, NULL);
 $rewrite2 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), array (
   'httpmethod_matchedRule' => 'matchedRule',
+), array (
+  0 => 'httpmethod_matchedRule',
 ), $this->invocationStrategy, static function () {}, NULL);
 $rewrite3 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'OPTIONS',
 ), array (
   'httpmethod_matchedRule' => 'matchedRule',
+), array (
+  0 => 'httpmethod_matchedRule',
 ), $this->invocationStrategy, static function () {}, NULL);
 $rewrite4 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'PATCH',
 ), array (
   'httpmethod_matchedRule' => 'matchedRule',
+), array (
+  0 => 'httpmethod_matchedRule',
 ), $this->invocationStrategy, static function () {}, NULL);
 $rewrite5 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'POST',
 ), array (
   'httpmethod_matchedRule' => 'matchedRule',
+), array (
+  0 => 'httpmethod_matchedRule',
 ), $this->invocationStrategy, static function () {}, NULL);
 $rewrite6 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'PUT',
 ), array (
   'httpmethod_matchedRule' => 'matchedRule',
+), array (
+  0 => 'httpmethod_matchedRule',
 ), $this->invocationStrategy, static function () {}, NULL);
 $this->rewrites->attach($rewrite0);
 $this->rewrites->attach($rewrite1);

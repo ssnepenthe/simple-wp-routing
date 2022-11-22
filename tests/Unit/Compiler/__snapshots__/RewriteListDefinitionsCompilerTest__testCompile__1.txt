@@ -4,6 +4,9 @@ $rewrite0 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
 ), array (
   'pfx_var' => 'var',
   'pfx_matchedRule' => 'matchedRule',
+), array (
+  0 => 'pfx_var',
+  1 => 'pfx_matchedRule',
 ), $this->invocationStrategy, static function () {
             }, static function () {
         });
@@ -12,6 +15,9 @@ $rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
 ), array (
   'pfx_var' => 'var',
   'pfx_matchedRule' => 'matchedRule',
+), array (
+  0 => 'pfx_var',
+  1 => 'pfx_matchedRule',
 ), $this->invocationStrategy, static function () {
             }, NULL);
 $this->rewrites->attach($rewrite0);

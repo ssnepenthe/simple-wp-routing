@@ -20,7 +20,7 @@ class RewriteCompilerTest extends TestCase
     {
         $rewrite = new Rewrite(
             ['GET', 'POST'],
-            [new RewriteRule('^regex$', 'index.php?var=value', 'pfx_')],
+            [(new RewriteRule('^regex$', 'index.php?var=value', 'pfx_'))->setRequiredQueryVariables(['pfx_var'])],
             ['handlerclass', 'handlermethod']
         );
         $rewrite->setIsActiveCallback(['isactiveclass', 'isactivemethod']);
@@ -32,7 +32,7 @@ class RewriteCompilerTest extends TestCase
     {
         $rewrite = new Rewrite(
             ['GET', 'POST'],
-            [new RewriteRule('^regex$', 'index.php?var=value', 'pfx_')],
+            [(new RewriteRule('^regex$', 'index.php?var=value', 'pfx_'))->setRequiredQueryVariables(['pfx_var'])],
             function () {
             }
         );
@@ -49,7 +49,7 @@ class RewriteCompilerTest extends TestCase
 
         $rewrite = new Rewrite(
             ['GET'],
-            [new RewriteRule('^regex$', 'index.php?var=val', 'pfx_')],
+            [(new RewriteRule('^regex$', 'index.php?var=val', 'pfx_'))->setRequiredQueryVariables(['pfx_var'])],
             [new stdClass(), 'methodname']
         );
 
@@ -63,7 +63,7 @@ class RewriteCompilerTest extends TestCase
 
         $rewrite = new Rewrite(
             ['GET'],
-            [new RewriteRule('^regex$', 'index.php?var=val', 'pfx_')],
+            [(new RewriteRule('^regex$', 'index.php?var=val', 'pfx_'))->setRequiredQueryVariables(['pfx_var'])],
             'handler'
         );
         $rewrite->setIsActiveCallback([new stdClass(), 'methodname']);
@@ -75,7 +75,7 @@ class RewriteCompilerTest extends TestCase
     {
         $rewrite = new Rewrite(
             ['GET', 'POST'],
-            [new RewriteRule('^regex$', 'index.php?var=value', 'pfx_')],
+            [(new RewriteRule('^regex$', 'index.php?var=value', 'pfx_'))->setRequiredQueryVariables(['pfx_var'])],
             function () {
             }
         );
@@ -87,7 +87,7 @@ class RewriteCompilerTest extends TestCase
     {
         $rewrite = new Rewrite(
             ['GET', 'POST'],
-            [new RewriteRule('^regex$', 'index.php?var=value', 'pfx_')],
+            [(new RewriteRule('^regex$', 'index.php?var=value', 'pfx_'))->setRequiredQueryVariables(['pfx_var'])],
             'handler'
         );
         $rewrite->setIsActiveCallback('isactivecallback');

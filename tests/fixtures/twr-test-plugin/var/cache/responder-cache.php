@@ -28,6 +28,8 @@ return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy 
   1 => 'HEAD',
 ), array (
   'responders_matchedRule' => 'matchedRule',
+), array (
+  0 => 'responders_matchedRule',
 ), $this->invocationStrategy, static function () {
             // @todo custom additional headers
             throw new \ToyWpRouting\Exception\NotFoundHttpException();
@@ -37,6 +39,8 @@ $rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   1 => 'HEAD',
 ), array (
   'responders_matchedRule' => 'matchedRule',
+), array (
+  0 => 'responders_matchedRule',
 ), $this->invocationStrategy, static function () {
             // @todo custom additional headers, custom theme template (body class and title), ensure query flags are reset
             throw new \ToyWpRouting\Exception\MethodNotAllowedHttpException(['POST', 'PUT']);
@@ -46,6 +50,8 @@ $rewrite2 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   1 => 'HEAD',
 ), array (
   'responders_matchedRule' => 'matchedRule',
+), array (
+  0 => 'responders_matchedRule',
 ), $this->invocationStrategy, static function () {
             // @todo custom status codes, error vs success status codes, json options, non-enveloped response, custom additional headers
             return new \ToyWpRouting\Responder\JsonResponder('hello from the json responder route');
@@ -55,6 +61,8 @@ $rewrite3 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   1 => 'HEAD',
 ), array (
   'responders_matchedRule' => 'matchedRule',
+), array (
+  0 => 'responders_matchedRule',
 ), $this->invocationStrategy, static function () {
             // @todo overwrite query variables
             add_action('twr_test_data', function () {
@@ -70,6 +78,8 @@ $rewrite4 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   1 => 'HEAD',
 ), array (
   'responders_matchedRule' => 'matchedRule',
+), array (
+  0 => 'responders_matchedRule',
 ), $this->invocationStrategy, static function () {
             // @todo custom status code, custom redirect-by, external (unsafe) redirect both allowed and not, custom headers
             return new \ToyWpRouting\Responder\RedirectResponder('/responders/query/');
@@ -79,6 +89,8 @@ $rewrite5 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   1 => 'HEAD',
 ), array (
   'responders_matchedRule' => 'matchedRule',
+), array (
+  0 => 'responders_matchedRule',
 ), $this->invocationStrategy, static function () {
             // @todo body class, document title, enqueue assets, dequeue assets, custom headers, query vars, query flags
             return new \ToyWpRouting\Responder\TemplateResponder('/srv/code/toy-wp-routing/tests/fixtures/twr-test-plugin' . '/templates/hello-world.php');

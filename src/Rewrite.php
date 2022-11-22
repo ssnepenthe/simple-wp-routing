@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ToyWpRouting;
 
+use ToyWpRouting\Exception\RequiredQueryVariablesMissingException;
+
 class Rewrite
 {
     /**
@@ -80,6 +82,19 @@ class Rewrite
         return $this->methods;
     }
 
+    public function getRequiredQueryVariables(): array
+    {
+        $requiredQueryVariables = [];
+
+        foreach ($this->rules as $rule) {
+            foreach ($rule->getRequiredQueryVariables() as $requiredQueryVariable) {
+                $requiredQueryVariables[$requiredQueryVariable] = true;
+            }
+        }
+
+        return array_keys($requiredQueryVariables);
+    }
+
     /**
      * @return RewriteRule[]
      */
@@ -144,5 +159,16 @@ class Rewrite
         $this->isActiveCallback = $isActiveCallback;
 
         return $this;
+    }
+
+    public function validate(array $queryVariables): array
+    {
+        $missing = array_diff_key(array_flip($this->getRequiredQueryVariables()), $queryVariables);
+
+        if ([] !== $missing) {
+            throw new RequiredQueryVariablesMissingException(array_keys($missing));
+        }
+
+        return $queryVariables;
     }
 }

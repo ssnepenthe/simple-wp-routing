@@ -10,7 +10,7 @@ use ToyWpRouting\Rewrite;
 
 class RewriteCompiler
 {
-    private const TEMPLATE = 'new \\ToyWpRouting\\Compiler\\OptimizedRewrite(%s, %s, $this->invocationStrategy, %s, %s)';
+    private const TEMPLATE = 'new \\ToyWpRouting\\Compiler\\OptimizedRewrite(%s, %s, %s, $this->invocationStrategy, %s, %s)';
 
     private Rewrite $rewrite;
 
@@ -30,6 +30,7 @@ class RewriteCompiler
             self::TEMPLATE,
             $this->methods(),
             $this->queryVariables(),
+            $this->requiredQueryVariables(),
             $this->handler(),
             $this->isActiveCallback()
         );
@@ -91,5 +92,10 @@ class RewriteCompiler
         }
 
         return var_export($queryVariables, true);
+    }
+
+    private function requiredQueryVariables(): string
+    {
+        return var_export($this->rewrite->getRequiredQueryVariables(), true);
     }
 }

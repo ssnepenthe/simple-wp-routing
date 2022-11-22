@@ -24,6 +24,9 @@ return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy 
 ), array (
   'some' => 'some',
   'matchedRule' => 'matchedRule',
+), array (
+  0 => 'some',
+  1 => 'matchedRule',
 ), $this->invocationStrategy, static function () {
         }, NULL);
 $this->rewrites->attach($rewrite0);

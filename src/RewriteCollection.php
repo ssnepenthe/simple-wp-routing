@@ -223,12 +223,10 @@ class RewriteCollection
      */
     protected function create(array $methods, string $regex, string $query, $handler): Rewrite
     {
-        $rewrite = new Rewrite(
-            $methods,
-            [new RewriteRule($regex, $query, $this->prefix)],
-            $handler
-        );
+        $rule = new RewriteRule($regex, $query, $this->prefix);
+        $rule->setRequiredQueryVariables(array_keys($rule->getQueryVariables()));
 
+        $rewrite = new Rewrite($methods, [$rule], $handler);
         $rewrite->setInvocationStrategy($this->invocationStrategy);
 
         return $rewrite;

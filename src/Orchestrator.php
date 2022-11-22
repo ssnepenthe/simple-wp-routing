@@ -163,7 +163,9 @@ class Orchestrator
                 return;
             }
 
-            $responder = $rewrite->handle($queryVars);
+            $validated = $rewrite->validate($queryVars);
+
+            $responder = $rewrite->handle($validated);
         } catch (HttpExceptionInterface $e) {
             $responder = new HttpExceptionResponder($e);
         } catch (RewriteInvocationExceptionInterface $e) {

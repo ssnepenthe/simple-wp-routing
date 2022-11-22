@@ -20,6 +20,7 @@ class RouteConverterTest extends TestCase
 
         $this->assertSame(['GET'], $rewrite->getMethods());
         $this->assertSame('somehandler', $rewrite->getHandler());
+        $this->assertSame(['matchedRule'], $rewrite->getRequiredQueryVariables());
     }
 
     public function testConvertCollection()
@@ -83,6 +84,15 @@ class RouteConverterTest extends TestCase
         $this->assertSame('^someroutestring$', $rewrite->getRules()[1]->getRegex());
     }
 
+    public function testConvertWithOptionalRouteSegmentsRequiredQueryVariableHandling()
+    {
+        $route = new Route(['GET'], 'one/{var}[/optional[/{optionalVar}]]', 'somehandler');
+
+        $rewrite = (new RouteConverter())->convert($route);
+
+        $this->assertSame(['var', 'matchedRule'], $rewrite->getRequiredQueryVariables());
+    }
+
     public function testConvertWithPrefix()
     {
         // Route prefixes are automatically applied to rewrites.
@@ -95,5 +105,6 @@ class RouteConverterTest extends TestCase
             ['pfx_string', 'pfx_matchedRule'],
             array_keys($rewrite->getRules()[0]->getQueryVariables())
         );
+        $this->assertSame(['pfx_string', 'pfx_matchedRule'], $rewrite->getRequiredQueryVariables());
     }
 }

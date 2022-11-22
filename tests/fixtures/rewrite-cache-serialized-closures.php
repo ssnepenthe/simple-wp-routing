@@ -25,6 +25,9 @@ return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy 
 ), array (
   'pfx_var' => 'var',
   'pfx_matchedRule' => 'matchedRule',
+), array (
+  0 => 'pfx_var',
+  1 => 'pfx_matchedRule',
 ), $this->invocationStrategy, static function () {}, static function () {});
 $this->rewrites->attach($rewrite0);
 $this->rewritesByHashAndMethod = array (

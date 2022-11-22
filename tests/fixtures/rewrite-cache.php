@@ -26,12 +26,18 @@ return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy 
 ), array (
   'var' => 'var',
   'matchedRule' => 'matchedRule',
+), array (
+  0 => 'var',
+  1 => 'matchedRule',
 ), $this->invocationStrategy, 'firsthandler', NULL);
 $rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'POST',
 ), array (
   'var' => 'var',
   'matchedRule' => 'matchedRule',
+), array (
+  0 => 'var',
+  1 => 'matchedRule',
 ), $this->invocationStrategy, 'secondhandler', 'secondisactivecallback');
 $this->rewrites->attach($rewrite0);
 $this->rewrites->attach($rewrite1);

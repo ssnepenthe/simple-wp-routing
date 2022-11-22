@@ -189,7 +189,7 @@ class OrchestratorTest extends TestCase
         $count = 0;
 
         $rewrites = new RewriteCollection();
-        $rewrites->get($this->regex, 'index.php?var=value', function () use (&$count) {
+        $rewrites->get($this->regex, '', function () use (&$count) {
             $count++;
         });
 
@@ -211,7 +211,7 @@ class OrchestratorTest extends TestCase
         };
 
         $rewrites = new RewriteCollection();
-        $rewrites->get($this->regex, 'index.php?var=value', function () use ($responder) {
+        $rewrites->get($this->regex, '', function () use ($responder) {
             return $responder;
         });
 

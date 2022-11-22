@@ -29,6 +29,9 @@ return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy 
 ), array (
   'orchestrator_activeVar' => 'activeVar',
   'orchestrator_matchedRule' => 'matchedRule',
+), array (
+  0 => 'orchestrator_activeVar',
+  1 => 'orchestrator_matchedRule',
 ), $this->invocationStrategy, static function () {}, NULL);
 $rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'GET',
@@ -36,6 +39,9 @@ $rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
 ), array (
   'orchestrator_inactiveVar' => 'inactiveVar',
   'orchestrator_matchedRule' => 'matchedRule',
+), array (
+  0 => 'orchestrator_inactiveVar',
+  1 => 'orchestrator_matchedRule',
 ), $this->invocationStrategy, static function () {
             add_action('twr_test_data', function () {
                 echo '<span class="twr-orchestrator-inactive"></span>';
@@ -46,6 +52,8 @@ $rewrite2 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   1 => 'HEAD',
 ), array (
   'orchestrator_matchedRule' => 'matchedRule',
+), array (
+  0 => 'orchestrator_matchedRule',
 ), $this->invocationStrategy, static function () {
             return new \ToyWpRouting\Responder\JsonResponder('hello from the orchestrator responder route');
         }, NULL);
@@ -54,6 +62,8 @@ $rewrite3 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   1 => 'HEAD',
 ), array (
   'orchestrator_matchedRule' => 'matchedRule',
+), array (
+  0 => 'orchestrator_matchedRule',
 ), $this->invocationStrategy, static function () {
             $responder = new \ToyWpRouting\Responder\JsonResponder('hello from the orchestrator hierarchical responder route');
 
