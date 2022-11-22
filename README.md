@@ -190,10 +190,10 @@ overwritten.
 
 Use `RewriteCollectionCache->delete()` to clear the rewrite cache.
 
-If you are using closures for rewrite handlers or active callbacks, you must install `opis/closure`:
+If you are using closures for rewrite handlers or active callbacks, you must install `laravel/serializable-closure`:
 
 ```sh
-composer require opis/closure
+composer require laravel/serializable-closure
 ```
 
 The caching mechanism does not support using instance methods for rewrite handlers or active callbacks.

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ToyWpRouting\Compiler;
 
 use Closure;
-use Opis\Closure\ReflectionClosure;
+use Laravel\SerializableClosure\Support\ReflectionClosure;
 use RuntimeException;
 
 class ClosureCompiler
