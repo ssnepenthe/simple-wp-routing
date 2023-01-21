@@ -49,8 +49,8 @@
         }
     },
     "scripts": {
-        "btest": "vendor/bin/phpunit --testsuite browser",
-        "cbtest": "vendor/bin/phpunit --testsuite browser -d --use-rewrite-cache",
-        "utest": "vendor/bin/phpunit --testsuite unit"
+        "test:e2e": "vendor/bin/phpunit --testsuite browser",
+        "test:e2e-cache": "vendor/bin/phpunit --testsuite browser -d --use-rewrite-cache",
+        "test:unit": "vendor/bin/phpunit --testsuite unit"
     }
 }
