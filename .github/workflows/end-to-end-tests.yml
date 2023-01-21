@@ -27,11 +27,9 @@ jobs:
           - '8.2'
         wordpress:
           - 'latest'
-        # WP 5.1 was arbitrarily chosen because it was released around the time of PHP 7.4
         include:
+          # WP 5.1 was arbitrarily chosen because it was released around the time of PHP 7.4
           - php: '7.4'
-            wordpress: '5.1'
-          - php: '8.2'
             wordpress: '5.1'
 
     steps:
