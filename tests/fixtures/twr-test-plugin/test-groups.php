@@ -31,7 +31,7 @@ abstract class TestGroup
 
     public function initialize(): void
     {
-        if (filter_var($_REQUEST['twr_enable_cache'] ?? false, FILTER_VALIDATE_BOOL)) {
+        if (filter_var($_REQUEST['twr_enable_cache'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
             $cache = $this->createCache();
 
             if (! $cache->exists()) {

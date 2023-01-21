@@ -10,6 +10,22 @@ use Symfony\Component\BrowserKit\HttpBrowser;
 
 class TestCase extends FrameworkTestCase
 {
+    protected static string $testHost = '';
+
+    protected static function getTestHost(): string
+    {
+        if ('' === static::$testHost) {
+            $url = file_get_contents(__DIR__ . '/test-url');
+            $url = trim($url);
+
+            $parsed = parse_url($url);
+
+            static::$testHost = "{$parsed['host']}:{$parsed['port']}";
+        }
+
+        return static::$testHost;
+    }
+
     protected function setUp(): void
     {
         $testData = $this->getBrowser()
@@ -24,7 +40,7 @@ class TestCase extends FrameworkTestCase
     protected function getBrowser(): AbstractBrowser
     {
         $browser = new HttpBrowser();
-        $browser->setServerParameter('HTTP_HOST', 'one.wordpress.test');
+        $browser->setServerParameter('HTTP_HOST', static::getTestHost());
         $browser->followRedirects(false);
 
         return $browser;
@@ -46,6 +62,6 @@ class TestCase extends FrameworkTestCase
             return true;
         }
 
-        return filter_var(getenv('USE_REWRITE_CACHE'), FILTER_VALIDATE_BOOL);
+        return filter_var(getenv('USE_REWRITE_CACHE'), FILTER_VALIDATE_BOOLEAN);
     }
 }

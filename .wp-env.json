@@ -1,0 +1,10 @@
+{
+    "plugins": ["./tests/fixtures/twr-test-plugin"],
+    "env": {
+        "tests": {
+            "mappings": {
+                "wp-cli.yml": "./wp-env/wp-cli.yml"
+            }
+        }
+    }
+}

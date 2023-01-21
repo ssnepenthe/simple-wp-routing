@@ -1,0 +1,25 @@
+{
+  "name": "toy-wp-routing",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ssnepenthe/toy-wp-routing.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ssnepenthe/toy-wp-routing/issues"
+  },
+  "homepage": "https://github.com/ssnepenthe/toy-wp-routing#readme",
+  "devDependencies": {
+    "@wordpress/env": "^5.10.0"
+  }
+}
