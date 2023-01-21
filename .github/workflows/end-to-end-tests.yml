@@ -82,6 +82,5 @@ jobs:
       - name: Run e2e tests
         run: composer run btest
 
-      # @todo uncomment after verified to be working as expected
-      # - name: Run e2e tests with cache enabled
-      #   run: composer run cbtest
+      - name: Run e2e tests with cache enabled
+        run: composer run cbtest
