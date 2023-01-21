@@ -1,5 +1,7 @@
 .phpunit.cache/
+node_modules/
 scratch/
 vendor/
 .php-cs-fixer.cache
+.wp-env.override.json
 composer.lock

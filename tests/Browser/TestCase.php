@@ -24,7 +24,7 @@ class TestCase extends FrameworkTestCase
     protected function getBrowser(): AbstractBrowser
     {
         $browser = new HttpBrowser();
-        $browser->setServerParameter('HTTP_HOST', 'one.wordpress.test');
+        $browser->setServerParameter('HTTP_HOST', 'localhost:8889');
         $browser->followRedirects(false);
 
         return $browser;
