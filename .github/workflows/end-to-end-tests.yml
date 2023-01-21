@@ -61,6 +61,7 @@ jobs:
       - name: Start WP environment
         run: |
           wp-env/prepare.sh
+          sed -i "s/dev-master/dev-$GITHUB_SHA/" tests/fixtures/twr-test-plugin/composer.json
           wp-env/refresh-test-dependencies.sh
           wp-env/print-config.js | jq
 
