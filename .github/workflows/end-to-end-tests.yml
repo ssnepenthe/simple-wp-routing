@@ -21,24 +21,18 @@ jobs:
     strategy:
       matrix:
         php:
-          # @todo uncomment after verified to be working as expected
-          # - '7.4'
-          # - '8.0'
-          # - '8.1'
+          - '7.4'
+          - '8.0'
+          - '8.1'
           - '8.2'
-        # @todo this needs to be used in the refresh-test-dependencies script
-        # dependencies:
-        #   - ''
-        #   - '--prefer-lowest'
         wordpress:
           - 'latest'
         # WP 5.1 was arbitrarily chosen because it was released around the time of PHP 7.4
-        # @todo uncomment after verified to be working as expected
-        # include:
-        #   - php: '7.4'
-        #     wordpress: '5.1'
-        #   - php: '8.2'
-        #     wordpress: '5.1'
+        include:
+          - php: '7.4'
+            wordpress: '5.1'
+          - php: '8.2'
+            wordpress: '5.1'
 
     steps:
       - name: Checkout
