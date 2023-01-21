@@ -46,6 +46,6 @@ class TestCase extends FrameworkTestCase
             return true;
         }
 
-        return filter_var(getenv('USE_REWRITE_CACHE'), FILTER_VALIDATE_BOOL);
+        return filter_var(getenv('USE_REWRITE_CACHE'), FILTER_VALIDATE_BOOLEAN);
     }
 }
