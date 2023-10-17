@@ -6,24 +6,16 @@ namespace ToyWpRouting\Responder;
 
 use ToyWpRouting\Responder\Partial\WpPartial;
 
-class QueryResponder extends ComposableResponder
+class QueryResponder extends Responder
 {
     public function __construct(array $queryVariables, bool $overwriteExisting = false)
     {
-        $this->wp()->setQueryVariables($queryVariables);
+        $wp = $this->getPartialSet()->get(WpPartial::class);
+
+        $wp->setQueryVariables($queryVariables);
 
         if ($overwriteExisting) {
-            $this->wp()->overwriteQueryVariables();
+            $wp->overwriteQueryVariables();
         }
-    }
-
-    public function wp(): WpPartial
-    {
-        return $this->getPartialSet()->get(WpPartial::class);
-    }
-
-    protected function createPartials(): array
-    {
-        return [new WpPartial()];
     }
 }

@@ -7,6 +7,7 @@ namespace ToyWpRouting\Exception;
 use RuntimeException;
 use Throwable;
 use ToyWpRouting\Responder\HttpExceptionResponder;
+use ToyWpRouting\Responder\Partial\HeadersPartial;
 
 class HttpException extends RuntimeException implements HttpExceptionInterface
 {
@@ -38,7 +39,8 @@ class HttpException extends RuntimeException implements HttpExceptionInterface
 
     public function prepareResponse(HttpExceptionResponder $responder): void
     {
-        $responder->headers()
+        $responder->getPartialSet()
+            ->get(HeadersPartial::class)
             ->setStatusCode($this->statusCode)
             ->setHeaders($this->headers);
 

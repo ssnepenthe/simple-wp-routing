@@ -6,6 +6,7 @@ namespace ToyWpRouting\Exception;
 
 use Throwable;
 use ToyWpRouting\Responder\HttpExceptionResponder;
+use ToyWpRouting\Responder\Partial\HeadersPartial;
 use WP_Query;
 
 class NotFoundHttpException extends HttpException
@@ -26,7 +27,7 @@ class NotFoundHttpException extends HttpException
 
     protected function doPrepareResponse(HttpExceptionResponder $responder): void
     {
-        $responder->headers()->includeNocacheHeaders();
+        $responder->getPartialSet()->get(HeadersPartial::class)->includeNocacheHeaders();
 
         add_action('parse_query', [$this, 'onParseQuery']);
     }

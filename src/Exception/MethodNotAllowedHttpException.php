@@ -6,6 +6,9 @@ namespace ToyWpRouting\Exception;
 
 use Throwable;
 use ToyWpRouting\Responder\HttpExceptionResponder;
+use ToyWpRouting\Responder\Partial\HeadersPartial;
+use ToyWpRouting\Responder\Partial\ThemePartial;
+use ToyWpRouting\Responder\Partial\WpQueryPartial;
 
 class MethodNotAllowedHttpException extends HttpException
 {
@@ -53,13 +56,14 @@ class MethodNotAllowedHttpException extends HttpException
 
     protected function doPrepareResponse(HttpExceptionResponder $responder): void
     {
-        $responder->headers()->includeNocacheHeaders();
+        $responder->getPartialSet()->get(HeadersPartial::class)->includeNocacheHeaders();
 
-        $responder->theme()
+        $responder->getPartialSet()
+            ->get(ThemePartial::class)
             ->addBodyClass('error405')
             ->setTitle('Method not allowed');
 
-        $responder->wpQuery()->resetFlags();
+        $responder->getPartialSet()->get(WpQueryPartial::class)->resetFlags();
 
         add_filter('template_include', [$this, 'onTemplateInclude']);
         add_filter('wp_robots', [$this, 'onWpRobots']);

@@ -7,6 +7,7 @@ use ToyWpRouting\Exception\MethodNotAllowedHttpException;
 use ToyWpRouting\Exception\NotFoundHttpException;
 use ToyWpRouting\Orchestrator;
 use ToyWpRouting\Responder\JsonResponder;
+use ToyWpRouting\Responder\Partial\HeadersPartial;
 use ToyWpRouting\Responder\QueryResponder;
 use ToyWpRouting\Responder\RedirectResponder;
 use ToyWpRouting\Responder\TemplateResponder;
@@ -106,7 +107,7 @@ class OrchestratorGroup extends TestGroup
             $responder = new JsonResponder('hello from the orchestrator hierarchical responder route');
 
             // We return the headers partial - expectation is that orchestrator traverses back up to the JsonResponder.
-            return $responder->headers();
+            return $responder->getPartialSet()->get(HeadersPartial::class);
         });
 
         return $routes;
