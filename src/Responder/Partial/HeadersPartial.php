@@ -99,9 +99,6 @@ final class HeadersPartial implements PartialInterface, RegistersConflictsInterf
 
         foreach ($this->headers as $key => $values) {
             foreach ($values as $value) {
-                // @todo Should we check $key and force replace param to true for certain headers?
-                // For example, Symfony prevents multiple content type headers.
-                // Should we also set status code as third param when we get around to implementing?
                 header("{$key}: {$value}", false);
             }
         }

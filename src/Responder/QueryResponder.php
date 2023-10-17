@@ -24,7 +24,6 @@ class QueryResponder extends ComposableResponder
 
     protected function createPartials(): array
     {
-        // @todo WpQueryPartial?
         return [new WpPartial()];
     }
 }

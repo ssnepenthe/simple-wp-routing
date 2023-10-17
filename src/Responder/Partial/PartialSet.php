@@ -48,10 +48,6 @@ final class PartialSet implements HierarchicalResponderInterface, IteratorAggreg
      */
     public function addConflict(array $one, array $two): void
     {
-        // @todo ???
-        // $this->assertWellFormedConflict($one);
-        // $this->assertWellFormedConflict($two);
-
         $oneKey = "{$one[0]}::{$one[1]}";
         $twoKey = "{$two[0]}::{$two[1]}";
 

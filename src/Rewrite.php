@@ -103,10 +103,6 @@ class Rewrite
         return $this->rules;
     }
 
-    // @todo also in snake case?
-    // @todo Test with optional params.
-    // @todo Include all query vars?
-    // @todo Include prefixed query vars as well?
     public function handle(array $queryVariables = [])
     {
         $context = [];

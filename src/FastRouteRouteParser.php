@@ -26,7 +26,6 @@ class FastRouteRouteParser implements RouteParserInterface
             throw new BadRouteException('Empty routes not allowed');
         }
 
-        // @todo Catch and rethrow fast-route exceptions as package-specific exceptions?
         $parsed = $this->parser->parse($route);
         $rewrites = [];
 

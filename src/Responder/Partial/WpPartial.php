@@ -6,7 +6,6 @@ namespace ToyWpRouting\Responder\Partial;
 
 use WP;
 
-// @todo Pre-empt 404 via pre_handle_404?
 final class WpPartial implements PartialInterface
 {
     use PartialTrait;
@@ -66,7 +65,6 @@ final class WpPartial implements PartialInterface
 
     public function setQueryVariables(array $queryVariables): self
     {
-        // @todo reset? and add addqueryvar function?
         foreach ($queryVariables as $key => $value) {
             $this->setQueryVariable($key, $value);
         }

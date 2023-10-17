@@ -48,7 +48,6 @@ final class RedirectPartial implements PartialInterface, RegistersConflictsInter
         }
 
         if (is_callable($this->responseFunction)) {
-            // @todo Should this also receive value of $this->safe?
             $success = ($this->responseFunction)(
                 $this->location,
                 $this->statusCode,
@@ -70,7 +69,6 @@ final class RedirectPartial implements PartialInterface, RegistersConflictsInter
      */
     public function registerConflicts(PartialSet $partialSet): void
     {
-        // @todo headers containing x-redirect-by?
         $partialSet->addConflict(
             [static::class, 'hasLocation'],
             [AssetsPartial::class, 'isModifyingResponse']
@@ -107,7 +105,6 @@ final class RedirectPartial implements PartialInterface, RegistersConflictsInter
         add_action('template_redirect', [$this, 'onTemplateRedirect']);
     }
 
-    // @todo name?
     public function setInitiator(string $initiator): self
     {
         $this->initiator = $initiator;
@@ -115,7 +112,6 @@ final class RedirectPartial implements PartialInterface, RegistersConflictsInter
         return $this;
     }
 
-    // @todo to() method as an alias?
     public function setLocation(string $location): self
     {
         $this->location = $location;

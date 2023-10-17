@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Responder\Partial;
 
-// @todo add inline scripts and styles? localize scripts? set script tranlations? block styles?
-// @todo reset dequeued/enqueued scripts/styles?
 final class AssetsPartial implements PartialInterface, RegistersConflictsInterface
 {
     use PartialTrait;

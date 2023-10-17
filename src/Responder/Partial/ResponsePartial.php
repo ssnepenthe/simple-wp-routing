@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Responder\Partial;
 
-// @todo Name?
 final class ResponsePartial implements PartialInterface, RegistersConflictsInterface
 {
     use PartialTrait;

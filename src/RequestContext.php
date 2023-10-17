@@ -76,7 +76,6 @@ class RequestContext
         $override = $this->getHeader('X-HTTP-METHOD-OVERRIDE');
 
         if (! is_string($override)) {
-            // @todo Support $_POST['_method'] as well?
             return $method;
         }
 

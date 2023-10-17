@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Responder\Partial;
 
-// @todo Hierarchy? query template?
 final class TemplatePartial implements PartialInterface, RegistersConflictsInterface
 {
     use PartialTrait;
@@ -63,7 +62,6 @@ final class TemplatePartial implements PartialInterface, RegistersConflictsInter
 
     public function setTemplate(string $templatePath): self
     {
-        // @todo verify file exists/is readable?
         $this->template = $templatePath;
 
         return $this;

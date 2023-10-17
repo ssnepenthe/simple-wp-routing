@@ -61,7 +61,6 @@ class RewriteCollectionCache
             mkdir($this->dir, 0700, true);
         }
 
-        // @todo Should we really delete by default?
         $this->delete();
 
         $compiled = (string) (new RewriteCollectionCompiler($rewriteCollection));
