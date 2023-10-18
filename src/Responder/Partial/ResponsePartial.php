@@ -39,19 +39,12 @@ final class ResponsePartial implements PartialInterface, RegistersConflictsInter
     /**
      * @internal
      */
-    public function registerConflicts(PartialSet $partialSet): void
+    public function registerConflicts(Conflicts $conflicts): void
     {
-        $partialSet->addConflict([static::class, 'hasBody'], [JsonPartial::class, 'hasData']);
-
-        $partialSet->addConflict(
-            [static::class, 'hasBody'],
-            [RedirectPartial::class, 'hasLocation']
-        );
-
-        $partialSet->addConflict(
-            [static::class, 'hasBody'],
-            [TemplatePartial::class, 'hasTemplate']
-        );
+        $conflicts
+            ->register([static::class, 'hasBody'], [JsonPartial::class, 'hasData'])
+            ->register([static::class, 'hasBody'], [RedirectPartial::class, 'hasLocation'])
+            ->register([static::class, 'hasBody'], [TemplatePartial::class, 'hasTemplate']);
     }
 
     /**

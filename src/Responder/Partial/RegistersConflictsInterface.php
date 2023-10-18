@@ -6,5 +6,5 @@ namespace ToyWpRouting\Responder\Partial;
 
 interface RegistersConflictsInterface
 {
-    public function registerConflicts(PartialSet $partialSet): void;
+    public function registerConflicts(Conflicts $conflicts): void;
 }

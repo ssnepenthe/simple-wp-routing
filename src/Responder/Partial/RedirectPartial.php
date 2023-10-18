@@ -67,34 +67,15 @@ final class RedirectPartial implements PartialInterface, RegistersConflictsInter
     /**
      * @internal
      */
-    public function registerConflicts(PartialSet $partialSet): void
+    public function registerConflicts(Conflicts $conflicts): void
     {
-        $partialSet->addConflict(
-            [static::class, 'hasLocation'],
-            [AssetsPartial::class, 'isModifyingResponse']
-        );
-
-        $partialSet->addConflict(
-            [static::class, 'hasLocation'],
-            [HeadersPartial::class, 'hasStatusCode']
-        );
-
-        $partialSet->addConflict([static::class, 'hasLocation'], [JsonPartial::class, 'hasData']);
-
-        $partialSet->addConflict(
-            [static::class, 'hasLocation'],
-            [ResponsePartial::class, 'hasBody']
-        );
-
-        $partialSet->addConflict(
-            [static::class, 'hasLocation'],
-            [TemplatePartial::class, 'hasTemplate']
-        );
-
-        $partialSet->addConflict(
-            [static::class, 'hasLocation'],
-            [ThemePartial::class, 'isModifyingResponse']
-        );
+        $conflicts
+            ->register([static::class, 'hasLocation'], [AssetsPartial::class, 'isModifyingResponse'])
+            ->register([static::class, 'hasLocation'], [HeadersPartial::class, 'hasStatusCode'])
+            ->register([static::class, 'hasLocation'], [JsonPartial::class, 'hasData'])
+            ->register([static::class, 'hasLocation'], [ResponsePartial::class, 'hasBody'])
+            ->register([static::class, 'hasLocation'], [TemplatePartial::class, 'hasTemplate'])
+            ->register([static::class, 'hasLocation'], [ThemePartial::class, 'isModifyingResponse']);
     }
 
     /**

@@ -140,14 +140,11 @@ final class HeadersPartial implements PartialInterface, RegistersConflictsInterf
     /**
      * @internal
      */
-    public function registerConflicts(PartialSet $partialSet): void
+    public function registerConflicts(Conflicts $conflicts): void
     {
-        $partialSet->addConflict([static::class, 'hasStatusCode'], [JsonPartial::class, 'hasData']);
-
-        $partialSet->addConflict(
-            [static::class, 'hasStatusCode'],
-            [RedirectPartial::class, 'hasLocation']
-        );
+        $conflicts
+            ->register([static::class, 'hasStatusCode'], [JsonPartial::class, 'hasData'])
+            ->register([static::class, 'hasStatusCode'], [RedirectPartial::class, 'hasLocation']);
     }
 
     public function removeHeader(string $key): self

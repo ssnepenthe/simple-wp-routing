@@ -84,17 +84,11 @@ final class AssetsPartial implements PartialInterface, RegistersConflictsInterfa
     /**
      * @internal
      */
-    public function registerConflicts(PartialSet $partialSet): void
+    public function registerConflicts(Conflicts $conflicts): void
     {
-        $partialSet->addConflict(
-            [static::class, 'isModifyingResponse'],
-            [JsonPartial::class, 'hasData']
-        );
-
-        $partialSet->addConflict(
-            [static::class, 'isModifyingResponse'],
-            [RedirectPartial::class, 'hasLocation']
-        );
+        $conflicts
+            ->register([static::class, 'isModifyingResponse'], [JsonPartial::class, 'hasData'])
+            ->register([static::class, 'isModifyingResponse'], [RedirectPartial::class, 'hasLocation']);
     }
 
     /**

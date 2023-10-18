@@ -7,17 +7,13 @@ namespace ToyWpRouting\Responder\Partial;
 use ArrayIterator;
 use InvalidArgumentException;
 use IteratorAggregate;
-use RuntimeException;
 use ToyWpRouting\Responder\HierarchicalResponderInterface;
 use ToyWpRouting\Responder\ResponderInterface;
 use Traversable;
 
 final class PartialSet implements HierarchicalResponderInterface, IteratorAggregate
 {
-    /**
-     * @var array<string, array{0: array, 1: array}>
-     */
-    private array $conflicts = [];
+    private Conflicts $conflicts;
     /**
      * @var array<class-string<PartialInterface>, PartialInterface>
      */
@@ -27,6 +23,7 @@ final class PartialSet implements HierarchicalResponderInterface, IteratorAggreg
     public function __construct(?ResponderInterface $responder = null)
     {
         $this->responder = $responder;
+        $this->conflicts = new Conflicts();
     }
 
     public function add(PartialInterface ...$partials): void
@@ -35,53 +32,16 @@ final class PartialSet implements HierarchicalResponderInterface, IteratorAggreg
             $partial->setParent($this);
 
             if ($partial instanceof RegistersConflictsInterface) {
-                $partial->registerConflicts($this);
+                $partial->registerConflicts($this->conflicts);
             }
 
             $this->partials[get_class($partial)] = $partial;
         }
     }
 
-    /**
-     * @psalm-param array{0: class-string<PartialInterface>, 1: string} $one
-     * @psalm-param array{0: class-string<PartialInterface>, 1: string} $two
-     */
-    public function addConflict(array $one, array $two): void
-    {
-        $oneKey = "{$one[0]}::{$one[1]}";
-        $twoKey = "{$two[0]}::{$two[1]}";
-
-        $a = strcmp($oneKey, $twoKey);
-
-        if ($a < 0) {
-            $key = $oneKey . $twoKey;
-        } elseif ($a > 0) {
-            $key = $twoKey . $oneKey;
-        } else {
-            throw new InvalidArgumentException('Cannot add self referencing conflict');
-        }
-
-        if (! array_key_exists($key, $this->conflicts)) {
-            $this->conflicts[$key] = [$one, $two];
-        }
-    }
-
     public function assertNoConflicts(): void
     {
-        foreach ($this->conflicts as [$one, $two]) {
-            if (
-                $this->has($one[0]) && call_user_func([$this->get($one[0]), $one[1]])
-                && $this->has($two[0]) && call_user_func([$this->get($two[0]), $two[1]])
-            ) {
-                throw new RuntimeException(sprintf(
-                    'Conflicting responder state - %s::%s() and %s::%s() cannot both be true',
-                    $one[0],
-                    $one[1],
-                    $two[0],
-                    $two[1]
-                ));
-            }
-        }
+        $this->conflicts->assertNoConflicts($this);
     }
 
     /**
@@ -120,7 +80,9 @@ final class PartialSet implements HierarchicalResponderInterface, IteratorAggreg
 
     public function respond(): void
     {
-        add_action('template_redirect', [$this, 'assertNoConflicts'], -99);
+        add_action('template_redirect', function () {
+            $this->conflicts->assertNoConflicts($this);
+        }, -99);
 
         foreach ($this->partials as $partial) {
             $partial->respond();

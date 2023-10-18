@@ -37,19 +37,12 @@ final class TemplatePartial implements PartialInterface, RegistersConflictsInter
     /**
      * @internal
      */
-    public function registerConflicts(PartialSet $partialSet): void
+    public function registerConflicts(Conflicts $conflicts): void
     {
-        $partialSet->addConflict([static::class, 'hasTemplate'], [JsonPartial::class, 'hasData']);
-
-        $partialSet->addConflict(
-            [static::class, 'hasTemplate'],
-            [RedirectPartial::class, 'hasLocation']
-        );
-
-        $partialSet->addConflict(
-            [static::class, 'hasTemplate'],
-            [ResponsePartial::class, 'hasBody']
-        );
+        $conflicts
+            ->register([static::class, 'hasTemplate'], [JsonPartial::class, 'hasData'])
+            ->register([static::class, 'hasTemplate'], [RedirectPartial::class, 'hasLocation'])
+            ->register([static::class, 'hasTemplate'], [ResponsePartial::class, 'hasBody']);
     }
 
     /**
