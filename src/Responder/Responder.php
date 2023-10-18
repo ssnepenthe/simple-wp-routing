@@ -1,8 +1,8 @@
 <?php
 
-namespace ToyWpRouting\Responder;
+declare(strict_types=1);
 
-use ToyWpRouting\Responder\Partial;
+namespace ToyWpRouting\Responder;
 
 class Responder extends ComposableResponder
 {
