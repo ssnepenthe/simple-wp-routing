@@ -103,6 +103,9 @@ class Rewrite
         return $this->rules;
     }
 
+    /**
+     * @return mixed
+     */
     public function handle(array $queryVariables = [])
     {
         $context = [];

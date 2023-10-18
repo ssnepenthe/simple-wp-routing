@@ -7,7 +7,7 @@ use Throwable;
 
 class RequiredQueryVariablesMissingException extends RuntimeException implements RewriteInvocationExceptionInterface
 {
-    protected $missingQueryVariables;
+    protected array $missingQueryVariables;
 
     /**
      * @param string[] $missingQueryVariables

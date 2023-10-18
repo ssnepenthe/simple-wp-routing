@@ -73,6 +73,9 @@ final class PartialSet implements HierarchicalResponderInterface, IteratorAggreg
         return $this->responder;
     }
 
+    /**
+     * @psalm-param class-string $class
+     */
     public function has(string $class): bool
     {
         return array_key_exists($class, $this->partials);
