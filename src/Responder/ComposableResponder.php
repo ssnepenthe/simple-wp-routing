@@ -16,9 +16,7 @@ abstract class ComposableResponder implements ResponderInterface
         if (! $this->partialSet instanceof PartialSet) {
             $this->partialSet = new PartialSet($this);
 
-            foreach ($this->createPartials() as $partial) {
-                $this->partialSet->add($partial);
-            }
+            $this->partialSet->add(...$this->createPartials());
         }
 
         return $this->partialSet;
