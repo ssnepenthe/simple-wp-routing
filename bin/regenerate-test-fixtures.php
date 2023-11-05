@@ -6,6 +6,9 @@ use ToyWpRouting\RewriteCollectionCache;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+
+// Cached rewrite collections for unit tests.
+
 // Regular
 $rewriteCollection = new RewriteCollection();
 
@@ -22,3 +25,18 @@ $rewriteCollection->get('^regex$', 'index.php?var=val', function () {})->setIsAc
 
 $rewriteCollectionCache = new RewriteCollectionCache(__DIR__ . '/../tests/fixtures', 'rewrite-cache-serialized-closures.php');
 $rewriteCollectionCache->put($rewriteCollection);
+
+
+// Cached rewrite collections for browser tests.
+
+use TwrTestPlugin\TestGroup;
+
+require_once __DIR__ . '/../tests/fixtures/twr-test-plugin/test-groups.php';
+
+foreach (TestGroup::createTestGroups() as $testGroup) {
+    $cache = $testGroup->createCache();
+
+    $cache->delete();
+
+    $cache->put($testGroup->createRewrites());
+}

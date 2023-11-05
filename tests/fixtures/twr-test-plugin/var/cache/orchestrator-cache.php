@@ -68,7 +68,7 @@ $rewrite3 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
             $responder = new \ToyWpRouting\Responder\JsonResponder('hello from the orchestrator hierarchical responder route');
 
             // We return the headers partial - expectation is that orchestrator traverses back up to the JsonResponder.
-            return $responder->headers();
+            return $responder->getPartialSet()->get(\ToyWpRouting\Responder\Partial\HeadersPartial::class);
         }, NULL);
 $this->rewrites->attach($rewrite0);
 $this->rewrites->attach($rewrite1);

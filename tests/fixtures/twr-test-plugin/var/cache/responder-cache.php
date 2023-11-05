@@ -93,7 +93,7 @@ $rewrite5 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'responders_matchedRule',
 ), $this->invocationStrategy, static function () {
             // @todo body class, document title, enqueue assets, dequeue assets, custom headers, query vars, query flags
-            return new \ToyWpRouting\Responder\TemplateResponder('/var/www/html/wp-content/plugins/twr-test-plugin' . '/templates/hello-world.php');
+            return new \ToyWpRouting\Responder\TemplateResponder('/var/www/html/wp-content/plugins/toy-wp-routing/tests/fixtures/twr-test-plugin' . '/templates/hello-world.php');
         }, NULL);
 $this->rewrites->attach($rewrite0);
 $this->rewrites->attach($rewrite1);

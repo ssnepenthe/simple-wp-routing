@@ -13,8 +13,7 @@ use ToyWpRouting\Responder\RedirectResponder;
 use ToyWpRouting\Responder\TemplateResponder;
 use ToyWpRouting\RewriteCollection;
 use ToyWpRouting\RewriteCollectionCache;
-use ToyWpRouting\RouteCollection;
-use ToyWpRouting\RouteConverter;
+use ToyWpRouting\Router;
 
 abstract class TestGroup
 {
@@ -41,8 +40,7 @@ abstract class TestGroup
 
             $rewrites = $cache->get();
         } else {
-            $converter = new RouteConverter();
-            $rewrites = $converter->convertCollection($this->createRoutes());
+            $rewrites = $this->createRewrites();
         }
 
         (new Orchestrator($rewrites))->initialize();
@@ -53,30 +51,26 @@ abstract class TestGroup
         return new RewriteCollectionCache(__DIR__ . '/var/cache', $this->getCacheFileName());
     }
 
-    public function createRewrites(): RewriteCollection
-    {
-        return (new RouteConverter())->convertCollection($this->createRoutes());
-    }
-
-    abstract protected function createRoutes(): RouteCollection;
+    abstract public function createRewrites(): RewriteCollection;
     abstract protected function getCacheFileName(): string;
 }
 
 class HttpMethodsGroup extends TestGroup
 {
-    protected function createRoutes(): RouteCollection
+    public function createRewrites(): RewriteCollection
     {
-        $routes = new RouteCollection('httpmethod_');
+        $router = new Router();
+        $router->setPrefix('httpmethod_');
 
-        $routes->any('http-method/any', function () {});
-        $routes->delete('http-method/delete', function () {});
-        $routes->get('http-method/get', function () {});
-        $routes->options('http-method/options', function () {});
-        $routes->patch('http-method/patch', function () {});
-        $routes->post('http-method/post', function () {});
-        $routes->put('http-method/put', function () {});
+        $router->any('http-method/any', function () {});
+        $router->delete('http-method/delete', function () {});
+        $router->get('http-method/get', function () {});
+        $router->options('http-method/options', function () {});
+        $router->patch('http-method/patch', function () {});
+        $router->post('http-method/post', function () {});
+        $router->put('http-method/put', function () {});
 
-        return $routes;
+        return $router->rewriteCollection();
     }
 
     protected function getCacheFileName(): string
@@ -87,30 +81,31 @@ class HttpMethodsGroup extends TestGroup
 
 class OrchestratorGroup extends TestGroup
 {
-    protected function createRoutes(): RouteCollection
+    public function createRewrites(): RewriteCollection
     {
-        $routes = new RouteCollection('orchestrator_');
+        $router = new Router();
+        $router->setPrefix('orchestrator_');
 
-        $routes->get('orchestrator/active/{activeVar}', function () {});
+        $router->get('orchestrator/active/{activeVar}', function () {});
 
-        $routes->get('orchestrator/inactive/{inactiveVar}', function () {
+        $router->get('orchestrator/inactive/{inactiveVar}', function () {
             add_action('twr_test_data', function () {
                 echo '<span class="twr-orchestrator-inactive"></span>';
             });
-        })->when('__return_false');
+        })->setIsActiveCallback('__return_false');
 
-        $routes->get('orchestrator/responder', function () {
+        $router->get('orchestrator/responder', function () {
             return new JsonResponder('hello from the orchestrator responder route');
         });
 
-        $routes->get('orchestrator/hierarchical-responder', function () {
+        $router->get('orchestrator/hierarchical-responder', function () {
             $responder = new JsonResponder('hello from the orchestrator hierarchical responder route');
 
             // We return the headers partial - expectation is that orchestrator traverses back up to the JsonResponder.
             return $responder->getPartialSet()->get(HeadersPartial::class);
         });
 
-        return $routes;
+        return $router->rewriteCollection();
     }
 
     protected function getCacheFileName(): string
@@ -121,26 +116,27 @@ class OrchestratorGroup extends TestGroup
 
 class ResponderGroup extends TestGroup
 {
-    protected function createRoutes(): RouteCollection
+    public function createRewrites(): RewriteCollection
     {
-        $routes = new RouteCollection('responders_');
+        $router = new Router();
+        $router->setPrefix('responders_');
 
-        $routes->get('responders/http-exception/not-found', function () {
+        $router->get('responders/http-exception/not-found', function () {
             // @todo custom additional headers
             throw new NotFoundHttpException();
         });
 
-        $routes->get('responders/http-exception/method-not-allowed', function () {
+        $router->get('responders/http-exception/method-not-allowed', function () {
             // @todo custom additional headers, custom theme template (body class and title), ensure query flags are reset
             throw new MethodNotAllowedHttpException(['POST', 'PUT']);
         });
 
-        $routes->get('responders/json', function () {
+        $router->get('responders/json', function () {
             // @todo custom status codes, error vs success status codes, json options, non-enveloped response, custom additional headers
             return new JsonResponder('hello from the json responder route');
         });
 
-        $routes->get('responders/query', function () {
+        $router->get('responders/query', function () {
             // @todo overwrite query variables
             add_action('twr_test_data', function () {
                 global $wp;
@@ -151,17 +147,17 @@ class ResponderGroup extends TestGroup
             return new QueryResponder(['custom-query-variable' => 'from-the-query-route']);
         });
 
-        $routes->get('responders/redirect', function () {
+        $router->get('responders/redirect', function () {
             // @todo custom status code, custom redirect-by, external (unsafe) redirect both allowed and not, custom headers
             return new RedirectResponder('/responders/query/');
         });
 
-        $routes->get('responders/template', function () {
+        $router->get('responders/template', function () {
             // @todo body class, document title, enqueue assets, dequeue assets, custom headers, query vars, query flags
             return new TemplateResponder(__DIR__ . '/templates/hello-world.php');
         });
 
-        return $routes;
+        return $router->rewriteCollection();
     }
 
     protected function getCacheFileName(): string
