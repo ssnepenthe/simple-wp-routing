@@ -7,6 +7,7 @@ namespace ToyWpRouting\Tests\Browser;
 use PHPUnit\Framework\TestCase as FrameworkTestCase;
 use Symfony\Component\BrowserKit\AbstractBrowser;
 use Symfony\Component\BrowserKit\HttpBrowser;
+use Symfony\Component\HttpClient\Exception\TransportException;
 
 class TestCase extends FrameworkTestCase
 {
@@ -28,12 +29,16 @@ class TestCase extends FrameworkTestCase
 
     protected function setUp(): void
     {
-        $testData = $this->getBrowser()
-            ->request('GET', '/')
-            ->filter('.twr-test-data');
+        try {
+            $testData = $this->getBrowser()
+                ->request('GET', '/')
+                ->filter('.twr-test-data');
 
-        if (! $testData->count()) {
-            $this->markTestSkipped('The test plugin does not appear to be active');
+            if (! $testData->count()) {
+                $this->markTestSkipped('The test plugin does not appear to be active');
+            }
+        } catch (TransportException $e) {
+            $this->markTestSkipped($e->getMessage());
         }
     }
 
