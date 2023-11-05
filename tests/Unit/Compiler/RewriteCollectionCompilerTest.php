@@ -7,7 +7,9 @@ namespace ToyWpRouting\Tests\Unit\Compiler;
 use PHPUnit\Framework\TestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 use ToyWpRouting\Compiler\RewriteCollectionCompiler;
+use ToyWpRouting\Rewrite;
 use ToyWpRouting\RewriteCollection;
+use ToyWpRouting\RewriteRule;
 
 class RewriteCollectionCompilerTest extends TestCase
 {
@@ -16,9 +18,12 @@ class RewriteCollectionCompilerTest extends TestCase
     public function testCompile()
     {
         $rewrites = new RewriteCollection();
-
-        $rewrites->post('^regex$', 'index.php?some=var', function () {
+        $rule = new RewriteRule('^regex$', 'index.php?some=var');
+        $rule->setRequiredQueryVariables(['some']);
+        $rewrite = new Rewrite(['POST'], [$rule], function () {
         });
+
+        $rewrites->add($rewrite);
 
         $this->assertMatchesSnapshot((new RewriteCollectionCompiler($rewrites))->compile());
     }

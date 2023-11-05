@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace ToyWpRouting\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 use ToyWpRouting\Orchestrator;
-use ToyWpRouting\RequestContext;
-use ToyWpRouting\Responder\ResponderInterface;
+use ToyWpRouting\Rewrite;
 use ToyWpRouting\RewriteCollection;
+use ToyWpRouting\RewriteRule;
 
 // @todo Test custom prefix? Test custom invoker?
 class OrchestratorTest extends TestCase
@@ -36,8 +35,8 @@ class OrchestratorTest extends TestCase
     public function testOnOptionRewriteRulesAndOnRewriteRulesArray()
     {
         $rewrites = new RewriteCollection();
-        $rewrites->get('three', 'index.php?three=value', 'threehandler');
-        $rewrites->get('four', 'index.php?four=value', 'fourhandler');
+        $rewrites->add(new Rewrite(['GET'], [new RewriteRule('three', 'index.php?three=value')], 'threehandler'));
+        $rewrites->add(new Rewrite(['GET'], [new RewriteRule('four', 'index.php?four=value')], 'fourhandler'));
 
         $orchestrator = new Orchestrator($rewrites);
 
@@ -56,9 +55,9 @@ class OrchestratorTest extends TestCase
     public function testOnOptionRewriteRulesAndOnRewriteRulesArrayWithDisabledRoutes()
     {
         $rewrites = new RewriteCollection();
-        $rewrites->get('three', 'index.php?three=value', 'threehandler');
+        $rewrites->add(new Rewrite(['GET'], [new RewriteRule('three', 'index.php?three=value')], 'threehandler'));
 
-        $rewrites->get('four', 'index.php?four=value', 'fourhandler')
+        $rewrites->add(new Rewrite(['GET'], [new RewriteRule('four', 'index.php?four=value')], 'fourhandler'))
             ->setIsActiveCallback(function () {
                 return false;
             });
@@ -77,8 +76,8 @@ class OrchestratorTest extends TestCase
     public function testOnOptionRewriteRulesAndOnRewriteRulesArrayWithInvalidExistingRules()
     {
         $rewrites = new RewriteCollection();
-        $rewrites->get('one', 'index.php?one=value', 'onehandler');
-        $rewrites->get('two', 'index.php?two=value', 'twohandler');
+        $rewrites->add(new Rewrite(['GET'], [new RewriteRule('one', 'index.php?one=value')], 'onehandler'));
+        $rewrites->add(new Rewrite(['GET'], [new RewriteRule('two', 'index.php?two=value')], 'twohandler'));
 
         $orchestrator = new Orchestrator($rewrites);
 
@@ -93,9 +92,9 @@ class OrchestratorTest extends TestCase
     public function testOnPreUpdateOptionRewriteRules()
     {
         $rewrites = new RewriteCollection();
-        $rewrites->get('three', 'index.php?three=value', 'threehandler');
+        $rewrites->add(new Rewrite(['GET'], [new RewriteRule('three', 'index.php?three=value')], 'threehandler'));
         // Rules are removed even when they are not active.
-        $rewrites->get('four', 'index.php?four=value', 'fourhandler')
+        $rewrites->add(new Rewrite(['GET'], [new RewriteRule('four', 'index.php?four=value')], 'fourhandler'))
             ->setIsActiveCallback(function () {
                 return false;
             });
@@ -116,8 +115,8 @@ class OrchestratorTest extends TestCase
     public function testOnPreUpdateOptionRewriteRulesWithInvalidExistingRules()
     {
         $rewrites = new RewriteCollection();
-        $rewrites->get('three', 'index.php?three=value', 'threehandler');
-        $rewrites->get('four', 'index.php?four=value', 'fourhandler');
+        $rewrites->add(new Rewrite(['GET'], [new RewriteRule('three', 'index.php?three=value')], 'threehandler'));
+        $rewrites->add(new Rewrite(['GET'], [new RewriteRule('four', 'index.php?four=value')], 'fourhandler'));
 
         $orchestrator = new Orchestrator($rewrites);
 
@@ -129,8 +128,8 @@ class OrchestratorTest extends TestCase
     public function testOnQueryVars()
     {
         $rewrites = new RewriteCollection();
-        $rewrites->get('three', 'index.php?three=value', 'threehandler');
-        $rewrites->get('four', 'index.php?four=value', 'fourhandler');
+        $rewrites->add(new Rewrite(['GET'], [new RewriteRule('three', 'index.php?three=value')], 'threehandler'));
+        $rewrites->add(new Rewrite(['GET'], [new RewriteRule('four', 'index.php?four=value')], 'fourhandler'));
 
         $orchestrator = new Orchestrator($rewrites);
 
@@ -144,8 +143,8 @@ class OrchestratorTest extends TestCase
     public function testOnQueryVarsWithInvalidExistingVars()
     {
         $rewrites = new RewriteCollection();
-        $rewrites->get('three', 'index.php?three=value', 'threehandler');
-        $rewrites->get('four', 'index.php?four=value', 'fourhandler');
+        $rewrites->add(new Rewrite(['GET'], [new RewriteRule('three', 'index.php?three=value')], 'threehandler'));
+        $rewrites->add(new Rewrite(['GET'], [new RewriteRule('four', 'index.php?four=value')], 'fourhandler'));
 
         $orchestrator = new Orchestrator($rewrites);
 

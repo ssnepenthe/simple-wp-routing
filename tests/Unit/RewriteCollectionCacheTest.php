@@ -127,7 +127,7 @@ class RewriteCollectionCacheTest extends TestCase
         $cache = new RewriteCollectionCache($root->url() . '/somedir', 'cache.php');
 
         $rewriteCollection = new RewriteCollection();
-        $rewriteCollection->get('^regex$', 'index.php?var=val', 'handler');
+        $rewriteCollection->add(new Rewrite(['GET'], [new RewriteRule('^regex$', 'index.php?var=val')], 'handler'));
 
         $cache->put($rewriteCollection);
 
@@ -141,7 +141,7 @@ class RewriteCollectionCacheTest extends TestCase
         $cache = new RewriteCollectionCache($root->url(), 'cache.php');
 
         $rewriteCollection = new RewriteCollection();
-        $rewriteCollection->get('^regex$', 'index.php?var=val', 'handler');
+        $rewriteCollection->add(new Rewrite(['GET'], [new RewriteRule('^regex$', 'index.php?var=val')], 'handler'));
 
         $cache->put($rewriteCollection);
 
