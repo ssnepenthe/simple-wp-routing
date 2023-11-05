@@ -9,7 +9,9 @@ return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy 
 
         public function __construct(?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy = null)
         {
-            parent::__construct('', $invocationStrategy);
+            parent::__construct();
+
+            $invocationStrategy = $invocationStrategy ?: new \ToyWpRouting\DefaultInvocationStrategy();
 
             $this->queryVariables = array (
   'some' => 'some',
@@ -24,7 +26,7 @@ return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy 
   'some' => 'some',
 ), array (
   0 => 'some',
-), $this->invocationStrategy, static function () {
+), $invocationStrategy, static function () {
         }, NULL);
 $this->rewrites->attach($rewrite0);
 $this->rewritesByRegexAndMethod = array (

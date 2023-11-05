@@ -20,7 +20,9 @@ class RewriteCollectionCompiler
 
             public function __construct(?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy = null)
             {
-                parent::__construct(%s, $invocationStrategy);
+                parent::__construct();
+
+                $invocationStrategy = $invocationStrategy ?: new \ToyWpRouting\DefaultInvocationStrategy();
 
                 $this->queryVariables = %s;
                 $this->rewriteRules = %s;
@@ -48,16 +50,10 @@ class RewriteCollectionCompiler
     {
         return sprintf(
             self::TEMPLATE,
-            $this->prefix(),
             $this->queryVariables(),
             $this->rewriteRules(),
             $this->rewrites()
         );
-    }
-
-    private function prefix(): string
-    {
-        return var_export($this->rewriteCollection->getPrefix(), true);
     }
 
     private function queryVariables(): string

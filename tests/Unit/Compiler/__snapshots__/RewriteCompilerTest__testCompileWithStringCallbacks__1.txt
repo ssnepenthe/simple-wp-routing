@@ -5,4 +5,4 @@ new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   'pfx_var' => 'var',
 ), array (
   0 => 'pfx_var',
-), $this->invocationStrategy, 'handler', 'isactivecallback')
+), $invocationStrategy, 'handler', 'isactivecallback')

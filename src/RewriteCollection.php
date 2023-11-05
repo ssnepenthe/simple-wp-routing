@@ -9,11 +9,7 @@ use SplObjectStorage;
 
 class RewriteCollection
 {
-    protected InvocationStrategyInterface $invocationStrategy;
-
     protected bool $locked = false;
-
-    protected string $prefix;
 
     /**
      * @var array<string, string>
@@ -35,12 +31,7 @@ class RewriteCollection
      */
     protected array $rewritesByRegexAndMethod = [];
 
-    public function __construct(
-        string $prefix = '',
-        ?InvocationStrategyInterface $invocationStrategy = null
-    ) {
-        $this->prefix = $prefix;
-        $this->invocationStrategy = $invocationStrategy ?: new DefaultInvocationStrategy();
+    public function __construct() {
         $this->rewrites = new SplObjectStorage();
     }
 
@@ -88,11 +79,6 @@ class RewriteCollection
     public function getQueryVariables(): array
     {
         return array_keys($this->queryVariables);
-    }
-
-    public function getPrefix(): string
-    {
-        return $this->prefix;
     }
 
     /**

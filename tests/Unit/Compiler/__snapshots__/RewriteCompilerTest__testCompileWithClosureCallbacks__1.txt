@@ -5,6 +5,6 @@ new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   'pfx_var' => 'var',
 ), array (
   0 => 'pfx_var',
-), $this->invocationStrategy, static function () {
+), $invocationStrategy, static function () {
             }, static function () {
         })

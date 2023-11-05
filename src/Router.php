@@ -108,7 +108,7 @@ final class Router
     public function rewriteCollection(): RewriteCollection
     {
         if (! $this->rewriteCollection instanceof RewriteCollection) {
-            $this->rewriteCollection = new RewriteCollection($this->prefix);
+            $this->rewriteCollection = new RewriteCollection();
         }
 
         return $this->rewriteCollection;

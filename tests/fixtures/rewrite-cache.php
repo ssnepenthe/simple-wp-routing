@@ -9,7 +9,9 @@ return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy 
 
         public function __construct(?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy = null)
         {
-            parent::__construct('', $invocationStrategy);
+            parent::__construct();
+
+            $invocationStrategy = $invocationStrategy ?: new \ToyWpRouting\DefaultInvocationStrategy();
 
             $this->queryVariables = array (
   'var' => 'var',
@@ -26,14 +28,14 @@ return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy 
   'var' => 'var',
 ), array (
   0 => 'var',
-), $this->invocationStrategy, 'firsthandler', NULL);
+), $invocationStrategy, 'firsthandler', NULL);
 $rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'POST',
 ), array (
   'var' => 'var',
 ), array (
   0 => 'var',
-), $this->invocationStrategy, 'secondhandler', 'secondisactivecallback');
+), $invocationStrategy, 'secondhandler', 'secondisactivecallback');
 $this->rewrites->attach($rewrite0);
 $this->rewrites->attach($rewrite1);
 $this->rewritesByRegexAndMethod = array (

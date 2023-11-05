@@ -5,7 +5,7 @@ new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   'pfx_var' => 'var',
 ), array (
   0 => 'pfx_var',
-), $this->invocationStrategy, array (
+), $invocationStrategy, array (
   0 => 'handlerclass',
   1 => 'handlermethod',
 ), array (

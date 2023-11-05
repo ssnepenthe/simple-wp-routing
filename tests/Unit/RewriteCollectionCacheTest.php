@@ -92,7 +92,7 @@ class RewriteCollectionCacheTest extends TestCase
         $root = vfsStream::setup();
         $cache = new RewriteCollectionCache($root->url(), 'cache.php');
 
-        $rewriteCollection = new RewriteCollection('pfx_');
+        $rewriteCollection = new RewriteCollection();
 
         $one = new Rewrite(
             ['GET'],
