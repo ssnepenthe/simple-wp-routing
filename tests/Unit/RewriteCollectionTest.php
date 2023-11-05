@@ -30,8 +30,7 @@ class RewriteCollectionTest extends TestCase
     public function testAddDuplicateRewrites()
     {
         $rewriteCollection = new RewriteCollection();
-        $rule = new RewriteRule('someregex', 'index.php?var=value');
-        $rewrite = new Rewrite(['GET'], [$rule], 'somehandler');
+        $rewrite = new Rewrite(['GET'], [new RewriteRule('someregex', 'index.php?var=value')], 'somehandler');
 
         $rewriteCollection->add($rewrite);
         $rewriteCollection->add($rewrite);
@@ -40,11 +39,9 @@ class RewriteCollectionTest extends TestCase
         $this->assertCount(1, $rewriteCollection->getRewrites());
 
         // Rewrite rules and query variables are unique.
-        $this->assertSame([
-            'someregex' => "index.php?var=value&matchedRule={$rule->getHash()}"
-        ], $rewriteCollection->getRewriteRules());
+        $this->assertSame(['someregex' => 'index.php?var=value'], $rewriteCollection->getRewriteRules());
 
-        $this->assertSame(['var', 'matchedRule'], $rewriteCollection->getQueryVariables());
+        $this->assertSame(['var'], $rewriteCollection->getQueryVariables());
     }
 
     public function testAddWhenLocked()
@@ -68,11 +65,10 @@ class RewriteCollectionTest extends TestCase
     {
         // Prefix should not be applied to rewrites via add method, only via create method.
         $collection = new RewriteCollection('pfx_');
-        $rule = new RewriteRule('someregex', 'index.php?var=value');
-        $collection->add(new Rewrite(['GET'], [$rule], 'somehandler'));
+        $collection->add(new Rewrite(['GET'], [new RewriteRule('someregex', 'index.php?var=value')], 'somehandler'));
 
         $this->assertSame([
-            'someregex' => "index.php?var=value&matchedRule={$rule->getHash()}"
+            'someregex' => 'index.php?var=value'
         ], $collection->getRewriteRules());
     }
 
@@ -162,20 +158,20 @@ class RewriteCollectionTest extends TestCase
     {
         $one = new Rewrite(
             ['GET', 'HEAD'],
-            [$rOne = new RewriteRule('first', 'index.php?first=first')],
+            [new RewriteRule('first', 'index.php?first=first')],
             'somehandler'
         );
         $two = new Rewrite(
             ['POST'],
-            [$rTwo = new RewriteRule('second', 'index.php?second=second')],
+            [new RewriteRule('second', 'index.php?second=second')],
             'somehandler'
         );
         $two->setIsActiveCallback(fn () => false);
         $three = new Rewrite(
             ['POST'],
             [
-                $rThree = new RewriteRule('third', 'index.php?third=third'),
-                $rFour = new RewriteRule('fourth', 'index.php?fourth=fourth'),
+                new RewriteRule('third', 'index.php?third=third'),
+                new RewriteRule('fourth', 'index.php?fourth=fourth'),
             ],
             'somehandler'
         );
@@ -186,14 +182,14 @@ class RewriteCollectionTest extends TestCase
         $rewriteCollection->add($three);
 
         $this->assertSame(
-            ['first', 'matchedRule', 'second', 'third', 'fourth'],
+            ['first', 'second', 'third', 'fourth'],
             $rewriteCollection->getQueryVariables()
         );
         $this->assertSame([
-            'first' => "index.php?first=first&matchedRule={$rOne->getHash()}",
-            'second' => "index.php?second=second&matchedRule={$rTwo->getHash()}",
-            'third' => "index.php?third=third&matchedRule={$rThree->getHash()}",
-            'fourth' => "index.php?fourth=fourth&matchedRule={$rFour->getHash()}",
+            'first' => 'index.php?first=first',
+            'second' => 'index.php?second=second',
+            'third' => 'index.php?third=third',
+            'fourth' => 'index.php?fourth=fourth',
         ], $rewriteCollection->getRewriteRules());
         $this->assertSame(
             [$one, $two, $three],
@@ -212,15 +208,15 @@ class RewriteCollectionTest extends TestCase
         );
         $two = new Rewrite(
             ['POST'],
-            [$rTwo = new RewriteRule('second', 'index.php?second=second', $prefix)],
+            [new RewriteRule('second', 'index.php?second=second', $prefix)],
             'somehandler'
         );
         $two->setIsActiveCallback(fn () => false);
         $three = new Rewrite(
             ['POST'],
             [
-                $rThree = new RewriteRule('third', 'index.php?third=third', $prefix),
-                $rFour = new RewriteRule('fourth', 'index.php?fourth=fourth', $prefix),
+                new RewriteRule('third', 'index.php?third=third', $prefix),
+                new RewriteRule('fourth', 'index.php?fourth=fourth', $prefix),
             ],
             'somehandler'
         );
@@ -231,14 +227,14 @@ class RewriteCollectionTest extends TestCase
         $rewriteCollection->add($three);
 
         $this->assertSame(
-            ['pfx_first', 'pfx_matchedRule', 'pfx_second', 'pfx_third', 'pfx_fourth'],
+            ['pfx_first', 'pfx_second', 'pfx_third', 'pfx_fourth'],
             $rewriteCollection->getQueryVariables()
         );
         $this->assertSame([
-            'first' => "index.php?pfx_first=first&pfx_matchedRule={$rOne->getHash()}",
-            'second' => "index.php?pfx_second=second&pfx_matchedRule={$rTwo->getHash()}",
-            'third' => "index.php?pfx_third=third&pfx_matchedRule={$rThree->getHash()}",
-            'fourth' => "index.php?pfx_fourth=fourth&pfx_matchedRule={$rFour->getHash()}",
+            'first' => 'index.php?pfx_first=first',
+            'second' => 'index.php?pfx_second=second',
+            'third' => 'index.php?pfx_third=third',
+            'fourth' => 'index.php?pfx_fourth=fourth',
         ], $rewriteCollection->getRewriteRules());
         $this->assertSame(
             [$one, $two, $three],
@@ -263,7 +259,6 @@ class RewriteCollectionTest extends TestCase
         $collection->any('someregex', 'index.php?var=value', 'somehandler');
 
         $rewrite = $collection->getRewrites()->current();
-        $matchedRule = md5('someregex');
 
         $this->assertSame('somehandler', $rewrite->getHandler());
         $this->assertNull($rewrite->getIsActiveCallback());

@@ -88,7 +88,6 @@ class OrchestratorTest extends TestCase
         );
 
         $this->assertContains('orchestrator_activeVar', $queryVars);
-        $this->assertContains('orchestrator_matchedRule', $queryVars);
         $this->assertContains('orchestrator_inactiveVar', $queryVars);
     }
 

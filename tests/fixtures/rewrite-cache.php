@@ -13,11 +13,10 @@ return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy 
 
             $this->queryVariables = array (
   'var' => 'var',
-  'matchedRule' => 'matchedRule',
 );
             $this->rewriteRules = array (
-  '^first$' => 'index.php?var=first&matchedRule=9f79cebcf1735d5eaefeee8dbc7316dd',
-  '^second$' => 'index.php?var=second&matchedRule=3cf5d427e03a68a3881d2d68a86b64f1',
+  '^first$' => 'index.php?var=first',
+  '^second$' => 'index.php?var=second',
 );
 
             $rewrite0 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
@@ -25,29 +24,25 @@ return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy 
   1 => 'HEAD',
 ), array (
   'var' => 'var',
-  'matchedRule' => 'matchedRule',
 ), array (
   0 => 'var',
-  1 => 'matchedRule',
 ), $this->invocationStrategy, 'firsthandler', NULL);
 $rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'POST',
 ), array (
   'var' => 'var',
-  'matchedRule' => 'matchedRule',
 ), array (
   0 => 'var',
-  1 => 'matchedRule',
 ), $this->invocationStrategy, 'secondhandler', 'secondisactivecallback');
 $this->rewrites->attach($rewrite0);
 $this->rewrites->attach($rewrite1);
-$this->rewritesByHashAndMethod = array (
-  '9f79cebcf1735d5eaefeee8dbc7316dd' => 
+$this->rewritesByRegexAndMethod = array (
+  '^first$' => 
   array (
     'GET' => $rewrite0,
     'HEAD' => $rewrite0,
   ),
-  '3cf5d427e03a68a3881d2d68a86b64f1' => 
+  '^second$' => 
   array (
     'POST' => $rewrite1,
   ),

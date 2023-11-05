@@ -41,12 +41,9 @@ class OrchestratorTest extends TestCase
 
         $orchestrator = new Orchestrator($rewrites);
 
-        $threeHash = md5('three');
-        $fourHash = md5('four');
-
         $newRules = [
-            'three' => "index.php?three=value&matchedRule={$threeHash}",
-            'four' => "index.php?four=value&matchedRule={$fourHash}",
+            'three' => 'index.php?three=value',
+            'four' => 'index.php?four=value',
         ];
         $existingRules = ['one' => 'index.php?one=value', 'two' => 'index.php?two=value'];
 
@@ -68,9 +65,7 @@ class OrchestratorTest extends TestCase
 
         $orchestrator = new Orchestrator($rewrites);
 
-        $threeHash = md5('three');
-        $fourHash = md5('four');
-        $newRules = ['three' => "index.php?three=value&matchedRule={$threeHash}", 'four' => "index.php?four=value&matchedRule={$fourHash}"];
+        $newRules = ['three' => 'index.php?three=value', 'four' => 'index.php?four=value'];
         $existingRules = ['one' => 'index.php?one=value', 'two' => 'index.php?two=value'];
 
         $expectedResult = array_merge($newRules, $existingRules);
@@ -107,12 +102,9 @@ class OrchestratorTest extends TestCase
 
         $orchestrator = new Orchestrator($rewrites);
 
-        $threeHash = md5('three');
-        $fourHash = md5('four');
-
         $allRules = [
-            'three' => "index.php?three=value&matchedRule={$threeHash}",
-            'four' => "index.php?four=value&matchedRule={$fourHash}",
+            'three' => 'index.php?three=value',
+            'four' => 'index.php?four=value',
             'one' => 'index.php?one=value',
             'two' => 'index.php?two=value',
         ];
@@ -142,9 +134,9 @@ class OrchestratorTest extends TestCase
 
         $orchestrator = new Orchestrator($rewrites);
 
-        $this->assertSame(['three', 'matchedRule', 'four'], $orchestrator->onQueryVars([]));
+        $this->assertSame(['three', 'four'], $orchestrator->onQueryVars([]));
         $this->assertSame(
-            ['three', 'matchedRule', 'four', 'var'],
+            ['three', 'four', 'var'],
             $orchestrator->onQueryVars(['var'])
         );
     }

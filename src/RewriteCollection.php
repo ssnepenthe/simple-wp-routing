@@ -35,7 +35,7 @@ class RewriteCollection
     /**
      * @var array<string, array<"GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS", Rewrite>>
      */
-    protected array $rewritesByHashAndMethod = [];
+    protected array $rewritesByRegexAndMethod = [];
 
     public function __construct(
         string $prefix = '',
@@ -61,14 +61,14 @@ class RewriteCollection
                 $this->queryVariables[$prefixed] = $unprefixed;
             }
 
-            $hash = $rule->getHash();
+            $regex = $rule->getRegex();
 
-            if (! array_key_exists($hash, $this->rewritesByHashAndMethod)) {
-                $this->rewritesByHashAndMethod[$hash] = [];
+            if (! array_key_exists($regex, $this->rewritesByRegexAndMethod)) {
+                $this->rewritesByRegexAndMethod[$regex] = [];
             }
 
             foreach ($rewrite->getMethods() as $method) {
-                $this->rewritesByHashAndMethod[$hash][$method] = $rewrite;
+                $this->rewritesByRegexAndMethod[$regex][$method] = $rewrite;
             }
         }
 
@@ -100,30 +100,13 @@ class RewriteCollection
         );
     }
 
-    public function findRewriteByHashAndMethod(string $hash, string $method): ?Rewrite
+    public function findByRegex(string $regex): array
     {
-        if (! array_key_exists($hash, $this->rewritesByHashAndMethod)) {
-            return null;
+        if (! array_key_exists($regex, $this->rewritesByRegexAndMethod)) {
+            return [];
         }
 
-        $candidates = $this->rewritesByHashAndMethod[$hash];
-
-        if (! array_key_exists($method, $candidates)) {
-            throw new MethodNotAllowedHttpException(array_keys($candidates));
-        }
-
-        return $candidates[$method];
-    }
-
-    public function findActiveRewriteByHashAndMethod(string $hash, string $method): ?Rewrite
-    {
-        $rewrite = $this->findRewriteByHashAndMethod($hash, $method);
-
-        if ($rewrite instanceof Rewrite && ! $rewrite->isActive()) {
-            throw new RewriteDisabledException();
-        }
-
-        return $rewrite;
+        return $this->rewritesByRegexAndMethod[$regex];
     }
 
     /**

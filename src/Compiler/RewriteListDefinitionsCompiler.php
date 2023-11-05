@@ -33,29 +33,29 @@ class RewriteListDefinitionsCompiler
 
     private function prepareTemplate(): string
     {
-        $definitions = $assignments = $byHashAndMethod = [];
+        $definitions = $assignments = $byRegexAndMethod = [];
 
         foreach ($this->rewrites as $i => $rewrite) {
             $definitions[] = "\$rewrite{$i} = %s;";
             $assignments[] = "\$this->rewrites->attach(\$rewrite{$i});";
 
             foreach ($rewrite->getRules() as $rule) {
-                $byHashAndMethod[$rule->getHash()] = $byHashAndMethod[$rule->getHash()] ?? [];
+                $byRegexAndMethod[$rule->getRegex()] = $byRegexAndMethod[$rule->getRegex()] ?? [];
 
                 foreach ($rewrite->getMethods() as $method) {
-                    $byHashAndMethod[$rule->getHash()][$method] = "\$rewrite{$i}";
+                    $byRegexAndMethod[$rule->getRegex()][$method] = "\$rewrite{$i}";
                 }
             }
         }
 
         $definitionsTemplate = implode(PHP_EOL, $definitions);
         $assignmentsTemplate = implode(PHP_EOL, $assignments);
-        $byHashAndMethodTemplate = sprintf('$this->rewritesByHashAndMethod = %s;', preg_replace(
+        $byRegexAndMethodTemplate = sprintf('$this->rewritesByRegexAndMethod = %s;', preg_replace(
             '/\'\$rewrite(\d+)\'/',
             '\$rewrite\1',
-            var_export($byHashAndMethod, true)
+            var_export($byRegexAndMethod, true)
         ));
 
-        return $definitionsTemplate . PHP_EOL . $assignmentsTemplate . PHP_EOL . $byHashAndMethodTemplate;
+        return $definitionsTemplate . PHP_EOL . $assignmentsTemplate . PHP_EOL . $byRegexAndMethodTemplate;
     }
 }

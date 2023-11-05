@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace ToyWpRouting;
 
 use ToyWpRouting\Exception\HttpExceptionInterface;
+use ToyWpRouting\Exception\MethodNotAllowedHttpException;
+use ToyWpRouting\Exception\RewriteDisabledException;
 use ToyWpRouting\Exception\RewriteInvocationExceptionInterface;
 use ToyWpRouting\Responder\HierarchicalResponderInterface;
 use ToyWpRouting\Responder\HttpExceptionResponder;
@@ -43,11 +45,12 @@ class Orchestrator
 
     public function initialize(): self
     {
+        add_action('parse_request', [$this, 'onParseRequest'], -99);
+
         add_filter('option_rewrite_rules', [$this, 'onOptionRewriteRules'], 99);
         add_filter('rewrite_rules_array', [$this, 'onRewriteRulesArray'], 99);
         add_filter('pre_update_option_rewrite_rules', [$this, 'onPreUpdateOptionRewriteRules'], -99);
         add_filter('query_vars', [$this, 'onQueryVars'], 99);
-        add_filter('request', [$this, 'onRequest'], -99);
 
         return $this;
     }
@@ -100,18 +103,9 @@ class Orchestrator
         return array_merge($this->rewriteCollection->getQueryVariables(), $vars);
     }
 
-    /**
-     * @template T
-     *
-     * @psalm-param T $queryVars
-     *
-     * @psalm-return T
-     */
-    public function onRequest($queryVars)
+    public function onParseRequest($wp)
     {
-        $this->respondToMatchedRuleHash($queryVars);
-
-        return $queryVars;
+        $this->respondToMatchedRegex($wp);
     }
 
     /**
@@ -135,35 +129,28 @@ class Orchestrator
         return array_merge($this->rewriteCollection->getRewriteRules(), $rules);
     }
 
-    /**
-     * @param mixed $queryVars
-     */
-    protected function respondToMatchedRuleHash($queryVars): void
+    protected function respondToMatchedRegex($wp): void
     {
-        if (! is_array($queryVars)) {
-            return;
-        }
+        $rewrites = $this->rewriteCollection->findByRegex($wp->matched_rule);
 
-        $matchedRuleKey = "{$this->rewriteCollection->getPrefix()}matchedRule";
-
-        if (
-            ! array_key_exists($matchedRuleKey, $queryVars)
-            || ! is_string($queryVars[$matchedRuleKey])
-        ) {
+        if ([] === $rewrites) {
             return;
         }
 
         try {
-            $rewrite = $this->rewriteCollection->findActiveRewriteByHashAndMethod(
-                $queryVars[$matchedRuleKey],
-                $this->getRequestContext()->getIntendedMethod()
-            );
+            $method = $this->getRequestContext()->getIntendedMethod();
 
-            if (! $rewrite instanceof Rewrite) {
-                return;
+            if (! array_key_exists($method, $rewrites)) {
+                throw new MethodNotAllowedHttpException(array_keys($rewrites));
             }
 
-            $validated = $rewrite->validate($queryVars);
+            $rewrite = $rewrites[$method];
+
+            if (! $rewrite->isActive()) {
+                throw new RewriteDisabledException();
+            }
+
+            $validated = $rewrite->validate($wp->query_vars);
 
             $responder = $rewrite->handle($validated);
         } catch (HttpExceptionInterface $e) {

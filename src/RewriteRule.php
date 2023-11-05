@@ -33,11 +33,6 @@ class RewriteRule
         $this->parseQuery();
     }
 
-    public function getHash(): string
-    {
-        return md5($this->regex);
-    }
-
     public function getQuery(): string
     {
         return $this->query;
@@ -73,9 +68,7 @@ class RewriteRule
 
     protected function parseQuery(): void
     {
-        $queryArray = '' === $this->rawQuery ? [] : Support::parseQuery($this->rawQuery);
-
-        $queryArray['matchedRule'] = $this->getHash();
+        $queryArray = '' === $this->rawQuery ? ['__routeType' => 'static'] : Support::parseQuery($this->rawQuery);
 
         $prefixedQueryArray = Support::applyPrefixToKeys($queryArray, $this->prefix);
 
