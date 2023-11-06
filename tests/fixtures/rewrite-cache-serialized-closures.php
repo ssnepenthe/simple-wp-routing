@@ -21,10 +21,8 @@ return function (): \ToyWpRouting\RewriteCollection {
             $rewrite0 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
-), array (
+), '^regex$', 'index.php?pfx_var=val', array (
   'pfx_var' => 'var',
-), array (
-  0 => 'pfx_var',
 ), static function () {}, static function () {});
 $this->rewrites->attach($rewrite0);
 $this->rewritesByRegexAndMethod = array (

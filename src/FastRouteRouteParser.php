@@ -28,14 +28,16 @@ class FastRouteRouteParser implements RouteParserInterface
 
         $parsed = $this->parser->parse($route);
         $rewrites = [];
+        $finalQuery = [];
 
         foreach ($parsed as $segments) {
             [$regex, $queryArray] = $this->convertSegments($segments);
 
-            $rewrites[$regex] = $queryArray;
+            $rewrites[] = $regex;
+            $finalQuery = $queryArray;
         }
 
-        return $rewrites;
+        return ['^(?|' . implode('|', $rewrites) . ')$', Support::buildQuery($finalQuery)];
     }
 
     /**
@@ -67,8 +69,6 @@ class FastRouteRouteParser implements RouteParserInterface
             $position++;
         }
 
-        $regex = "^{$regex}$";
-
-        return [$regex, Support::buildQuery($queryArray)];
+        return [$regex, $queryArray];
     }
 }

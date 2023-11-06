@@ -18,11 +18,7 @@ class RewriteCompilerTest extends TestCase
 
     public function testCompileWithArrayCallbacks()
     {
-        $rewrite = new Rewrite(
-            ['GET', 'POST'],
-            [(new RewriteRule('^regex$', 'index.php?var=value', 'pfx_'))->setRequiredQueryVariables(['pfx_var'])],
-            ['handlerclass', 'handlermethod']
-        );
+        $rewrite = new Rewrite(['GET', 'POST'], '^regex$', 'index.php?var=value', ['handlerclass', 'handlermethod'], 'pfx_');
         $rewrite->setIsActiveCallback(['isactiveclass', 'isactivemethod']);
 
         $this->assertMatchesSnapshot((new RewriteCompiler($rewrite))->compile());
@@ -30,12 +26,8 @@ class RewriteCompilerTest extends TestCase
 
     public function testCompileWithClosureCallbacks()
     {
-        $rewrite = new Rewrite(
-            ['GET', 'POST'],
-            [(new RewriteRule('^regex$', 'index.php?var=value', 'pfx_'))->setRequiredQueryVariables(['pfx_var'])],
-            function () {
-            }
-        );
+        $rewrite = new Rewrite(['GET', 'POST'], '^regex$', 'index.php?var=value', function () {
+        }, 'pfx_');
         $rewrite->setIsActiveCallback(function () {
         });
 
@@ -47,11 +39,7 @@ class RewriteCompilerTest extends TestCase
         // @todo Exception message?
         $this->expectException(RuntimeException::class);
 
-        $rewrite = new Rewrite(
-            ['GET'],
-            [(new RewriteRule('^regex$', 'index.php?var=val', 'pfx_'))->setRequiredQueryVariables(['pfx_var'])],
-            [new stdClass(), 'methodname']
-        );
+        $rewrite = new Rewrite(['GET'], '^regex$', 'index.php?var=val', [new stdClass(), 'methodname'], 'pfx_');
 
         (new RewriteCompiler($rewrite))->compile();
     }
@@ -61,11 +49,7 @@ class RewriteCompilerTest extends TestCase
         // @todo Exception message?
         $this->expectException(RuntimeException::class);
 
-        $rewrite = new Rewrite(
-            ['GET'],
-            [(new RewriteRule('^regex$', 'index.php?var=val', 'pfx_'))->setRequiredQueryVariables(['pfx_var'])],
-            'handler'
-        );
+        $rewrite = new Rewrite(['GET'], '^regex$', 'index.php?var=val', 'handler', 'pfx_');
         $rewrite->setIsActiveCallback([new stdClass(), 'methodname']);
 
         (new RewriteCompiler($rewrite))->compile();
@@ -73,23 +57,15 @@ class RewriteCompilerTest extends TestCase
 
     public function testCompileWithNoIsActiveCallback()
     {
-        $rewrite = new Rewrite(
-            ['GET', 'POST'],
-            [(new RewriteRule('^regex$', 'index.php?var=value', 'pfx_'))->setRequiredQueryVariables(['pfx_var'])],
-            function () {
-            }
-        );
+        $rewrite = new Rewrite(['GET', 'POST'], '^regex$', 'index.php?var=value', function () {
+        }, 'pfx_');
 
         $this->assertMatchesSnapshot((new RewriteCompiler($rewrite))->compile());
     }
 
     public function testCompileWithStringCallbacks()
     {
-        $rewrite = new Rewrite(
-            ['GET', 'POST'],
-            [(new RewriteRule('^regex$', 'index.php?var=value', 'pfx_'))->setRequiredQueryVariables(['pfx_var'])],
-            'handler'
-        );
+        $rewrite = new Rewrite(['GET', 'POST'], '^regex$', 'index.php?var=value', 'handler', 'pfx_');
         $rewrite->setIsActiveCallback('isactivecallback');
 
         $this->assertMatchesSnapshot((new RewriteCompiler($rewrite))->compile());

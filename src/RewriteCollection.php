@@ -43,22 +43,21 @@ class RewriteCollection
 
         $this->rewrites->attach($rewrite);
 
-        foreach ($rewrite->getRules() as $rule) {
-            $this->rewriteRules[$rule->getRegex()] = $rule->getQuery();
+        $regex = $rewrite->getRegex();
 
-            foreach ($rule->getQueryVariables() as $prefixed => $unprefixed) {
-                $this->queryVariables[$prefixed] = $unprefixed;
-            }
+        $this->rewriteRules[$regex] = $rewrite->getQuery();
 
-            $regex = $rule->getRegex();
+        // @todo prevent merging of "__routeType" var?
+        foreach ($rewrite->getQueryVariables() as $prefixed => $unprefixed) {
+            $this->queryVariables[$prefixed] = $unprefixed;
+        }
 
-            if (! array_key_exists($regex, $this->rewritesByRegexAndMethod)) {
-                $this->rewritesByRegexAndMethod[$regex] = [];
-            }
+        if (! array_key_exists($regex, $this->rewritesByRegexAndMethod)) {
+            $this->rewritesByRegexAndMethod[$regex] = [];
+        }
 
-            foreach ($rewrite->getMethods() as $method) {
-                $this->rewritesByRegexAndMethod[$regex][$method] = $rewrite;
-            }
+        foreach ($rewrite->getMethods() as $method) {
+            $this->rewritesByRegexAndMethod[$regex][$method] = $rewrite;
         }
 
         return $rewrite;

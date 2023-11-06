@@ -145,27 +145,9 @@ final class Router
     {
         $route = $this->autoSlash($this->currentGroup, $route);
 
-        $rules = $this->parser()->parse($route);
-        $requiredQueryVariables = [];
+        [$regex, $query] = $this->parser()->parse($route);
 
-        $rewrite = new Rewrite(
-            $methods,
-            array_map(
-                function (string $regex, string $query) use (&$requiredQueryVariables) {
-                    $rule = new RewriteRule($regex, $query, $this->prefix);
-
-                    if ([] === $requiredQueryVariables) {
-                        $requiredQueryVariables = array_keys($rule->getQueryVariables());
-                        $rule->setRequiredQueryVariables($requiredQueryVariables);
-                    }
-
-                    return $rule;
-                },
-                array_keys($rules),
-                $rules
-            ),
-            $handler
-        );
+        $rewrite = new Rewrite($methods, $regex, $query, $handler, $this->prefix);
 
         // @todo ParsedRewrite, PendingRewrite, RewriteHelper? whats in a name?
         return $rewrite;

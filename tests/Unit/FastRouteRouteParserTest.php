@@ -18,80 +18,51 @@ class FastRouteRouteParserTest extends TestCase
         return [
             [
                 '/test',
-                [
-                    '^/test$' => '',
-                ]
+                ['^(?|/test)$', '']
             ],
             [
                 '/test/{param}',
-                [
-                    '^/test/([^/]+)$' => 'index.php?param=$matches[1]',
-                ],
+                ['^(?|/test/([^/]+))$', 'index.php?param=$matches[1]'],
             ],
             [
                 '/te{ param }st',
-                [
-                    '^/te([^/]+)st$' => 'index.php?param=$matches[1]',
-                ],
+                ['^(?|/te([^/]+)st)$', 'index.php?param=$matches[1]'],
             ],
             [
                 '/test/{param1}/test2/{param2}',
-                [
-                    '^/test/([^/]+)/test2/([^/]+)$' => 'index.php?param1=$matches[1]&param2=$matches[2]',
-                ],
+                ['^(?|/test/([^/]+)/test2/([^/]+))$', 'index.php?param1=$matches[1]&param2=$matches[2]'],
             ],
             [
                 '/test/{param:\d+}',
-                [
-                    '^/test/(\d+)$' => 'index.php?param=$matches[1]',
-                ],
+                ['^(?|/test/(\d+))$', 'index.php?param=$matches[1]'],
             ],
             [
                 '/test/{ param : \d{1,9} }',
-                [
-                    '^/test/(\d{1,9})$' => 'index.php?param=$matches[1]',
-                ],
+                ['^(?|/test/(\d{1,9}))$', 'index.php?param=$matches[1]'],
             ],
             [
                 '/test[opt]',
-                [
-                    '^/test$' => '',
-                    '^/testopt$' => '',
-                ],
+                ['^(?|/test|/testopt)$', ''],
             ],
             [
                 '/test[/{param}]',
-                [
-                    '^/test$' => '',
-                    '^/test/([^/]+)$' => 'index.php?param=$matches[1]',
-                ],
+                ['^(?|/test|/test/([^/]+))$', 'index.php?param=$matches[1]'],
             ],
             [
                 '/{param}[opt]',
-                [
-                    '^/([^/]+)$' => 'index.php?param=$matches[1]',
-                    '^/([^/]+)opt$' => 'index.php?param=$matches[1]',
-                ],
+                ['^(?|/([^/]+)|/([^/]+)opt)$', 'index.php?param=$matches[1]'],
             ],
             [
                 '/test[/{name}[/{id:[0-9]+}]]',
-                [
-                    '^/test$' => '',
-                    '^/test/([^/]+)$' => 'index.php?name=$matches[1]',
-                    '^/test/([^/]+)/([0-9]+)$' => 'index.php?name=$matches[1]&id=$matches[2]',
-                ],
+                ['^(?|/test|/test/([^/]+)|/test/([^/]+)/([0-9]+))$', 'index.php?name=$matches[1]&id=$matches[2]'],
             ],
             [
                 '/{foo-bar}',
-                [
-                    '^/([^/]+)$' => 'index.php?foo-bar=$matches[1]',
-                ],
+                ['^(?|/([^/]+))$', 'index.php?foo-bar=$matches[1]'],
             ],
             [
                 '/{_foo:.*}',
-                [
-                    '^/(.*)$' => 'index.php?_foo=$matches[1]',
-                ],
+                ['^(?|/(.*))$', 'index.php?_foo=$matches[1]'],
             ],
         ];
     }

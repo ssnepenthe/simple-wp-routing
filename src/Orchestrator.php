@@ -201,7 +201,7 @@ class Orchestrator
 
         foreach ($queryVariables as $key => $value) {
             if (is_string($newKey = $rewrite->mapQueryVariable($key))) {
-                $context[$newKey] = $value;
+                $context[$newKey] = '' === $value ? null : $value;
             }
         }
 

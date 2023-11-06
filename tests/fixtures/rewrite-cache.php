@@ -22,17 +22,13 @@ return function (): \ToyWpRouting\RewriteCollection {
             $rewrite0 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
-), array (
+), '^first$', 'index.php?var=first', array (
   'var' => 'var',
-), array (
-  0 => 'var',
 ), 'firsthandler', NULL);
 $rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'POST',
-), array (
+), '^second$', 'index.php?var=second', array (
   'var' => 'var',
-), array (
-  0 => 'var',
 ), 'secondhandler', 'secondisactivecallback');
 $this->rewrites->attach($rewrite0);
 $this->rewrites->attach($rewrite1);

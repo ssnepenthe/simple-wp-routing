@@ -39,12 +39,10 @@ class RewriteListDefinitionsCompiler
             $definitions[] = "\$rewrite{$i} = %s;";
             $assignments[] = "\$this->rewrites->attach(\$rewrite{$i});";
 
-            foreach ($rewrite->getRules() as $rule) {
-                $byRegexAndMethod[$rule->getRegex()] = $byRegexAndMethod[$rule->getRegex()] ?? [];
+            $byRegexAndMethod[$rewrite->getRegex()] = $byRegexAndMethod[$rewrite->getRegex()] ?? [];
 
-                foreach ($rewrite->getMethods() as $method) {
-                    $byRegexAndMethod[$rule->getRegex()][$method] = "\$rewrite{$i}";
-                }
+            foreach ($rewrite->getMethods() as $method) {
+                $byRegexAndMethod[$rewrite->getRegex()][$method] = "\$rewrite{$i}";
             }
         }
 

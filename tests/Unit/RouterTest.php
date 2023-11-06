@@ -22,18 +22,10 @@ class RouterTest extends TestCase
         $router = new Router();
         $router->get('one/{two}[/{three}[/four]]', 'handler');
 
-        $rules = $this->getRewrites($router)[0]->getRules();
+        $rewrite = $this->getRewrites($router)[0];
 
-        $this->assertCount(3, $rules);
-
-        $this->assertSame('^one/([^/]+)$', $rules[0]->getRegex());
-        $this->assertSame('index.php?two=$matches[1]', $rules[0]->getQuery());
-
-        $this->assertSame('^one/([^/]+)/([^/]+)$', $rules[1]->getRegex());
-        $this->assertSame('index.php?two=$matches[1]&three=$matches[2]', $rules[1]->getQuery());
-
-        $this->assertSame('^one/([^/]+)/([^/]+)/four$', $rules[2]->getRegex());
-        $this->assertSame('index.php?two=$matches[1]&three=$matches[2]', $rules[2]->getQuery());
+        $this->assertSame('^(?|one/([^/]+)|one/([^/]+)/([^/]+)|one/([^/]+)/([^/]+)/four)$', $rewrite->getRegex());
+        $this->assertSame('index.php?two=$matches[1]&three=$matches[2]', $rewrite->getQuery());
     }
 
     public function testHttpMethodShorthandMethods()
@@ -70,11 +62,11 @@ class RouterTest extends TestCase
             });
         });
 
-        $regexes = array_map(fn ($rewrite) => $rewrite->getRules()[0]->getRegex(), $this->getRewrites($router));
+        $regexes = array_map(fn ($rewrite) => $rewrite->getRegex(), $this->getRewrites($router));
 
-        $this->assertSame('^one/two$', $regexes[0]);
-        $this->assertSame('^one/three$', $regexes[1]);
-        $this->assertSame('^one/four/five$', $regexes[2]);
+        $this->assertSame('^(?|one/two)$', $regexes[0]);
+        $this->assertSame('^(?|one/three)$', $regexes[1]);
+        $this->assertSame('^(?|one/four/five)$', $regexes[2]);
     }
 
     private function getRewrites(Router $router): array

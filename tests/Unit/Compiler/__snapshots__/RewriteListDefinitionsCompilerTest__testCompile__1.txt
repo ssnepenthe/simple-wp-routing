@@ -1,21 +1,17 @@
 $rewrite0 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
-), array (
+), '^getregex$', 'index.php?pfx_var=get', array (
   'pfx_var' => 'var',
-), array (
-  0 => 'pfx_var',
 ), static function () {
-            }, static function () {
+        }, static function () {
         });
 $rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'POST',
-), array (
+), '^postregex$', 'index.php?pfx_var=post', array (
   'pfx_var' => 'var',
-), array (
-  0 => 'pfx_var',
 ), static function () {
-            }, NULL);
+        }, NULL);
 $this->rewrites->attach($rewrite0);
 $this->rewrites->attach($rewrite1);
 $this->rewritesByRegexAndMethod = array (

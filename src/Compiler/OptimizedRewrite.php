@@ -10,16 +10,6 @@ use ToyWpRouting\Rewrite;
 class OptimizedRewrite extends Rewrite
 {
     /**
-     * @var array<string, string>
-     */
-    protected array $queryVariables;
-
-    /**
-     * @var string[]
-     */
-    protected array $requiredQueryVariables;
-
-    /**
      * @param array<int, "GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS"> $methods
      * @param array<string, string> $queryVariables
      * @param mixed $handler
@@ -27,25 +17,18 @@ class OptimizedRewrite extends Rewrite
      */
     public function __construct(
         array $methods,
+        string $regex,
+        string $query,
         array $queryVariables,
-        array $requiredQueryVariables,
         $handler,
         $isActiveCallback = null
     ) {
-        parent::__construct($methods, [], $handler, $isActiveCallback);
-
+        $this->methods = $methods;
+        $this->regex = $regex;
+        $this->query = $query;
         $this->queryVariables = $queryVariables;
-        $this->requiredQueryVariables = $requiredQueryVariables;
-    }
-
-    public function getRequiredQueryVariables(): array
-    {
-        return $this->requiredQueryVariables;
-    }
-
-    public function mapQueryVariable(string $queryVariable): ?string
-    {
-        return $this->queryVariables[$queryVariable] ?? null;
+        $this->handler = $handler;
+        $this->isActiveCallback = $isActiveCallback;
     }
 
     public function setIsActiveCallback($isActiveCallback): Rewrite

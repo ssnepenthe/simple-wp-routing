@@ -4,7 +4,6 @@
 use ToyWpRouting\Rewrite;
 use ToyWpRouting\RewriteCollection;
 use ToyWpRouting\RewriteCollectionCache;
-use ToyWpRouting\RewriteRule;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -14,13 +13,8 @@ require_once __DIR__ . '/../vendor/autoload.php';
 // Regular
 $rewriteCollection = new RewriteCollection();
 
-$ruleOne = new RewriteRule('^first$', 'index.php?var=first');
-$ruleOne->setRequiredQueryVariables(['var']);
-$ruleTwo = new RewriteRule('^second$', 'index.php?var=second');
-$ruleTwo->setRequiredQueryVariables(['var']);
-
-$rewriteCollection->add(new Rewrite(['GET', 'HEAD'], [$ruleOne], 'firsthandler'));
-$rewriteCollection->add(new Rewrite(['POST'], [$ruleTwo], 'secondhandler'))->setIsActiveCallback('secondisactivecallback');
+$rewriteCollection->add(new Rewrite(['GET', 'HEAD'], '^first$', 'index.php?var=first', 'firsthandler'));
+$rewriteCollection->add(new Rewrite(['POST'], '^second$', 'index.php?var=second', 'secondhandler'))->setIsActiveCallback('secondisactivecallback');
 
 $rewriteCollectionCache = new RewriteCollectionCache(__DIR__ . '/../tests/fixtures', 'rewrite-cache.php');
 $rewriteCollectionCache->put($rewriteCollection);
@@ -28,9 +22,7 @@ $rewriteCollectionCache->put($rewriteCollection);
 // Closures
 $rewriteCollection = new RewriteCollection('pfx_');
 
-$ruleThree = new RewriteRule('^regex$', 'index.php?var=val', 'pfx_');
-$ruleThree->setRequiredQueryVariables(['pfx_var']);
-$rewriteCollection->add(new Rewrite(['GET', 'HEAD'], [$ruleThree], function () {}))->setIsActiveCallback(function () {});
+$rewriteCollection->add(new Rewrite(['GET', 'HEAD'], '^regex$', 'index.php?var=val', function () {}, 'pfx_'))->setIsActiveCallback(function () {});
 
 $rewriteCollectionCache = new RewriteCollectionCache(__DIR__ . '/../tests/fixtures', 'rewrite-cache-serialized-closures.php');
 $rewriteCollectionCache->put($rewriteCollection);

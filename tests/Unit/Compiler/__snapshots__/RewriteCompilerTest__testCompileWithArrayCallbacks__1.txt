@@ -1,10 +1,8 @@
 new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'POST',
-), array (
+), '^regex$', 'index.php?pfx_var=value', array (
   'pfx_var' => 'var',
-), array (
-  0 => 'pfx_var',
 ), array (
   0 => 'handlerclass',
   1 => 'handlermethod',

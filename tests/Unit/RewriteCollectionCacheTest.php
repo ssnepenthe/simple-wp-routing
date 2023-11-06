@@ -94,19 +94,8 @@ class RewriteCollectionCacheTest extends TestCase
 
         $rewriteCollection = new RewriteCollection();
 
-        $one = new Rewrite(
-            ['GET'],
-            [new RewriteRule('first', 'index.php?first=first', 'pfx_')],
-            'somehandler'
-        );
-        $two = new Rewrite(
-            ['GET', 'POST'],
-            [
-                new RewriteRule('second', 'index.php?second=second'),
-                new RewriteRule('third', 'index.php?third=third'),
-            ],
-            'anotherhandler'
-        );
+        $one = new Rewrite(['GET'], 'first', 'index.php?first=first', 'somehandler', 'pfx_');
+        $two = new Rewrite(['GET', 'POST'], 'second', 'index.php?second=second&third=third', 'anotherhandler');
         $two->setIsActiveCallback('isActive');
 
         $rewriteCollection->add($one);
@@ -127,7 +116,7 @@ class RewriteCollectionCacheTest extends TestCase
         $cache = new RewriteCollectionCache($root->url() . '/somedir', 'cache.php');
 
         $rewriteCollection = new RewriteCollection();
-        $rewriteCollection->add(new Rewrite(['GET'], [new RewriteRule('^regex$', 'index.php?var=val')], 'handler'));
+        $rewriteCollection->add(new Rewrite(['GET'], '^regex$', 'index.php?var=val', 'handler'));
 
         $cache->put($rewriteCollection);
 
@@ -141,7 +130,7 @@ class RewriteCollectionCacheTest extends TestCase
         $cache = new RewriteCollectionCache($root->url(), 'cache.php');
 
         $rewriteCollection = new RewriteCollection();
-        $rewriteCollection->add(new Rewrite(['GET'], [new RewriteRule('^regex$', 'index.php?var=val')], 'handler'));
+        $rewriteCollection->add(new Rewrite(['GET'], '^regex$', 'index.php?var=val', 'handler'));
 
         $cache->put($rewriteCollection);
 
@@ -150,9 +139,7 @@ class RewriteCollectionCacheTest extends TestCase
             (include $root->getChild('cache.php')->url())()
         );
 
-        $rewriteCollection->add(
-            new Rewrite(['GET'], [new RewriteRule('first', 'index.php?first=first')], 'somehandler')
-        );
+        $rewriteCollection->add(new Rewrite(['GET'], 'first', 'index.php?first=first', 'somehandler'));
         $cache->put($rewriteCollection);
 
         $this->assertNotSame([], include $root->getChild('cache.php')->url());
@@ -165,17 +152,9 @@ class RewriteCollectionCacheTest extends TestCase
 
         $rewriteCollection = new RewriteCollection();
 
-        $one = new Rewrite(
-            ['GET'],
-            [new RewriteRule('first', 'index.php?first=first', 'pfx_')],
-            function () {
-            }
-        );
-        $two = new Rewrite(
-            ['POST'],
-            [new RewriteRule('second', 'index.php?second=second')],
-            'anotherhandler'
-        );
+        $one = new Rewrite(['GET'], 'first', 'index.php?first=first', function () {
+        }, 'pfx_');
+        $two = new Rewrite(['POST'], 'second', 'index.php?second=second', 'anotherhandler');
         $two->setIsActiveCallback(function () {
             return true;
         });

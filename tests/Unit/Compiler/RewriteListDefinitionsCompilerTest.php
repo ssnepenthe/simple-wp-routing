@@ -8,7 +8,6 @@ use PHPUnit\Framework\TestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 use ToyWpRouting\Compiler\RewriteListDefinitionsCompiler;
 use ToyWpRouting\Rewrite;
-use ToyWpRouting\RewriteRule;
 
 class RewriteListDefinitionsCompilerTest extends TestCase
 {
@@ -16,21 +15,13 @@ class RewriteListDefinitionsCompilerTest extends TestCase
 
     public function testCompile()
     {
-        $one = new Rewrite(
-            ['GET', 'HEAD'],
-            [(new RewriteRule('^getregex$', 'index.php?var=get', 'pfx_'))->setRequiredQueryVariables(['pfx_var'])],
-            function () {
-            }
-        );
+        $one = new Rewrite(['GET', 'HEAD'], '^getregex$', 'index.php?var=get', function () {
+        }, 'pfx_');
         $one->setIsActiveCallback(function () {
         });
 
-        $two = new Rewrite(
-            ['POST'],
-            [(new RewriteRule('^postregex$', 'index.php?var=post', 'pfx_'))->setRequiredQueryVariables(['pfx_var'])],
-            function () {
-            }
-        );
+        $two = new Rewrite(['POST'], '^postregex$', 'index.php?var=post', function () {
+        }, 'pfx_');
 
         $this->assertMatchesSnapshot((new RewriteListDefinitionsCompiler([$one, $two]))->compile());
     }

@@ -23,25 +23,31 @@ class Rewrite
      */
     protected array $methods;
 
-    /**
-     * @var RewriteRule[]
-     */
-    protected array $rules;
+    protected string $regex;
+
+    protected string $query;
+
+    protected array $queryVariables;
 
     /**
      * @param array<int, "GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS"> $methods
-     * @param RewriteRule[] $rules
      * @param mixed $handler
      * @param mixed $isActiveCallback
      */
-    public function __construct(array $methods, array $rules, $handler, $isActiveCallback = null)
+    public function __construct(array $methods, string $regex, string $query, $handler, string $prefix = '', $isActiveCallback = null)
     {
         Support::assertValidMethodsList($methods);
 
         $this->methods = $methods;
-        $this->rules = (fn (RewriteRule ...$rules) => $rules)(...$rules);
+        $this->regex = $regex;
         $this->handler = $handler;
         $this->isActiveCallback = $isActiveCallback;
+
+        $queryArray = '' === $query ? ['__routeType' => 'static'] : Support::parseQuery($query);
+        $prefixedQueryArray = Support::applyPrefixToKeys($queryArray, $prefix);
+
+        $this->query = Support::buildQuery($prefixedQueryArray);
+        $this->queryVariables = array_combine(array_keys($prefixedQueryArray), array_keys($queryArray));
     }
 
     /**
@@ -68,38 +74,29 @@ class Rewrite
         return $this->methods;
     }
 
+    public function getRegex(): string
+    {
+        return $this->regex;
+    }
+
     public function getRequiredQueryVariables(): array
     {
-        $requiredQueryVariables = [];
-
-        foreach ($this->rules as $rule) {
-            foreach ($rule->getRequiredQueryVariables() as $requiredQueryVariable) {
-                $requiredQueryVariables[$requiredQueryVariable] = true;
-            }
-        }
-
-        return array_keys($requiredQueryVariables);
+        return array_keys($this->queryVariables);
     }
 
-    /**
-     * @return RewriteRule[]
-     */
-    public function getRules(): array
+    public function getQuery(): string
     {
-        return $this->rules;
+        return $this->query;
     }
 
-    public function mapQueryVariable(string $queryVariable): ?string
+    public function getQueryVariables(): array
     {
-        foreach ($this->rules as $rule) {
-            $queryVariables = $rule->getQueryVariables();
+        return $this->queryVariables;
+    }
 
-            if (array_key_exists($queryVariable, $queryVariables)) {
-                return $queryVariables[$queryVariable];
-            }
-        }
-
-        return null;
+    public function mapQueryVariable(string $prefixedQueryVariable): ?string
+    {
+        return $this->queryVariables[$prefixedQueryVariable] ?? null;
     }
 
     /**

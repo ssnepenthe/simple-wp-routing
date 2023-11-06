@@ -20,10 +20,8 @@ return function (): \ToyWpRouting\RewriteCollection {
 
             $rewrite0 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'POST',
-), array (
+), '^regex$', 'index.php?some=var', array (
   'some' => 'some',
-), array (
-  0 => 'some',
 ), static function () {
         }, NULL);
 $this->rewrites->attach($rewrite0);

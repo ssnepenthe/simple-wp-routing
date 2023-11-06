@@ -7,7 +7,6 @@ namespace ToyWpRouting\Tests\Unit\Compiler;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use ToyWpRouting\Compiler\OptimizedRewrite;
-use ToyWpRouting\InvocationStrategyInterface;
 
 class OptimizedRewriteTest extends TestCase
 {
@@ -15,8 +14,9 @@ class OptimizedRewriteTest extends TestCase
     {
         $rewrite = new OptimizedRewrite(
             ['GET'],
+            'regex',
+            'query',
             ['pfx_var' => 'var'],
-            ['pfx_var'],
             'somehandler',
             'isActiveCallback'
         );
@@ -31,12 +31,12 @@ class OptimizedRewriteTest extends TestCase
     {
         $rewrite = new OptimizedRewrite(
             ['GET'],
+            'regex',
+            'query',
             [
                 'some' => 'some',
                 'pfx_another' => 'another',
             ],
-            [],
-            $this->createStub(InvocationStrategyInterface::class),
             'somehandler',
             'isActiveCallback'
         );
@@ -52,13 +52,7 @@ class OptimizedRewriteTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Cannot override isActiveCallback');
 
-        $rewrite = new OptimizedRewrite(
-            ['GET'],
-            ['some' => 'some'],
-            [],
-            $this->createStub(InvocationStrategyInterface::class),
-            'somehandler'
-        );
+        $rewrite = new OptimizedRewrite(['GET'], 'regex', 'query', ['some' => 'some'], 'somehandler');
         $rewrite->setIsActiveCallback('someisactivecallback');
     }
 }

@@ -59,10 +59,8 @@ class RewriteCollectionCompiler
         $queryVariables = [];
 
         foreach ($this->rewriteCollection->getRewrites() as $rewrite) {
-            foreach ($rewrite->getRules() as $rule) {
-                foreach ($rule->getQueryVariables() as $prefixed => $unprefixed) {
-                    $queryVariables[$prefixed] = $unprefixed;
-                }
+            foreach ($rewrite->getQueryVariables() as $prefixed => $unprefixed) {
+                $queryVariables[$prefixed] = $unprefixed;
             }
         }
 
@@ -74,9 +72,7 @@ class RewriteCollectionCompiler
         $rewriteRules = [];
 
         foreach ($this->rewriteCollection->getRewrites() as $rewrite) {
-            foreach ($rewrite->getRules() as $rule) {
-                $rewriteRules[$rule->getRegex()] = $rule->getQuery();
-            }
+            $rewriteRules[$rewrite->getRegex()] = $rewrite->getQuery();
         }
 
         return var_export($rewriteRules, true);
