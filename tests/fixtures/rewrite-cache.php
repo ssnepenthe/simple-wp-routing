@@ -2,16 +2,14 @@
 
 declare(strict_types=1);
 
-return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy = null): \ToyWpRouting\RewriteCollection {
-    return new class($invocationStrategy) extends \ToyWpRouting\RewriteCollection
+return function (): \ToyWpRouting\RewriteCollection {
+    return new class() extends \ToyWpRouting\RewriteCollection
     {
         protected bool $locked = true;
 
-        public function __construct(?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy = null)
+        public function __construct()
         {
             parent::__construct();
-
-            $invocationStrategy = $invocationStrategy ?: new \ToyWpRouting\DefaultInvocationStrategy();
 
             $this->queryVariables = array (
   'var' => 'var',
@@ -28,14 +26,14 @@ return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy 
   'var' => 'var',
 ), array (
   0 => 'var',
-), $invocationStrategy, 'firsthandler', NULL);
+), 'firsthandler', NULL);
 $rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'POST',
 ), array (
   'var' => 'var',
 ), array (
   0 => 'var',
-), $invocationStrategy, 'secondhandler', 'secondisactivecallback');
+), 'secondhandler', 'secondisactivecallback');
 $this->rewrites->attach($rewrite0);
 $this->rewrites->attach($rewrite1);
 $this->rewritesByRegexAndMethod = array (

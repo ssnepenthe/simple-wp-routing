@@ -74,7 +74,7 @@ final class Router
             $callback($this);
         }
 
-        (new Orchestrator($this->rewriteCollection(), $this->requestContext()))->initialize();
+        $this->createOrchestrator()->initialize();
     }
 
     public function options(string $route, $handler): Rewrite
@@ -167,8 +167,6 @@ final class Router
             $handler
         );
 
-        $rewrite->setInvocationStrategy($this->invocationStrategy());
-
         // @todo ParsedRewrite, PendingRewrite, RewriteHelper? whats in a name?
         return $rewrite;
     }
@@ -198,5 +196,10 @@ final class Router
         }
 
         return $this->rewriteCollectionCache;
+    }
+
+    private function createOrchestrator(): Orchestrator
+    {
+        return new Orchestrator($this->rewriteCollection(), $this->invocationStrategy(), $this->requestContext());
     }
 }

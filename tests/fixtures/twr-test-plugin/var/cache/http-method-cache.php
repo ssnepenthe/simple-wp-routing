@@ -2,16 +2,14 @@
 
 declare(strict_types=1);
 
-return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy = null): \ToyWpRouting\RewriteCollection {
-    return new class($invocationStrategy) extends \ToyWpRouting\RewriteCollection
+return function (): \ToyWpRouting\RewriteCollection {
+    return new class() extends \ToyWpRouting\RewriteCollection
     {
         protected bool $locked = true;
 
-        public function __construct(?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy = null)
+        public function __construct()
         {
             parent::__construct();
-
-            $invocationStrategy = $invocationStrategy ?: new \ToyWpRouting\DefaultInvocationStrategy();
 
             $this->queryVariables = array (
   'httpmethod___routeType' => '__routeType',
@@ -38,14 +36,14 @@ return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy 
   'httpmethod___routeType' => '__routeType',
 ), array (
   0 => 'httpmethod___routeType',
-), $invocationStrategy, static function () {}, NULL);
+), static function () {}, NULL);
 $rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'DELETE',
 ), array (
   'httpmethod___routeType' => '__routeType',
 ), array (
   0 => 'httpmethod___routeType',
-), $invocationStrategy, static function () {}, NULL);
+), static function () {}, NULL);
 $rewrite2 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
@@ -53,35 +51,35 @@ $rewrite2 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   'httpmethod___routeType' => '__routeType',
 ), array (
   0 => 'httpmethod___routeType',
-), $invocationStrategy, static function () {}, NULL);
+), static function () {}, NULL);
 $rewrite3 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'OPTIONS',
 ), array (
   'httpmethod___routeType' => '__routeType',
 ), array (
   0 => 'httpmethod___routeType',
-), $invocationStrategy, static function () {}, NULL);
+), static function () {}, NULL);
 $rewrite4 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'PATCH',
 ), array (
   'httpmethod___routeType' => '__routeType',
 ), array (
   0 => 'httpmethod___routeType',
-), $invocationStrategy, static function () {}, NULL);
+), static function () {}, NULL);
 $rewrite5 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'POST',
 ), array (
   'httpmethod___routeType' => '__routeType',
 ), array (
   0 => 'httpmethod___routeType',
-), $invocationStrategy, static function () {}, NULL);
+), static function () {}, NULL);
 $rewrite6 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'PUT',
 ), array (
   'httpmethod___routeType' => '__routeType',
 ), array (
   0 => 'httpmethod___routeType',
-), $invocationStrategy, static function () {}, NULL);
+), static function () {}, NULL);
 $this->rewrites->attach($rewrite0);
 $this->rewrites->attach($rewrite1);
 $this->rewrites->attach($rewrite2);

@@ -2,16 +2,14 @@
 
 declare(strict_types=1);
 
-return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy = null): \ToyWpRouting\RewriteCollection {
-    return new class($invocationStrategy) extends \ToyWpRouting\RewriteCollection
+return function (): \ToyWpRouting\RewriteCollection {
+    return new class() extends \ToyWpRouting\RewriteCollection
     {
         protected bool $locked = true;
 
-        public function __construct(?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy = null)
+        public function __construct()
         {
             parent::__construct();
-
-            $invocationStrategy = $invocationStrategy ?: new \ToyWpRouting\DefaultInvocationStrategy();
 
             $this->queryVariables = array (
   'responders___routeType' => '__routeType',
@@ -32,7 +30,7 @@ return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy 
   'responders___routeType' => '__routeType',
 ), array (
   0 => 'responders___routeType',
-), $invocationStrategy, static function () {
+), static function () {
             // @todo custom additional headers
             throw new \ToyWpRouting\Exception\NotFoundHttpException();
         }, NULL);
@@ -43,7 +41,7 @@ $rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   'responders___routeType' => '__routeType',
 ), array (
   0 => 'responders___routeType',
-), $invocationStrategy, static function () {
+), static function () {
             // @todo custom additional headers, custom theme template (body class and title), ensure query flags are reset
             throw new \ToyWpRouting\Exception\MethodNotAllowedHttpException(['POST', 'PUT']);
         }, NULL);
@@ -54,7 +52,7 @@ $rewrite2 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   'responders___routeType' => '__routeType',
 ), array (
   0 => 'responders___routeType',
-), $invocationStrategy, static function () {
+), static function () {
             // @todo custom status codes, error vs success status codes, json options, non-enveloped response, custom additional headers
             return new \ToyWpRouting\Responder\JsonResponder('hello from the json responder route');
         }, NULL);
@@ -65,7 +63,7 @@ $rewrite3 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   'responders___routeType' => '__routeType',
 ), array (
   0 => 'responders___routeType',
-), $invocationStrategy, static function () {
+), static function () {
             // @todo overwrite query variables
             add_action('twr_test_data', function () {
                 global $wp;
@@ -82,7 +80,7 @@ $rewrite4 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   'responders___routeType' => '__routeType',
 ), array (
   0 => 'responders___routeType',
-), $invocationStrategy, static function () {
+), static function () {
             // @todo custom status code, custom redirect-by, external (unsafe) redirect both allowed and not, custom headers
             return new \ToyWpRouting\Responder\RedirectResponder('/responders/query/');
         }, NULL);
@@ -93,7 +91,7 @@ $rewrite5 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   'responders___routeType' => '__routeType',
 ), array (
   0 => 'responders___routeType',
-), $invocationStrategy, static function () {
+), static function () {
             // @todo body class, document title, enqueue assets, dequeue assets, custom headers, query vars, query flags
             return new \ToyWpRouting\Responder\TemplateResponder('/var/www/html/wp-content/plugins/toy-wp-routing/tests/fixtures/twr-test-plugin' . '/templates/hello-world.php');
         }, NULL);

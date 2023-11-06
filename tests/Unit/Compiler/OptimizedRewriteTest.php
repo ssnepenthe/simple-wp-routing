@@ -17,7 +17,6 @@ class OptimizedRewriteTest extends TestCase
             ['GET'],
             ['pfx_var' => 'var'],
             ['pfx_var'],
-            $this->createStub(InvocationStrategyInterface::class),
             'somehandler',
             'isActiveCallback'
         );
@@ -46,21 +45,6 @@ class OptimizedRewriteTest extends TestCase
         $this->assertSame('another', $rewrite->mapQueryVariable('pfx_another'));
         $this->assertNull($rewrite->mapQueryVariable('another'));
         $this->assertNull($rewrite->mapQueryVariable('andanother'));
-    }
-
-    public function testSetInvocationStrategy()
-    {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Cannot override invocationStrategy');
-
-        $rewrite = new OptimizedRewrite(
-            ['GET'],
-            ['some' => 'some'],
-            [],
-            $this->createStub(InvocationStrategyInterface::class),
-            'somehandler'
-        );
-        $rewrite->setInvocationStrategy($this->createStub(InvocationStrategyInterface::class));
     }
 
     public function testSetIsActiveCallback()

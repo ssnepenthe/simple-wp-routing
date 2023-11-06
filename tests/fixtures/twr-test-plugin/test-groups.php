@@ -3,6 +3,7 @@
 namespace TwrTestPlugin;
 
 use RuntimeException;
+use ToyWpRouting\DefaultInvocationStrategy;
 use ToyWpRouting\Exception\MethodNotAllowedHttpException;
 use ToyWpRouting\Exception\NotFoundHttpException;
 use ToyWpRouting\Orchestrator;
@@ -43,7 +44,7 @@ abstract class TestGroup
             $rewrites = $this->createRewrites();
         }
 
-        (new Orchestrator($rewrites))->initialize();
+        (new Orchestrator($rewrites, new DefaultInvocationStrategy()))->initialize();
     }
 
     public function createCache(): RewriteCollectionCache

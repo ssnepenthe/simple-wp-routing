@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ToyWpRouting\Compiler;
 
 use RuntimeException;
-use ToyWpRouting\InvocationStrategyInterface;
 use ToyWpRouting\Rewrite;
 
 class OptimizedRewrite extends Rewrite
@@ -30,7 +29,6 @@ class OptimizedRewrite extends Rewrite
         array $methods,
         array $queryVariables,
         array $requiredQueryVariables,
-        InvocationStrategyInterface $invocationStrategy,
         $handler,
         $isActiveCallback = null
     ) {
@@ -38,7 +36,6 @@ class OptimizedRewrite extends Rewrite
 
         $this->queryVariables = $queryVariables;
         $this->requiredQueryVariables = $requiredQueryVariables;
-        $this->invocationStrategy = $invocationStrategy;
     }
 
     public function getRequiredQueryVariables(): array
@@ -49,13 +46,6 @@ class OptimizedRewrite extends Rewrite
     public function mapQueryVariable(string $queryVariable): ?string
     {
         return $this->queryVariables[$queryVariable] ?? null;
-    }
-
-    public function setInvocationStrategy(InvocationStrategyInterface $invocationStrategy): Rewrite
-    {
-        throw new RuntimeException(
-            'Cannot override invocationStrategy on OptimizedRewrite instance'
-        );
     }
 
     public function setIsActiveCallback($isActiveCallback): Rewrite

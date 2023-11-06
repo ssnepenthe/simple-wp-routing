@@ -7,28 +7,12 @@ namespace ToyWpRouting\Tests\Unit;
 use Closure;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use ToyWpRouting\DefaultInvocationStrategy;
 use ToyWpRouting\Exception\RequiredQueryVariablesMissingException;
-use ToyWpRouting\InvocationStrategyInterface;
 use ToyWpRouting\Rewrite;
 use ToyWpRouting\RewriteRule;
 
 class RewriteTest extends TestCase
 {
-    public function testGetInvocationStrategyDefault()
-    {
-        $rewrite = new Rewrite(
-            ['GET'],
-            [new RewriteRule('someregex', 'some=query')],
-            'somehandler'
-        );
-
-        $this->assertInstanceOf(
-            DefaultInvocationStrategy::class,
-            $rewrite->getInvocationStrategy()
-        );
-    }
-
     public function testGetRequiredQueryVariables()
     {
         $one = new RewriteRule('oneregex', 'one=query');

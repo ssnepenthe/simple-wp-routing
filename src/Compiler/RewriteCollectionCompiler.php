@@ -13,16 +13,14 @@ class RewriteCollectionCompiler
 
     declare(strict_types=1);
 
-    return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy = null): \ToyWpRouting\RewriteCollection {
-        return new class($invocationStrategy) extends \ToyWpRouting\RewriteCollection
+    return function (): \ToyWpRouting\RewriteCollection {
+        return new class() extends \ToyWpRouting\RewriteCollection
         {
             protected bool $locked = true;
 
-            public function __construct(?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy = null)
+            public function __construct()
             {
                 parent::__construct();
-
-                $invocationStrategy = $invocationStrategy ?: new \ToyWpRouting\DefaultInvocationStrategy();
 
                 $this->queryVariables = %s;
                 $this->rewriteRules = %s;

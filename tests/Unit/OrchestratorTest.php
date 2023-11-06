@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ToyWpRouting\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use ToyWpRouting\InvocationStrategyInterface;
 use ToyWpRouting\Orchestrator;
 use ToyWpRouting\Rewrite;
 use ToyWpRouting\RewriteCollection;
@@ -38,7 +39,7 @@ class OrchestratorTest extends TestCase
         $rewrites->add(new Rewrite(['GET'], [new RewriteRule('three', 'index.php?three=value')], 'threehandler'));
         $rewrites->add(new Rewrite(['GET'], [new RewriteRule('four', 'index.php?four=value')], 'fourhandler'));
 
-        $orchestrator = new Orchestrator($rewrites);
+        $orchestrator = new Orchestrator($rewrites, $this->createStub(InvocationStrategyInterface::class));
 
         $newRules = [
             'three' => 'index.php?three=value',
@@ -62,7 +63,7 @@ class OrchestratorTest extends TestCase
                 return false;
             });
 
-        $orchestrator = new Orchestrator($rewrites);
+        $orchestrator = new Orchestrator($rewrites, $this->createStub(InvocationStrategyInterface::class));
 
         $newRules = ['three' => 'index.php?three=value', 'four' => 'index.php?four=value'];
         $existingRules = ['one' => 'index.php?one=value', 'two' => 'index.php?two=value'];
@@ -79,7 +80,7 @@ class OrchestratorTest extends TestCase
         $rewrites->add(new Rewrite(['GET'], [new RewriteRule('one', 'index.php?one=value')], 'onehandler'));
         $rewrites->add(new Rewrite(['GET'], [new RewriteRule('two', 'index.php?two=value')], 'twohandler'));
 
-        $orchestrator = new Orchestrator($rewrites);
+        $orchestrator = new Orchestrator($rewrites, $this->createStub(InvocationStrategyInterface::class));
 
         // Not array or empty array input get returned unmodified.
         $this->assertSame(null, $orchestrator->onOptionRewriteRules(null));
@@ -99,7 +100,7 @@ class OrchestratorTest extends TestCase
                 return false;
             });
 
-        $orchestrator = new Orchestrator($rewrites);
+        $orchestrator = new Orchestrator($rewrites, $this->createStub(InvocationStrategyInterface::class));
 
         $allRules = [
             'three' => 'index.php?three=value',
@@ -118,7 +119,7 @@ class OrchestratorTest extends TestCase
         $rewrites->add(new Rewrite(['GET'], [new RewriteRule('three', 'index.php?three=value')], 'threehandler'));
         $rewrites->add(new Rewrite(['GET'], [new RewriteRule('four', 'index.php?four=value')], 'fourhandler'));
 
-        $orchestrator = new Orchestrator($rewrites);
+        $orchestrator = new Orchestrator($rewrites, $this->createStub(InvocationStrategyInterface::class));
 
         // Non array or empty array values are returned un-modified.
         $this->assertSame(null, $orchestrator->onPreUpdateOptionRewriteRules(null));
@@ -131,7 +132,7 @@ class OrchestratorTest extends TestCase
         $rewrites->add(new Rewrite(['GET'], [new RewriteRule('three', 'index.php?three=value')], 'threehandler'));
         $rewrites->add(new Rewrite(['GET'], [new RewriteRule('four', 'index.php?four=value')], 'fourhandler'));
 
-        $orchestrator = new Orchestrator($rewrites);
+        $orchestrator = new Orchestrator($rewrites, $this->createStub(InvocationStrategyInterface::class));
 
         $this->assertSame(['three', 'four'], $orchestrator->onQueryVars([]));
         $this->assertSame(
@@ -146,7 +147,7 @@ class OrchestratorTest extends TestCase
         $rewrites->add(new Rewrite(['GET'], [new RewriteRule('three', 'index.php?three=value')], 'threehandler'));
         $rewrites->add(new Rewrite(['GET'], [new RewriteRule('four', 'index.php?four=value')], 'fourhandler'));
 
-        $orchestrator = new Orchestrator($rewrites);
+        $orchestrator = new Orchestrator($rewrites, $this->createStub(InvocationStrategyInterface::class));
 
         // Non array values are returned unmodified.
         $this->assertSame(null, $orchestrator->onQueryVars(null));

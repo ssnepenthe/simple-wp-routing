@@ -14,11 +14,6 @@ class Rewrite
     protected $handler;
 
     /**
-     * @var ?InvocationStrategyInterface
-     */
-    protected $invocationStrategy;
-
-    /**
      * @var mixed
      */
     protected $isActiveCallback;
@@ -55,15 +50,6 @@ class Rewrite
     public function getHandler()
     {
         return $this->handler;
-    }
-
-    public function getInvocationStrategy(): InvocationStrategyInterface
-    {
-        if (! $this->invocationStrategy instanceof InvocationStrategyInterface) {
-            $this->invocationStrategy = new DefaultInvocationStrategy();
-        }
-
-        return $this->invocationStrategy;
     }
 
     /**
@@ -103,33 +89,6 @@ class Rewrite
         return $this->rules;
     }
 
-    /**
-     * @return mixed
-     */
-    public function handle(array $queryVariables = [])
-    {
-        $context = [];
-
-        foreach ($queryVariables as $key => $value) {
-            if (is_string($newKey = $this->mapQueryVariable($key))) {
-                $context[$newKey] = $value;
-            }
-        }
-
-        return $this->getInvocationStrategy()->invoke($this->getHandler(), $context);
-    }
-
-    public function isActive(): bool
-    {
-        $callback = $this->getIsActiveCallback();
-
-        if (null === $callback) {
-            return true;
-        }
-
-        return $this->getInvocationStrategy()->invoke($callback);
-    }
-
     public function mapQueryVariable(string $queryVariable): ?string
     {
         foreach ($this->rules as $rule) {
@@ -141,13 +100,6 @@ class Rewrite
         }
 
         return null;
-    }
-
-    public function setInvocationStrategy(InvocationStrategyInterface $invocationStrategy): self
-    {
-        $this->invocationStrategy = $invocationStrategy;
-
-        return $this;
     }
 
     /**

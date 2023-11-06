@@ -5,7 +5,7 @@ $rewrite0 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   'pfx_var' => 'var',
 ), array (
   0 => 'pfx_var',
-), $invocationStrategy, static function () {
+), static function () {
             }, static function () {
         });
 $rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
@@ -14,7 +14,7 @@ $rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   'pfx_var' => 'var',
 ), array (
   0 => 'pfx_var',
-), $invocationStrategy, static function () {
+), static function () {
             }, NULL);
 $this->rewrites->attach($rewrite0);
 $this->rewrites->attach($rewrite1);

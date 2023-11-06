@@ -2,16 +2,14 @@
 
 declare(strict_types=1);
 
-return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy = null): \ToyWpRouting\RewriteCollection {
-    return new class($invocationStrategy) extends \ToyWpRouting\RewriteCollection
+return function (): \ToyWpRouting\RewriteCollection {
+    return new class() extends \ToyWpRouting\RewriteCollection
     {
         protected bool $locked = true;
 
-        public function __construct(?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy = null)
+        public function __construct()
         {
             parent::__construct();
-
-            $invocationStrategy = $invocationStrategy ?: new \ToyWpRouting\DefaultInvocationStrategy();
 
             $this->queryVariables = array (
   'orchestrator_activeVar' => 'activeVar',
@@ -32,7 +30,7 @@ return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy 
   'orchestrator_activeVar' => 'activeVar',
 ), array (
   0 => 'orchestrator_activeVar',
-), $invocationStrategy, static function () {}, NULL);
+), static function () {}, NULL);
 $rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
@@ -40,7 +38,7 @@ $rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   'orchestrator_inactiveVar' => 'inactiveVar',
 ), array (
   0 => 'orchestrator_inactiveVar',
-), $invocationStrategy, static function () {
+), static function () {
             add_action('twr_test_data', function () {
                 echo '<span class="twr-orchestrator-inactive"></span>';
             });
@@ -52,7 +50,7 @@ $rewrite2 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   'orchestrator___routeType' => '__routeType',
 ), array (
   0 => 'orchestrator___routeType',
-), $invocationStrategy, static function () {
+), static function () {
             return new \ToyWpRouting\Responder\JsonResponder('hello from the orchestrator responder route');
         }, NULL);
 $rewrite3 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
@@ -62,7 +60,7 @@ $rewrite3 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   'orchestrator___routeType' => '__routeType',
 ), array (
   0 => 'orchestrator___routeType',
-), $invocationStrategy, static function () {
+), static function () {
             $responder = new \ToyWpRouting\Responder\JsonResponder('hello from the orchestrator hierarchical responder route');
 
             // We return the headers partial - expectation is that orchestrator traverses back up to the JsonResponder.

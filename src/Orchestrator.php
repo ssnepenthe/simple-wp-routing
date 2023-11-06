@@ -14,6 +14,8 @@ use ToyWpRouting\Responder\ResponderInterface;
 
 class Orchestrator
 {
+    protected InvocationStrategyInterface $invocationStrategy;
+
     /**
      * @var ?RequestContext
      */
@@ -23,8 +25,10 @@ class Orchestrator
 
     public function __construct(
         RewriteCollection $rewriteCollection,
+        InvocationStrategyInterface $invocationStrategy,
         ?RequestContext $requestContext = null
     ) {
+        $this->invocationStrategy = $invocationStrategy;
         $this->requestContext = $requestContext;
         $this->rewriteCollection = $rewriteCollection;
     }
@@ -146,13 +150,13 @@ class Orchestrator
 
             $rewrite = $rewrites[$method];
 
-            if (! $rewrite->isActive()) {
+            if (! $this->isRewriteActive($rewrite)) {
                 throw new RewriteDisabledException();
             }
 
             $validated = $rewrite->validate($wp->query_vars);
 
-            $responder = $rewrite->handle($validated);
+            $responder = $this->callHandler($rewrite, $validated);
         } catch (HttpExceptionInterface $e) {
             $responder = new HttpExceptionResponder($e);
         } catch (RewriteInvocationExceptionInterface $e) {
@@ -177,5 +181,30 @@ class Orchestrator
     protected function shouldModifyRules($rules): bool
     {
         return is_array($rules) && count($rules) > 0;
+    }
+
+    protected function isRewriteActive(Rewrite $rewrite): bool
+    {
+        $callback = $rewrite->getIsActiveCallback();
+
+        // @todo Default callback instead of null?
+        if (null === $callback) {
+            return true;
+        }
+
+        return (bool) $this->invocationStrategy->invoke($callback);
+    }
+
+    protected function callHandler(Rewrite $rewrite, array $queryVariables)
+    {
+        $context = [];
+
+        foreach ($queryVariables as $key => $value) {
+            if (is_string($newKey = $rewrite->mapQueryVariable($key))) {
+                $context[$newKey] = $value;
+            }
+        }
+
+        return $this->invocationStrategy->invoke($rewrite->getHandler(), $context);
     }
 }
