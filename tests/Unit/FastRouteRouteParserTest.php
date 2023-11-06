@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Tests\Unit;
 
-use FastRoute\BadRouteException;
 use PHPUnit\Framework\TestCase;
+use ToyWpRouting\Exception\BadRouteException;
 use ToyWpRouting\FastRouteRouteParser;
 
 /**
