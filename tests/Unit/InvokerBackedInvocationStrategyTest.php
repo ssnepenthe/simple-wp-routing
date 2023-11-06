@@ -17,20 +17,6 @@ class InvokerBackedInvocationStrategyTest extends TestCase
         $this->assertSame('testreturnval', $invocationStrategy->invoke(fn () => 'testreturnval'));
     }
 
-    public function testInvokeWithCallableResolver()
-    {
-        $invocationStrategy = new InvokerBackedInvocationStrategy();
-        $invocationStrategy->setCallableResolver(function ($potentialCallable) {
-            if ('handler' === $potentialCallable) {
-                return fn () => 'modified';
-            }
-
-            return $potentialCallable;
-        });
-
-        $this->assertSame('modified', $invocationStrategy->invoke('handler'));
-    }
-
     public function testInvokeWithContext()
     {
         $invocationStrategy = new InvokerBackedInvocationStrategy();

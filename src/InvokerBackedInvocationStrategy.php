@@ -7,7 +7,7 @@ namespace ToyWpRouting;
 use Invoker\Invoker;
 use Invoker\InvokerInterface;
 
-class InvokerBackedInvocationStrategy extends AbstractInvocationStrategy
+class InvokerBackedInvocationStrategy implements InvocationStrategyInterface
 {
     protected InvokerInterface $invoker;
 
@@ -23,6 +23,6 @@ class InvokerBackedInvocationStrategy extends AbstractInvocationStrategy
      */
     public function invoke($callable, array $context = [])
     {
-        return $this->invoker->call($this->resolveCallable($callable), $context);
+        return $this->invoker->call($callable, $context);
     }
 }

@@ -14,6 +14,8 @@ use ToyWpRouting\Responder\ResponderInterface;
 
 class Orchestrator
 {
+    protected CallableResolverInterface $callableResolver;
+
     protected InvocationStrategyInterface $invocationStrategy;
 
     /**
@@ -26,8 +28,10 @@ class Orchestrator
     public function __construct(
         RewriteCollection $rewriteCollection,
         InvocationStrategyInterface $invocationStrategy,
+        CallableResolverInterface $callableResolver,
         ?RequestContext $requestContext = null
     ) {
+        $this->callableResolver = $callableResolver;
         $this->invocationStrategy = $invocationStrategy;
         $this->requestContext = $requestContext;
         $this->rewriteCollection = $rewriteCollection;
@@ -192,6 +196,8 @@ class Orchestrator
             return true;
         }
 
+        $callback = $this->callableResolver->resolve($callback);
+
         return (bool) $this->invocationStrategy->invoke($callback);
     }
 
@@ -205,6 +211,8 @@ class Orchestrator
             }
         }
 
-        return $this->invocationStrategy->invoke($rewrite->getHandler(), $context);
+        $handler = $this->callableResolver->resolve($rewrite->getHandler());
+
+        return $this->invocationStrategy->invoke($handler, $context);
     }
 }

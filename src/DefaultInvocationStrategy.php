@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ToyWpRouting;
 
-class DefaultInvocationStrategy extends AbstractInvocationStrategy
+class DefaultInvocationStrategy implements InvocationStrategyInterface
 {
     /**
      * @param mixed $callable
@@ -13,6 +13,6 @@ class DefaultInvocationStrategy extends AbstractInvocationStrategy
      */
     public function invoke($callable, array $context = [])
     {
-        return ($this->resolveCallable($callable))($context);
+        return $callable($context);
     }
 }

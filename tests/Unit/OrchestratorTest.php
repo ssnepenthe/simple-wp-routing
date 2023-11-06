@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace ToyWpRouting\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use ToyWpRouting\CallableResolverInterface;
 use ToyWpRouting\InvocationStrategyInterface;
 use ToyWpRouting\Orchestrator;
 use ToyWpRouting\Rewrite;
 use ToyWpRouting\RewriteCollection;
-use ToyWpRouting\RewriteRule;
 
 // @todo Test custom prefix? Test custom invoker?
 class OrchestratorTest extends TestCase
@@ -39,7 +39,11 @@ class OrchestratorTest extends TestCase
         $rewrites->add(new Rewrite(['GET'], 'three', 'index.php?three=value', 'threehandler'));
         $rewrites->add(new Rewrite(['GET'], 'four', 'index.php?four=value', 'fourhandler'));
 
-        $orchestrator = new Orchestrator($rewrites, $this->createStub(InvocationStrategyInterface::class));
+        $orchestrator = new Orchestrator(
+            $rewrites,
+            $this->createStub(InvocationStrategyInterface::class),
+            $this->createStub(CallableResolverInterface::class)
+        );
 
         $newRules = [
             'three' => 'index.php?three=value',
@@ -63,7 +67,11 @@ class OrchestratorTest extends TestCase
                 return false;
             });
 
-        $orchestrator = new Orchestrator($rewrites, $this->createStub(InvocationStrategyInterface::class));
+        $orchestrator = new Orchestrator(
+            $rewrites,
+            $this->createStub(InvocationStrategyInterface::class),
+            $this->createStub(CallableResolverInterface::class)
+        );
 
         $newRules = ['three' => 'index.php?three=value', 'four' => 'index.php?four=value'];
         $existingRules = ['one' => 'index.php?one=value', 'two' => 'index.php?two=value'];
@@ -80,7 +88,11 @@ class OrchestratorTest extends TestCase
         $rewrites->add(new Rewrite(['GET'], 'one', 'index.php?one=value', 'onehandler'));
         $rewrites->add(new Rewrite(['GET'], 'two', 'index.php?two=value', 'twohandler'));
 
-        $orchestrator = new Orchestrator($rewrites, $this->createStub(InvocationStrategyInterface::class));
+        $orchestrator = new Orchestrator(
+            $rewrites,
+            $this->createStub(InvocationStrategyInterface::class),
+            $this->createStub(CallableResolverInterface::class)
+        );
 
         // Not array or empty array input get returned unmodified.
         $this->assertSame(null, $orchestrator->onOptionRewriteRules(null));
@@ -100,7 +112,11 @@ class OrchestratorTest extends TestCase
                 return false;
             });
 
-        $orchestrator = new Orchestrator($rewrites, $this->createStub(InvocationStrategyInterface::class));
+        $orchestrator = new Orchestrator(
+            $rewrites,
+            $this->createStub(InvocationStrategyInterface::class),
+            $this->createStub(CallableResolverInterface::class)
+        );
 
         $allRules = [
             'three' => 'index.php?three=value',
@@ -119,7 +135,11 @@ class OrchestratorTest extends TestCase
         $rewrites->add(new Rewrite(['GET'], 'three', 'index.php?three=value', 'threehandler'));
         $rewrites->add(new Rewrite(['GET'], 'four', 'index.php?four=value', 'fourhandler'));
 
-        $orchestrator = new Orchestrator($rewrites, $this->createStub(InvocationStrategyInterface::class));
+        $orchestrator = new Orchestrator(
+            $rewrites,
+            $this->createStub(InvocationStrategyInterface::class),
+            $this->createStub(CallableResolverInterface::class)
+        );
 
         // Non array or empty array values are returned un-modified.
         $this->assertSame(null, $orchestrator->onPreUpdateOptionRewriteRules(null));
@@ -132,7 +152,11 @@ class OrchestratorTest extends TestCase
         $rewrites->add(new Rewrite(['GET'], 'three', 'index.php?three=value', 'threehandler'));
         $rewrites->add(new Rewrite(['GET'], 'four', 'index.php?four=value', 'fourhandler'));
 
-        $orchestrator = new Orchestrator($rewrites, $this->createStub(InvocationStrategyInterface::class));
+        $orchestrator = new Orchestrator(
+            $rewrites,
+            $this->createStub(InvocationStrategyInterface::class),
+            $this->createStub(CallableResolverInterface::class)
+        );
 
         $this->assertSame(['three', 'four'], $orchestrator->onQueryVars([]));
         $this->assertSame(
@@ -147,7 +171,11 @@ class OrchestratorTest extends TestCase
         $rewrites->add(new Rewrite(['GET'], 'three', 'index.php?three=value', 'threehandler'));
         $rewrites->add(new Rewrite(['GET'], 'four', 'index.php?four=value', 'fourhandler'));
 
-        $orchestrator = new Orchestrator($rewrites, $this->createStub(InvocationStrategyInterface::class));
+        $orchestrator = new Orchestrator(
+            $rewrites,
+            $this->createStub(InvocationStrategyInterface::class),
+            $this->createStub(CallableResolverInterface::class)
+        );
 
         // Non array values are returned unmodified.
         $this->assertSame(null, $orchestrator->onQueryVars(null));

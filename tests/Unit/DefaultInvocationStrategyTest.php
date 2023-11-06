@@ -16,20 +16,6 @@ class DefaultInvocationStrategyTest extends TestCase
         $this->assertSame('testreturnval', $invocationStrategy->invoke(fn () => 'testreturnval'));
     }
 
-    public function testInvokeWithCallableResolver()
-    {
-        $invocationStrategy = new DefaultInvocationStrategy();
-        $invocationStrategy->setCallableResolver(function ($potentialCallable) {
-            if ('handler' === $potentialCallable) {
-                return fn () => 'modified';
-            }
-
-            return $potentialCallable;
-        });
-
-        $this->assertSame('modified', $invocationStrategy->invoke('handler'));
-    }
-
     public function testInvokeWithContext()
     {
         $invocationStrategy = new DefaultInvocationStrategy();

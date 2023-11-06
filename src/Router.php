@@ -12,6 +12,7 @@ final class Router
     private string $currentGroup = '';
     private bool $initialized = false;
 
+    private ?CallableResolverInterface $callableResolver = null;
     private ?InvocationStrategyInterface $invocationStrategy = null;
     private ?RouteParserInterface $parser = null;
     private string $prefix = '';
@@ -141,6 +142,15 @@ final class Router
         return rtrim($left, '/') . '/' . ltrim($right, '/');
     }
 
+    private function callableResolver(): CallableResolverInterface
+    {
+        if (! $this->callableResolver instanceof CallableResolverInterface) {
+            $this->callableResolver = new NullCallableResolver();
+        }
+
+        return $this->callableResolver;
+    }
+
     private function create(array $methods, string $route, $handler)
     {
         $route = $this->autoSlash($this->currentGroup, $route);
@@ -182,6 +192,11 @@ final class Router
 
     private function createOrchestrator(): Orchestrator
     {
-        return new Orchestrator($this->rewriteCollection(), $this->invocationStrategy(), $this->requestContext());
+        return new Orchestrator(
+            $this->rewriteCollection(),
+            $this->invocationStrategy(),
+            $this->callableResolver(),
+            $this->requestContext()
+        );
     }
 }
