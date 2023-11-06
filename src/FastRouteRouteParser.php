@@ -41,24 +41,16 @@ REGEX;
         }
 
         $currentRoute = '';
-        $routeDatas = [];
+        $rewrites = [];
+        $finalQuery = [];
         foreach ($segments as $n => $segment) {
             if ($segment === '' && $n !== 0) {
                 throw new BadRouteException('Empty optional part');
             }
 
             $currentRoute .= $segment;
-            $routeDatas[] = $this->parsePlaceholders($currentRoute);
-        }
-
-        $rewrites = [];
-        $finalQuery = [];
-
-        foreach ($routeDatas as $segments) {
-            [$regex, $queryArray] = $this->convertSegments($segments);
-
+            [$regex, $finalQuery] = $this->convertSegments($this->parsePlaceholders($currentRoute));
             $rewrites[] = $regex;
-            $finalQuery = $queryArray;
         }
 
         return ['^(?|' . implode('|', $rewrites) . ')$', Support::buildQuery($finalQuery)];
