@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace ToyWpRouting\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use ToyWpRouting\CallableResolverInterface;
-use ToyWpRouting\InvocationStrategyInterface;
+use ToyWpRouting\DefaultInvocationStrategy;
+use ToyWpRouting\NullCallableResolver;
 use ToyWpRouting\Orchestrator;
+use ToyWpRouting\RequestContext;
+use ToyWpRouting\Responder\ResponderInterface;
 use ToyWpRouting\Rewrite;
 use ToyWpRouting\RewriteCollection;
 
 // @todo Test custom prefix? Test custom invoker?
 class OrchestratorTest extends TestCase
 {
-    protected $hash;
     protected $regex;
 
     protected function setUp(): void
@@ -22,7 +23,6 @@ class OrchestratorTest extends TestCase
         parent::setUp();
 
         $this->regex = 'someregex';
-        $this->hash = md5($this->regex);
     }
 
     protected function tearDown(): void
@@ -30,7 +30,6 @@ class OrchestratorTest extends TestCase
         parent::tearDown();
 
         $this->regex = null;
-        $this->hash = null;
     }
 
     public function testOnOptionRewriteRulesAndOnRewriteRulesArray()
@@ -39,11 +38,7 @@ class OrchestratorTest extends TestCase
         $rewrites->add(new Rewrite(['GET'], 'three', 'index.php?three=value', 'threehandler'));
         $rewrites->add(new Rewrite(['GET'], 'four', 'index.php?four=value', 'fourhandler'));
 
-        $orchestrator = new Orchestrator(
-            $rewrites,
-            $this->createStub(InvocationStrategyInterface::class),
-            $this->createStub(CallableResolverInterface::class)
-        );
+        $orchestrator = $this->createOrchestrator($rewrites);
 
         $newRules = [
             'three' => 'index.php?three=value',
@@ -67,11 +62,7 @@ class OrchestratorTest extends TestCase
                 return false;
             });
 
-        $orchestrator = new Orchestrator(
-            $rewrites,
-            $this->createStub(InvocationStrategyInterface::class),
-            $this->createStub(CallableResolverInterface::class)
-        );
+        $orchestrator = $this->createOrchestrator($rewrites);
 
         $newRules = ['three' => 'index.php?three=value', 'four' => 'index.php?four=value'];
         $existingRules = ['one' => 'index.php?one=value', 'two' => 'index.php?two=value'];
@@ -88,11 +79,7 @@ class OrchestratorTest extends TestCase
         $rewrites->add(new Rewrite(['GET'], 'one', 'index.php?one=value', 'onehandler'));
         $rewrites->add(new Rewrite(['GET'], 'two', 'index.php?two=value', 'twohandler'));
 
-        $orchestrator = new Orchestrator(
-            $rewrites,
-            $this->createStub(InvocationStrategyInterface::class),
-            $this->createStub(CallableResolverInterface::class)
-        );
+        $orchestrator = $this->createOrchestrator($rewrites);
 
         // Not array or empty array input get returned unmodified.
         $this->assertSame(null, $orchestrator->onOptionRewriteRules(null));
@@ -112,11 +99,7 @@ class OrchestratorTest extends TestCase
                 return false;
             });
 
-        $orchestrator = new Orchestrator(
-            $rewrites,
-            $this->createStub(InvocationStrategyInterface::class),
-            $this->createStub(CallableResolverInterface::class)
-        );
+        $orchestrator = $this->createOrchestrator($rewrites);
 
         $allRules = [
             'three' => 'index.php?three=value',
@@ -135,11 +118,7 @@ class OrchestratorTest extends TestCase
         $rewrites->add(new Rewrite(['GET'], 'three', 'index.php?three=value', 'threehandler'));
         $rewrites->add(new Rewrite(['GET'], 'four', 'index.php?four=value', 'fourhandler'));
 
-        $orchestrator = new Orchestrator(
-            $rewrites,
-            $this->createStub(InvocationStrategyInterface::class),
-            $this->createStub(CallableResolverInterface::class)
-        );
+        $orchestrator = $this->createOrchestrator($rewrites);
 
         // Non array or empty array values are returned un-modified.
         $this->assertSame(null, $orchestrator->onPreUpdateOptionRewriteRules(null));
@@ -152,11 +131,7 @@ class OrchestratorTest extends TestCase
         $rewrites->add(new Rewrite(['GET'], 'three', 'index.php?three=value', 'threehandler'));
         $rewrites->add(new Rewrite(['GET'], 'four', 'index.php?four=value', 'fourhandler'));
 
-        $orchestrator = new Orchestrator(
-            $rewrites,
-            $this->createStub(InvocationStrategyInterface::class),
-            $this->createStub(CallableResolverInterface::class)
-        );
+        $orchestrator = $this->createOrchestrator($rewrites);
 
         $this->assertSame(['three', 'four'], $orchestrator->onQueryVars([]));
         $this->assertSame(
@@ -171,37 +146,10 @@ class OrchestratorTest extends TestCase
         $rewrites->add(new Rewrite(['GET'], 'three', 'index.php?three=value', 'threehandler'));
         $rewrites->add(new Rewrite(['GET'], 'four', 'index.php?four=value', 'fourhandler'));
 
-        $orchestrator = new Orchestrator(
-            $rewrites,
-            $this->createStub(InvocationStrategyInterface::class),
-            $this->createStub(CallableResolverInterface::class)
-        );
+        $orchestrator = $this->createOrchestrator($rewrites);
 
         // Non array values are returned unmodified.
         $this->assertSame(null, $orchestrator->onQueryVars(null));
-    }
-
-    public function testOnRequest()
-    {
-        $rewrites = new RewriteCollection();
-        $rewrites->get($this->regex, 'index.php?var=value', function () {
-            throw new RuntimeException('This should not happen');
-        });
-
-        $orchestrator = new Orchestrator($rewrites);
-
-        $input = ['var' => 'value'];
-
-        // Input is returned unmodified.
-        $this->assertSame($input, $orchestrator->onRequest($input));
-
-        // Nothing happens with invalid input.
-        $orchestrator->onRequest(false);
-        $orchestrator->onRequest([]);
-        $orchestrator->onRequest(['matchedRule' => 5]);
-
-        // Nothing happens when matchedRule doesn't match a registered rewrite.
-        $orchestrator->onRequest(['matchedRule' => 'badhash']);
     }
 
     public function testOnRequestMatchedRewrite()
@@ -209,13 +157,13 @@ class OrchestratorTest extends TestCase
         $count = 0;
 
         $rewrites = new RewriteCollection();
-        $rewrites->get($this->regex, '', function () use (&$count) {
+        $rewrites->add(new Rewrite(['GET', 'HEAD'], $this->regex, '', function () use (&$count) {
             $count++;
-        });
+        }));
 
-        $orchestrator = new Orchestrator($rewrites, new RequestContext('GET', []));
+        $orchestrator = $this->createOrchestrator($rewrites);
 
-        $orchestrator->onRequest(['matchedRule' => $this->hash]);
+        $orchestrator->onParseRequest($this->createWpDouble($this->regex));
 
         $this->assertSame(1, $count);
     }
@@ -231,13 +179,13 @@ class OrchestratorTest extends TestCase
         };
 
         $rewrites = new RewriteCollection();
-        $rewrites->get($this->regex, '', function () use ($responder) {
+        $rewrites->add(new Rewrite(['GET', 'HEAD'], $this->regex, '', function () use ($responder) {
             return $responder;
-        });
+        }));
 
-        $orchestrator = new Orchestrator($rewrites, new RequestContext('GET', []));
+        $orchestrator = $this->createOrchestrator($rewrites);
 
-        $orchestrator->onRequest(['matchedRule' => $this->hash]);
+        $orchestrator->onParseRequest($this->createWpDouble($this->regex));
 
         $this->assertSame(1, $responder->count);
     }
@@ -247,25 +195,39 @@ class OrchestratorTest extends TestCase
         $foundId = $foundFormat = null;
 
         $rewrites = new RewriteCollection();
-
-        $rewrites->get(
-            $this->regex,
-            'index.php?id=123&format=json',
-            function ($vars) use (&$foundId, &$foundFormat) {
+        $rewrites->add(
+            new Rewrite(['GET', 'HEAD'], $this->regex, 'index.php?id=123&format=json', function ($vars) use (&$foundId, &$foundFormat) {
                 $foundId = $vars['id'];
                 $foundFormat = $vars['format'];
-            }
+            })
         );
 
-        $orchestrator = new Orchestrator($rewrites, new RequestContext('GET', []));
+        $orchestrator = $this->createOrchestrator($rewrites);
 
-        $orchestrator->onRequest([
-            'matchedRule' => $this->hash,
+        $orchestrator->onParseRequest($this->createWpDouble($this->regex, [
             'id' => '123',
             'format' => 'json',
-        ]);
+        ]));
 
         $this->assertSame('123', $foundId);
         $this->assertSame('json', $foundFormat);
+    }
+
+    private function createOrchestrator(RewriteCollection $rewrites, ?RequestContext $request = null): Orchestrator
+    {
+        return new Orchestrator(
+            $rewrites,
+            new DefaultInvocationStrategy(),
+            new NullCallableResolver(),
+            new RequestContext('GET', [])
+        );
+    }
+
+    private function createWpDouble(string $matchedRule, array $queryVars = ['__routeType' => 'static']): object
+    {
+        return (object) [
+            'matched_rule' => $matchedRule,
+            'query_vars' => $queryVars,
+        ];
     }
 }
