@@ -6,6 +6,9 @@ namespace ToyWpRouting;
 
 use ToyWpRouting\Exception\BadRouteException;
 
+/**
+ * Adapted from https://github.com/nikic/FastRoute/blob/181d480e08d9476e61381e04a71b34dc0432e812/src/RouteParser/Std.php
+ */
 class FastRouteRouteParser implements RouteParserInterface
 {
     const VARIABLE_REGEX = <<<'REGEX'
@@ -19,7 +22,7 @@ REGEX;
     const DEFAULT_DISPATCH_REGEX = '[^/]+';
 
     /**
-     * @return array<string, string>
+     * @return array{0: string, 1: string}
      */
     public function parse(string $route): array
     {

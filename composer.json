@@ -23,7 +23,6 @@
     },
     "suggest": {
         "laravel/serializable-closure": "Required to dump rewrites to a file when using closures for handlers",
-        "nikic/fast-route": "Required to use default route syntax",
         "php-di/invoker": "Required to use the InvokerBackedInvocationStrategy"
     },
     "autoload": {
