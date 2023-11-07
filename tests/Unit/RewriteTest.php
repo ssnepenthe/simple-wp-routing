@@ -19,50 +19,36 @@ class RewriteTest extends TestCase
         $this->assertNull($rewrite->getIsActiveCallback());
         $this->assertSame(['GET'], $rewrite->getMethods());
         $this->assertSame('someregex', $rewrite->getRegex());
-        $this->assertSame(['var'], $rewrite->getRequiredQueryVariables());
         $this->assertSame('index.php?var=value', $rewrite->getQuery());
         $this->assertSame(['var' => 'var'], $rewrite->getQueryVariables());
     }
 
-    public function testMapQueryVariable()
+    public function testGetConcernedQueryVariablesWithoutPrefix()
     {
-        $rewriteOne = new Rewrite(['GET'], 'regex', 'one=valone&two=valtwo', 'somehandler');
-        $rewriteTwo = new Rewrite(['GET'], 'regex', 'one=valone&two=valtwo', 'somehandler', 'pfx_');
-
-        $this->assertSame('one', $rewriteOne->mapQueryVariable('one'));
-        $this->assertSame('two', $rewriteOne->mapQueryVariable('two'));
-        $this->assertNull($rewriteOne->mapQueryVariable('three'));
-
-        $this->assertSame('one', $rewriteTwo->mapQueryVariable('pfx_one'));
-        $this->assertSame('two', $rewriteTwo->mapQueryVariable('pfx_two'));
-        $this->assertNull($rewriteTwo->mapQueryVariable('pfx_three'));
-
-        $this->assertNull($rewriteTwo->mapQueryVariable('two'));
-    }
-
-    public function testValidate()
-    {
+        // Without prefix.
         $rewrite = new Rewrite(['GET'], 'regex', 'one=valone&two=valtwo', 'somehandler');
 
         $this->assertSame(
             ['one' => 'valone', 'two' => 'valtwo'],
-            $rewrite->validate(['one' => 'valone', 'two' => 'valtwo'])
+            $rewrite->getConcernedQueryVariablesWithoutPrefix(['one' => 'valone', 'two' => 'valtwo', 'three' => 'valthree'])
         );
 
-        // Only checking for required vars - extras are untouched.
+        // With prefix.
+        $rewrite = new Rewrite(['GET'], 'regex', 'one=valone&two=valtwo', 'somehandler', 'pfx_');
+
         $this->assertSame(
-            ['one' => 'valone', 'two' => 'valtwo', 'three' => 'valthree'],
-            $rewrite->validate(['one' => 'valone', 'two' => 'valtwo', 'three' => 'valthree'])
+            ['one' => 'valone', 'two' => 'valtwo'],
+            $rewrite->getConcernedQueryVariablesWithoutPrefix(['pfx_one' => 'valone', 'pfx_two' => 'valtwo', 'pfx_three' => 'valthree'])
         );
     }
 
-    public function testValidateThrowsForMissingRequiredQueryVariables()
+    public function testGetConcernedQueryVariablesWithoutPrefixThrowsForMissingRequiredQueryVariables()
     {
         $this->expectException(RequiredQueryVariablesMissingException::class);
 
         $rewrite = new Rewrite(['GET'], 'regex', 'one=valone&two=valtwo', 'somehandler');
 
-        $rewrite->validate(['one' => 'valone']);
+        $rewrite->getConcernedQueryVariablesWithoutPrefix(['one' => 'valone']);
     }
 
     public function testWithInvalidMethods()

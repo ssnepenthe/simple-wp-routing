@@ -158,9 +158,7 @@ class Orchestrator
                 throw new RewriteDisabledException();
             }
 
-            $validated = $rewrite->validate($wp->query_vars);
-
-            $responder = $this->callHandler($rewrite, $validated);
+            $responder = $this->callHandler($rewrite, $wp->query_vars);
         } catch (HttpExceptionInterface $e) {
             $responder = new HttpExceptionResponder($e);
         } catch (RewriteInvocationExceptionInterface $e) {
@@ -203,16 +201,9 @@ class Orchestrator
 
     protected function callHandler(Rewrite $rewrite, array $queryVariables)
     {
-        $context = [];
-
-        foreach ($queryVariables as $key => $value) {
-            if (is_string($newKey = $rewrite->mapQueryVariable($key))) {
-                $context[$newKey] = '' === $value ? null : $value;
-            }
-        }
-
-        $handler = $this->callableResolver->resolve($rewrite->getHandler());
-
-        return $this->invocationStrategy->invoke($handler, $context);
+        return $this->invocationStrategy->invoke(
+            $this->callableResolver->resolve($rewrite->getHandler()),
+            $rewrite->getConcernedQueryVariablesWithoutPrefix($queryVariables)
+        );
     }
 }

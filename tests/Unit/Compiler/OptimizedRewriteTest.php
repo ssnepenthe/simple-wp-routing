@@ -24,27 +24,6 @@ class OptimizedRewriteTest extends TestCase
         $this->assertSame('somehandler', $rewrite->getHandler());
         $this->assertSame('isActiveCallback', $rewrite->getIsActiveCallback());
         $this->assertSame(['GET'], $rewrite->getMethods());
-        $this->assertSame(['pfx_var'], $rewrite->getRequiredQueryVariables());
-    }
-
-    public function testMapQueryVariable()
-    {
-        $rewrite = new OptimizedRewrite(
-            ['GET'],
-            'regex',
-            'query',
-            [
-                'some' => 'some',
-                'pfx_another' => 'another',
-            ],
-            'somehandler',
-            'isActiveCallback'
-        );
-
-        $this->assertSame('some', $rewrite->mapQueryVariable('some'));
-        $this->assertSame('another', $rewrite->mapQueryVariable('pfx_another'));
-        $this->assertNull($rewrite->mapQueryVariable('another'));
-        $this->assertNull($rewrite->mapQueryVariable('andanother'));
     }
 
     public function testSetIsActiveCallback()

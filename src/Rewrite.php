@@ -79,11 +79,6 @@ class Rewrite
         return $this->regex;
     }
 
-    public function getRequiredQueryVariables(): array
-    {
-        return array_keys($this->queryVariables);
-    }
-
     public function getQuery(): string
     {
         return $this->query;
@@ -92,11 +87,6 @@ class Rewrite
     public function getQueryVariables(): array
     {
         return $this->queryVariables;
-    }
-
-    public function mapQueryVariable(string $prefixedQueryVariable): ?string
-    {
-        return $this->queryVariables[$prefixedQueryVariable] ?? null;
     }
 
     /**
@@ -109,14 +99,22 @@ class Rewrite
         return $this;
     }
 
-    public function validate(array $queryVariables): array
+    public function getConcernedQueryVariablesWithoutPrefix(array $queryVariables): array
     {
-        $missing = array_diff_key(array_flip($this->getRequiredQueryVariables()), $queryVariables);
+        $return = $missing = [];
 
-        if ([] !== $missing) {
-            throw new RequiredQueryVariablesMissingException(array_keys($missing));
+        foreach ($this->queryVariables as $prefixed => $unprefixed) {
+            if (! array_key_exists($prefixed, $queryVariables)) {
+                $missing[] = $prefixed;
+            } else {
+                $return[$unprefixed] = $queryVariables[$prefixed];
+            }
         }
 
-        return $queryVariables;
+        if ([] !== $missing) {
+            throw new RequiredQueryVariablesMissingException($missing);
+        }
+
+        return $return;
     }
 }
