@@ -21,7 +21,7 @@ class RouterTest extends TestCase
             $router->get('{four}', 'threehandler');
         });
 
-        [$rewriteOne, $rewriteTwo] = $this->getRewrites($router);
+        [$rewriteOne, $rewriteTwo] = $router->rewriteCollection()->getRewrites();
 
         $this->assertSame('^(?|one/([^/]+))$', $rewriteOne->getRegex());
         $this->assertSame('index.php?two=$matches[1]&__routeType=variable', $rewriteOne->getQuery());
@@ -43,7 +43,7 @@ class RouterTest extends TestCase
             $router->get('{four}', 'threehandler');
         });
 
-        [$rewriteOne, $rewriteTwo] = $this->getRewrites($router);
+        [$rewriteOne, $rewriteTwo] = $router->rewriteCollection()->getRewrites();
 
         $this->assertSame('^(?|one/([^/]+))$', $rewriteOne->getRegex());
         $this->assertSame('index.php?pfx_two=$matches[1]&pfx___routeType=variable', $rewriteOne->getQuery());
@@ -63,7 +63,7 @@ class RouterTest extends TestCase
         $router->post('postroute', 'handler');
         $router->put('putroute', 'handler');
 
-        $methods = array_map(fn ($rewrite) => $rewrite->getMethods(), $this->getRewrites($router));
+        $methods = array_map(fn ($rewrite) => $rewrite->getMethods(), $router->rewriteCollection()->getRewrites());
 
         $this->assertSame(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], $methods[0]);
         $this->assertSame(['DELETE'], $methods[1]);
@@ -86,15 +86,10 @@ class RouterTest extends TestCase
             });
         });
 
-        $regexes = array_map(fn ($rewrite) => $rewrite->getRegex(), $this->getRewrites($router));
+        $regexes = array_map(fn ($rewrite) => $rewrite->getRegex(), $router->rewriteCollection()->getRewrites());
 
         $this->assertSame('^(?|one/two)$', $regexes[0]);
         $this->assertSame('^(?|one/three)$', $regexes[1]);
         $this->assertSame('^(?|one/four/five)$', $regexes[2]);
-    }
-
-    private function getRewrites(Router $router): array
-    {
-        return iterator_to_array($router->rewriteCollection()->getRewrites());
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Tests\Unit;
 
+use LogicException;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use ToyWpRouting\Rewrite;
@@ -23,19 +24,14 @@ class RewriteCollectionTest extends TestCase
 
     public function testAddDuplicateRewrites()
     {
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('already registered');
+
         $rewriteCollection = new RewriteCollection();
         $rewrite = new Rewrite(['GET'], 'someregex', 'index.php?var=value', ['var' => 'var'], 'somehandler');
 
         $rewriteCollection->add($rewrite);
         $rewriteCollection->add($rewrite);
-
-        // Rewrites are only added once.
-        $this->assertCount(1, $rewriteCollection->getRewrites());
-
-        // Rewrite rules and query variables are unique.
-        $this->assertSame(['someregex' => 'index.php?var=value'], $rewriteCollection->getRewriteRules());
-
-        $this->assertSame(['var'], $rewriteCollection->getQueryVariables());
     }
 
     public function testAddWhenLocked()

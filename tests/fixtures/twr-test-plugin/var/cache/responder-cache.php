@@ -9,8 +9,6 @@ return function (): \ToyWpRouting\RewriteCollection {
 
         public function __construct()
         {
-            parent::__construct();
-
             $this->queryVariables = array (
   'responders___routeType' => '__routeType',
 );
@@ -83,12 +81,6 @@ $rewrite5 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
             // @todo body class, document title, enqueue assets, dequeue assets, custom headers, query vars, query flags
             return new \ToyWpRouting\Responder\TemplateResponder('/var/www/html/wp-content/plugins/toy-wp-routing/tests/fixtures/twr-test-plugin' . '/templates/hello-world.php');
         }, NULL);
-$this->rewrites->attach($rewrite0);
-$this->rewrites->attach($rewrite1);
-$this->rewrites->attach($rewrite2);
-$this->rewrites->attach($rewrite3);
-$this->rewrites->attach($rewrite4);
-$this->rewrites->attach($rewrite5);
 $this->rewritesByRegexAndMethod = array (
   '^(?|responders/http-exception/not-found)$' => 
   array (
@@ -121,6 +113,11 @@ $this->rewritesByRegexAndMethod = array (
     'HEAD' => $rewrite5,
   ),
 );
+        }
+
+        public function getRewrites(): array
+        {
+            throw new LogicException('Rewrites list not accessible on cache rewrite collection');
         }
     };
 };

@@ -9,8 +9,6 @@ return function (): \ToyWpRouting\RewriteCollection {
 
         public function __construct()
         {
-            parent::__construct();
-
             $this->queryVariables = array (
   'httpmethod___routeType' => '__routeType',
 );
@@ -66,13 +64,6 @@ $rewrite6 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
 ), '^(?|http-method/put)$', 'index.php?httpmethod___routeType=static', array (
   'httpmethod___routeType' => '__routeType',
 ), static function () {}, NULL);
-$this->rewrites->attach($rewrite0);
-$this->rewrites->attach($rewrite1);
-$this->rewrites->attach($rewrite2);
-$this->rewrites->attach($rewrite3);
-$this->rewrites->attach($rewrite4);
-$this->rewrites->attach($rewrite5);
-$this->rewrites->attach($rewrite6);
 $this->rewritesByRegexAndMethod = array (
   '^(?|http-method/any)$' => 
   array (
@@ -110,6 +101,11 @@ $this->rewritesByRegexAndMethod = array (
     'PUT' => $rewrite6,
   ),
 );
+        }
+
+        public function getRewrites(): array
+        {
+            throw new LogicException('Rewrites list not accessible on cache rewrite collection');
         }
     };
 };

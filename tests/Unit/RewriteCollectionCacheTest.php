@@ -45,31 +45,27 @@ class RewriteCollectionCacheTest extends TestCase
 
     public function testGet()
     {
+        // @todo Why are we using actual filesystem here instead of vfsStream?
         $cache = new RewriteCollectionCache(__DIR__ . '/../fixtures');
 
         $rewriteCollection = $cache->get();
 
         $this->assertInstanceOf(RewriteCollection::class, $rewriteCollection);
-        $this->assertCount(2, $rewriteCollection->getRewrites());
 
-        $rewrites = iterator_to_array($rewriteCollection->getRewrites());
+        $first = $rewriteCollection->findByRegex('^first$')['GET'];
+        $second = $rewriteCollection->findByRegex('^second$')['POST'];
 
-        $this->assertInstanceOf(OptimizedRewrite::class, $rewrites[0]);
-        $this->assertSame('firsthandler', $rewrites[0]->getHandler());
-        $this->assertNull($rewrites[0]->getIsActiveCallback());
-        $this->assertSame(['GET', 'HEAD'], $rewrites[0]->getMethods());
-        // @todo
-        // $this->assertSame(
-        //     [],
-        //     $rewrites[0]->getRules()
-        // );
+        $this->assertInstanceOf(OptimizedRewrite::class, $first);
+        $this->assertSame('firsthandler', $first->getHandler());
+        $this->assertNull($first->getIsActiveCallback());
+        $this->assertSame(['GET', 'HEAD'], $first->getMethods());
 
-        $this->assertInstanceOf(OptimizedRewrite::class, $rewrites[1]);
+        $this->assertInstanceOf(OptimizedRewrite::class, $second);
         $this->assertSame(
             'secondisactivecallback',
-            $rewrites[1]->getIsActiveCallback()
+            $second->getIsActiveCallback()
         );
-        $this->assertSame(['POST'], $rewrites[1]->getMethods());
+        $this->assertSame(['POST'], $second->getMethods());
     }
 
     public function testGetWithSerializedClosures()
@@ -80,7 +76,7 @@ class RewriteCollectionCacheTest extends TestCase
         );
 
         $rewriteCollection = $cache->get();
-        $rewrite = $rewriteCollection->getRewrites()->current();
+        $rewrite = $rewriteCollection->findByRegex('^regex$')['GET'];
 
         $this->assertInstanceOf(Closure::class, $rewrite->getHandler());
         $this->assertInstanceOf(Closure::class, $rewrite->getIsActiveCallback());
@@ -164,9 +160,10 @@ class RewriteCollectionCacheTest extends TestCase
         $cache->put($rewriteCollection);
 
         $dumped = (include $root->getChild('cache.php')->url())();
-        $dumpedRewrites = iterator_to_array($dumped->getRewrites());
+        $dumpedOne = $dumped->findByRegex('first')['GET'];
+        $dumpedTwo = $dumped->findByRegex('second')['POST'];
 
-        $this->assertInstanceOf(Closure::class, $dumpedRewrites[0]->getHandler());
-        $this->assertInstanceOf(Closure::class, $dumpedRewrites[1]->getIsActiveCallback());
+        $this->assertInstanceOf(Closure::class, $dumpedOne->getHandler());
+        $this->assertInstanceOf(Closure::class, $dumpedTwo->getIsActiveCallback());
     }
 }

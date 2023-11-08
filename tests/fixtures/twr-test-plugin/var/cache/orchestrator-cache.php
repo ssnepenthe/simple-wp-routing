@@ -9,8 +9,6 @@ return function (): \ToyWpRouting\RewriteCollection {
 
         public function __construct()
         {
-            parent::__construct();
-
             $this->queryVariables = array (
   'orchestrator_activeVar' => 'activeVar',
   'orchestrator___routeType' => '__routeType',
@@ -60,10 +58,6 @@ $rewrite3 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
             // We return the headers partial - expectation is that orchestrator traverses back up to the JsonResponder.
             return $responder->getPartialSet()->get(\ToyWpRouting\Responder\Partial\HeadersPartial::class);
         }, NULL);
-$this->rewrites->attach($rewrite0);
-$this->rewrites->attach($rewrite1);
-$this->rewrites->attach($rewrite2);
-$this->rewrites->attach($rewrite3);
 $this->rewritesByRegexAndMethod = array (
   '^(?|orchestrator/active/([^/]+))$' => 
   array (
@@ -86,6 +80,11 @@ $this->rewritesByRegexAndMethod = array (
     'HEAD' => $rewrite3,
   ),
 );
+        }
+
+        public function getRewrites(): array
+        {
+            throw new LogicException('Rewrites list not accessible on cache rewrite collection');
         }
     };
 };

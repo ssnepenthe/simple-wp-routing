@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace ToyWpRouting;
 
+use LogicException;
 use RuntimeException;
-use SplObjectStorage;
 
 class RewriteCollection
 {
@@ -22,26 +22,20 @@ class RewriteCollection
     protected array $rewriteRules = [];
 
     /**
-     * @var SplObjectStorage<Rewrite, null>
+     * @var Rewrite[]
      */
-    protected SplObjectStorage $rewrites;
+    protected array $rewrites = [];
 
     /**
      * @var array<string, array<"GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS", Rewrite>>
      */
     protected array $rewritesByRegexAndMethod = [];
 
-    public function __construct() {
-        $this->rewrites = new SplObjectStorage();
-    }
-
     public function add(Rewrite $rewrite): Rewrite
     {
         if ($this->locked) {
             throw new RuntimeException('Cannot add rewrites when rewrite collection is locked');
         }
-
-        $this->rewrites->attach($rewrite);
 
         $regex = $rewrite->getRegex();
 
@@ -57,8 +51,14 @@ class RewriteCollection
         }
 
         foreach ($rewrite->getMethods() as $method) {
+            if (array_key_exists($method, $this->rewritesByRegexAndMethod[$regex])) {
+                throw new LogicException("Route matching {$regex} for method {$method} already registered");
+            }
+
             $this->rewritesByRegexAndMethod[$regex][$method] = $rewrite;
         }
+
+        $this->rewrites[] = $rewrite;
 
         return $rewrite;
     }
@@ -89,9 +89,9 @@ class RewriteCollection
     }
 
     /**
-     * @return SplObjectStorage<Rewrite, null>
+     * @return Rewrite[]
      */
-    public function getRewrites(): SplObjectStorage
+    public function getRewrites(): array
     {
         return $this->rewrites;
     }

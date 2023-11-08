@@ -12,8 +12,6 @@ $rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   'pfx_var' => 'var',
 ), static function () {
         }, NULL);
-$this->rewrites->attach($rewrite0);
-$this->rewrites->attach($rewrite1);
 $this->rewritesByRegexAndMethod = array (
   '^getregex$' => 
   array (

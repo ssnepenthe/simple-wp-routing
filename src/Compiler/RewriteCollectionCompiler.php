@@ -20,12 +20,15 @@ class RewriteCollectionCompiler
 
             public function __construct()
             {
-                parent::__construct();
-
                 $this->queryVariables = %s;
                 $this->rewriteRules = %s;
 
                 %s
+            }
+
+            public function getRewrites(): array
+            {
+                throw new LogicException('Rewrites list not accessible on cache rewrite collection');
             }
         };
     };
@@ -81,7 +84,7 @@ class RewriteCollectionCompiler
     private function rewrites(): string
     {
         return (string) (new RewriteListDefinitionsCompiler(
-            iterator_to_array($this->rewriteCollection->getRewrites())
+            $this->rewriteCollection->getRewrites()
         ));
     }
 }

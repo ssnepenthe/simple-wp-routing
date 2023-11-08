@@ -9,8 +9,6 @@ return function (): \ToyWpRouting\RewriteCollection {
 
         public function __construct()
         {
-            parent::__construct();
-
             $this->queryVariables = array (
   'pfx_var' => 'var',
 );
@@ -24,7 +22,6 @@ return function (): \ToyWpRouting\RewriteCollection {
 ), '^regex$', 'index.php?pfx_var=val', array (
   'pfx_var' => 'var',
 ), static function () {}, static function () {});
-$this->rewrites->attach($rewrite0);
 $this->rewritesByRegexAndMethod = array (
   '^regex$' => 
   array (
@@ -32,6 +29,11 @@ $this->rewritesByRegexAndMethod = array (
     'HEAD' => $rewrite0,
   ),
 );
+        }
+
+        public function getRewrites(): array
+        {
+            throw new LogicException('Rewrites list not accessible on cache rewrite collection');
         }
     };
 };
