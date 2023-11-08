@@ -11,21 +11,45 @@ class RouterTest extends TestCase
 {
     public function testCreate()
     {
-        // @todo
-        // Test with group
-        // Test with prefix
-        // Test first rewrite rule gets requried qvs
-        // Test with invocation strat
-
+        $router = new Router();
 
         // Indirectly via get.
+        $router->get('one/{two}', 'onehandler');
+
+        // Also groups + autoslash.
+        $router->group('three', function ($router) {
+            $router->get('{four}', 'threehandler');
+        });
+
+        [$rewriteOne, $rewriteTwo] = $this->getRewrites($router);
+
+        $this->assertSame('^(?|one/([^/]+))$', $rewriteOne->getRegex());
+        $this->assertSame('index.php?two=$matches[1]', $rewriteOne->getQuery());
+
+        $this->assertSame('^(?|three/([^/]+))$', $rewriteTwo->getRegex());
+        $this->assertSame('index.php?four=$matches[1]', $rewriteTwo->getQuery());
+    }
+
+    public function testCreateWithPrefix()
+    {
         $router = new Router();
-        $router->get('one/{two}[/{three}[/four]]', 'handler');
+        $router->setPrefix('pfx_');
 
-        $rewrite = $this->getRewrites($router)[0];
+        // Indirectly via get.
+        $router->get('one/{two}', 'onehandler');
 
-        $this->assertSame('^(?|one/([^/]+)|one/([^/]+)/([^/]+)|one/([^/]+)/([^/]+)/four)$', $rewrite->getRegex());
-        $this->assertSame('index.php?two=$matches[1]&three=$matches[2]', $rewrite->getQuery());
+        // Also groups + autoslash.
+        $router->group('three', function ($router) {
+            $router->get('{four}', 'threehandler');
+        });
+
+        [$rewriteOne, $rewriteTwo] = $this->getRewrites($router);
+
+        $this->assertSame('^(?|one/([^/]+))$', $rewriteOne->getRegex());
+        $this->assertSame('index.php?pfx_two=$matches[1]', $rewriteOne->getQuery());
+
+        $this->assertSame('^(?|three/([^/]+))$', $rewriteTwo->getRegex());
+        $this->assertSame('index.php?pfx_four=$matches[1]', $rewriteTwo->getQuery());
     }
 
     public function testHttpMethodShorthandMethods()
