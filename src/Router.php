@@ -155,9 +155,13 @@ final class Router
     {
         $route = $this->autoSlash($this->currentGroup, $route);
 
-        [$regex, $query] = $this->parser()->parse($route);
+        [$regex, $queryArray] = $this->parser()->parse($route);
 
-        $rewrite = new Rewrite($methods, $regex, $query, $handler, $this->prefix);
+        $prefixedQueryArray = Support::applyPrefixToKeys($queryArray, $this->prefix);
+        $query = Support::buildQuery($prefixedQueryArray);
+        $queryVariables = array_combine(array_keys($prefixedQueryArray), array_keys($queryArray));
+
+        $rewrite = new Rewrite($methods, $regex, $query, $queryVariables, $handler);
 
         // @todo ParsedRewrite, PendingRewrite, RewriteHelper? whats in a name?
         return $rewrite;

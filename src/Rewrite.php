@@ -27,27 +27,34 @@ class Rewrite
 
     protected string $query;
 
+    /**
+     * @var array<string, string>
+     */
     protected array $queryVariables;
 
     /**
      * @param array<int, "GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS"> $methods
+     * @param array<string, string> $queryVariables
      * @param mixed $handler
      * @param mixed $isActiveCallback
      */
-    public function __construct(array $methods, string $regex, string $query, $handler, string $prefix = '', $isActiveCallback = null)
-    {
+    public function __construct(
+        array $methods,
+        string $regex,
+        string $query,
+        array $queryVariables,
+        $handler,
+        $isActiveCallback = null
+    ) {
+        // @todo Verify query and queryVariables are not empty?
         Support::assertValidMethodsList($methods);
 
         $this->methods = $methods;
         $this->regex = $regex;
+        $this->query = $query;
+        $this->queryVariables = $queryVariables;
         $this->handler = $handler;
         $this->isActiveCallback = $isActiveCallback;
-
-        $queryArray = '' === $query ? ['__routeType' => 'static'] : Support::parseQuery($query);
-        $prefixedQueryArray = Support::applyPrefixToKeys($queryArray, $prefix);
-
-        $this->query = Support::buildQuery($prefixedQueryArray);
-        $this->queryVariables = array_combine(array_keys($prefixedQueryArray), array_keys($queryArray));
     }
 
     /**

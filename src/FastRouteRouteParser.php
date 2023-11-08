@@ -56,7 +56,7 @@ REGEX;
             $rewrites[] = $regex;
         }
 
-        return ['^(?|' . implode('|', $rewrites) . ')$', Support::buildQuery($finalQuery)];
+        return ['^(?|' . implode('|', $rewrites) . ')$', $finalQuery];
     }
 
     /**
@@ -87,6 +87,8 @@ REGEX;
             $queryArray[$name] = "\$matches[{$position}]";
             $position++;
         }
+
+        $queryArray['__routeType'] = ([] === $queryArray) ? 'static' : 'variable';
 
         return [$regex, $queryArray];
     }

@@ -13,7 +13,7 @@ class RewriteTest extends TestCase
 {
     public function testGetters()
     {
-        $rewrite = new Rewrite(['GET'], 'someregex', 'index.php?var=value', 'somehandler');
+        $rewrite = new Rewrite(['GET'], 'someregex', 'index.php?var=value', ['var' => 'var'], 'somehandler');
 
         $this->assertSame('somehandler', $rewrite->getHandler());
         $this->assertNull($rewrite->getIsActiveCallback());
@@ -23,10 +23,18 @@ class RewriteTest extends TestCase
         $this->assertSame(['var' => 'var'], $rewrite->getQueryVariables());
     }
 
+    public function testCreateWithPrefix()
+    {
+        $rewrite = new Rewrite(['GET'], 'someregex', 'index.php?pfx_var=value', ['pfx_var' => 'var'], 'somehandler');
+
+        $this->assertSame('index.php?pfx_var=value', $rewrite->getQuery());
+        $this->assertSame(['pfx_var' => 'var'], $rewrite->getQueryVariables());
+    }
+
     public function testGetConcernedQueryVariablesWithoutPrefix()
     {
         // Without prefix.
-        $rewrite = new Rewrite(['GET'], 'regex', 'one=valone&two=valtwo', 'somehandler');
+        $rewrite = new Rewrite(['GET'], 'regex', 'one=valone&two=valtwo', ['one' => 'one', 'two' => 'two'], 'somehandler');
 
         $this->assertSame(
             ['one' => 'valone', 'two' => 'valtwo'],
@@ -34,7 +42,7 @@ class RewriteTest extends TestCase
         );
 
         // With prefix.
-        $rewrite = new Rewrite(['GET'], 'regex', 'one=valone&two=valtwo', 'somehandler', 'pfx_');
+        $rewrite = new Rewrite(['GET'], 'regex', 'pfx_one=valone&pfx_two=valtwo', ['pfx_one' => 'one', 'pfx_two' => 'two'], 'somehandler');
 
         $this->assertSame(
             ['one' => 'valone', 'two' => 'valtwo'],
@@ -46,7 +54,7 @@ class RewriteTest extends TestCase
     {
         $this->expectException(RequiredQueryVariablesMissingException::class);
 
-        $rewrite = new Rewrite(['GET'], 'regex', 'one=valone&two=valtwo', 'somehandler');
+        $rewrite = new Rewrite(['GET'], 'regex', 'one=valone&two=valtwo', ['one' => 'one', 'two' => 'two'], 'somehandler');
 
         $rewrite->getConcernedQueryVariablesWithoutPrefix(['one' => 'valone']);
     }
@@ -56,17 +64,20 @@ class RewriteTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid methods list');
 
-        new Rewrite(['GET', 'BADMETHOD'], 'someregex', 'some=query', 'somehandler');
+        new Rewrite(['GET', 'BADMETHOD'], 'someregex', 'some=query', ['some' => 'some'], 'somehandler');
     }
 
     public function testWithIsActiveCallback()
     {
-        $one = new Rewrite(['GET'], 'someregex', 'index.php?var=value', 'somehandler');
-        $one->setIsActiveCallback('someisactivecallback');
+        $one = new Rewrite(['GET'], 'someregex', 'index.php?var=value', ['var' => 'var'], 'somehandler');
 
-        $two = new Rewrite(['GET'], 'anotherregex', 'index.php?var=value', 'anotherhandler', '', 'anotherisactivecallback');
+        $two = new Rewrite(['GET'], 'anotherregex', 'index.php?var=value', ['var' => 'var'], 'anotherhandler');
+        $two->setIsActiveCallback('anotherisactivecallback');
 
-        $this->assertSame('someisactivecallback', $one->getIsActiveCallback());
+        $three = new Rewrite(['GET'], 'yetanotherregex', 'index.php?var=value', ['var' => 'var'], 'yetanotherhandler', 'yetanotherisactivecallback');
+
+        $this->assertNull($one->getIsActiveCallback());
         $this->assertSame('anotherisactivecallback', $two->getIsActiveCallback());
+        $this->assertSame('yetanotherisactivecallback', $three->getIsActiveCallback());
     }
 }

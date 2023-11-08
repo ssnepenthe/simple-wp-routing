@@ -13,12 +13,12 @@ return function (): \ToyWpRouting\RewriteCollection {
 
             $this->queryVariables = array (
   'orchestrator_activeVar' => 'activeVar',
-  'orchestrator_inactiveVar' => 'inactiveVar',
   'orchestrator___routeType' => '__routeType',
+  'orchestrator_inactiveVar' => 'inactiveVar',
 );
             $this->rewriteRules = array (
-  '^(?|orchestrator/active/([^/]+))$' => 'index.php?orchestrator_activeVar=$matches[1]',
-  '^(?|orchestrator/inactive/([^/]+))$' => 'index.php?orchestrator_inactiveVar=$matches[1]',
+  '^(?|orchestrator/active/([^/]+))$' => 'index.php?orchestrator_activeVar=$matches[1]&orchestrator___routeType=variable',
+  '^(?|orchestrator/inactive/([^/]+))$' => 'index.php?orchestrator_inactiveVar=$matches[1]&orchestrator___routeType=variable',
   '^(?|orchestrator/responder)$' => 'index.php?orchestrator___routeType=static',
   '^(?|orchestrator/hierarchical-responder)$' => 'index.php?orchestrator___routeType=static',
 );
@@ -26,14 +26,16 @@ return function (): \ToyWpRouting\RewriteCollection {
             $rewrite0 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
-), '^(?|orchestrator/active/([^/]+))$', 'index.php?orchestrator_activeVar=$matches[1]', array (
+), '^(?|orchestrator/active/([^/]+))$', 'index.php?orchestrator_activeVar=$matches[1]&orchestrator___routeType=variable', array (
   'orchestrator_activeVar' => 'activeVar',
+  'orchestrator___routeType' => '__routeType',
 ), static function () {}, NULL);
 $rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
-), '^(?|orchestrator/inactive/([^/]+))$', 'index.php?orchestrator_inactiveVar=$matches[1]', array (
+), '^(?|orchestrator/inactive/([^/]+))$', 'index.php?orchestrator_inactiveVar=$matches[1]&orchestrator___routeType=variable', array (
   'orchestrator_inactiveVar' => 'inactiveVar',
+  'orchestrator___routeType' => '__routeType',
 ), static function () {
             add_action('twr_test_data', function () {
                 echo '<span class="twr-orchestrator-inactive"></span>';

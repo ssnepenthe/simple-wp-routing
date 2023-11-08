@@ -17,7 +17,7 @@ class RewriteCollectionCompilerTest extends TestCase
     public function testCompile()
     {
         $rewrites = new RewriteCollection();
-        $rewrite = new Rewrite(['POST'], '^regex$', 'index.php?some=var', function () {
+        $rewrite = new Rewrite(['POST'], '^regex$', 'index.php?some=var', ['some' => 'some'], function () {
         });
 
         $rewrites->add($rewrite);

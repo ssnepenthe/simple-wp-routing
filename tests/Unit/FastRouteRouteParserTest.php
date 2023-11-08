@@ -18,51 +18,51 @@ class FastRouteRouteParserTest extends TestCase
         return [
             [
                 '/test',
-                ['^(?|/test)$', '']
+                ['^(?|/test)$', ['__routeType' => 'static']],
             ],
             [
                 '/test/{param}',
-                ['^(?|/test/([^/]+))$', 'index.php?param=$matches[1]'],
+                ['^(?|/test/([^/]+))$', ['param' => '$matches[1]', '__routeType' => 'variable']],
             ],
             [
                 '/te{ param }st',
-                ['^(?|/te([^/]+)st)$', 'index.php?param=$matches[1]'],
+                ['^(?|/te([^/]+)st)$', ['param' => '$matches[1]', '__routeType' => 'variable']],
             ],
             [
                 '/test/{param1}/test2/{param2}',
-                ['^(?|/test/([^/]+)/test2/([^/]+))$', 'index.php?param1=$matches[1]&param2=$matches[2]'],
+                ['^(?|/test/([^/]+)/test2/([^/]+))$', ['param1' => '$matches[1]', 'param2' => '$matches[2]', '__routeType' => 'variable']],
             ],
             [
                 '/test/{param:\d+}',
-                ['^(?|/test/(\d+))$', 'index.php?param=$matches[1]'],
+                ['^(?|/test/(\d+))$', ['param' => '$matches[1]', '__routeType' => 'variable']],
             ],
             [
                 '/test/{ param : \d{1,9} }',
-                ['^(?|/test/(\d{1,9}))$', 'index.php?param=$matches[1]'],
+                ['^(?|/test/(\d{1,9}))$', ['param' => '$matches[1]', '__routeType' => 'variable']],
             ],
             [
                 '/test[opt]',
-                ['^(?|/test|/testopt)$', ''],
+                ['^(?|/test|/testopt)$', ['__routeType' => 'static']],
             ],
             [
                 '/test[/{param}]',
-                ['^(?|/test|/test/([^/]+))$', 'index.php?param=$matches[1]'],
+                ['^(?|/test|/test/([^/]+))$', ['param' => '$matches[1]', '__routeType' => 'variable']],
             ],
             [
                 '/{param}[opt]',
-                ['^(?|/([^/]+)|/([^/]+)opt)$', 'index.php?param=$matches[1]'],
+                ['^(?|/([^/]+)|/([^/]+)opt)$', ['param' => '$matches[1]', '__routeType' => 'variable']],
             ],
             [
                 '/test[/{name}[/{id:[0-9]+}]]',
-                ['^(?|/test|/test/([^/]+)|/test/([^/]+)/([0-9]+))$', 'index.php?name=$matches[1]&id=$matches[2]'],
+                ['^(?|/test|/test/([^/]+)|/test/([^/]+)/([0-9]+))$', ['name' => '$matches[1]', 'id' => '$matches[2]', '__routeType' => 'variable']],
             ],
             [
                 '/{foo-bar}',
-                ['^(?|/([^/]+))$', 'index.php?foo-bar=$matches[1]'],
+                ['^(?|/([^/]+))$', ['foo-bar' => '$matches[1]', '__routeType' => 'variable']],
             ],
             [
                 '/{_foo:.*}',
-                ['^(?|/(.*))$', 'index.php?_foo=$matches[1]'],
+                ['^(?|/(.*))$', ['_foo' => '$matches[1]', '__routeType' => 'variable']],
             ],
         ];
     }

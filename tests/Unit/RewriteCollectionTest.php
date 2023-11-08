@@ -14,7 +14,7 @@ class RewriteCollectionTest extends TestCase
     public function testAdd()
     {
         $rewriteCollection = new RewriteCollection();
-        $rewrite = new Rewrite(['GET'], 'someregex', 'index.php?var=value', 'somehandler');
+        $rewrite = new Rewrite(['GET'], 'someregex', 'index.php?var=value', ['var' => 'var'], 'somehandler');
 
         $rewriteCollection->add($rewrite);
 
@@ -24,7 +24,7 @@ class RewriteCollectionTest extends TestCase
     public function testAddDuplicateRewrites()
     {
         $rewriteCollection = new RewriteCollection();
-        $rewrite = new Rewrite(['GET'], 'someregex', 'index.php?var=value', 'somehandler');
+        $rewrite = new Rewrite(['GET'], 'someregex', 'index.php?var=value', ['var' => 'var'], 'somehandler');
 
         $rewriteCollection->add($rewrite);
         $rewriteCollection->add($rewrite);
@@ -46,7 +46,7 @@ class RewriteCollectionTest extends TestCase
         $rewriteCollection = new RewriteCollection();
         $rewriteCollection->lock();
 
-        $rewriteCollection->add(new Rewrite(['GET'], 'someregex', 'index.php?var=value', 'somehandler'));
+        $rewriteCollection->add(new Rewrite(['GET'], 'someregex', 'index.php?var=value', ['var' => 'var'], 'somehandler'));
     }
 
     public function testFindByRegex()
@@ -56,10 +56,10 @@ class RewriteCollectionTest extends TestCase
         $rewriteCollection = new RewriteCollection();
 
         // Multiple methods, single regex.
-        $rewriteOne = new Rewrite(['GET', 'POST'], $regex, 'index.php?var=value', 'somehandler');
+        $rewriteOne = new Rewrite(['GET', 'POST'], $regex, 'index.php?var=value', ['var' => 'var'], 'somehandler');
 
         // Same regex, additional method.
-        $rewriteTwo = new Rewrite(['PUT'], $regex, 'index.php?var=value', 'somehandler');
+        $rewriteTwo = new Rewrite(['PUT'], $regex, 'index.php?var=value', ['var' => 'var'], 'somehandler');
 
         $rewriteCollection->add($rewriteOne);
         $rewriteCollection->add($rewriteTwo);
@@ -73,10 +73,10 @@ class RewriteCollectionTest extends TestCase
 
     public function testGetters()
     {
-        $one = new Rewrite(['GET', 'HEAD'], 'first', 'index.php?first=first', 'somehandler');
-        $two = new Rewrite(['POST'], 'second', 'index.php?second=second', 'somehandler');
+        $one = new Rewrite(['GET', 'HEAD'], 'first', 'index.php?first=first', ['first' => 'first'], 'somehandler');
+        $two = new Rewrite(['POST'], 'second', 'index.php?second=second', ['second' => 'second'], 'somehandler');
         $two->setIsActiveCallback(fn () => false);
-        $three = new Rewrite(['POST'], 'third', 'index.php?third=third&fourth=fourth', 'somehandler');
+        $three = new Rewrite(['POST'], 'third', 'index.php?third=third&fourth=fourth', ['third' => 'third', 'fourth' => 'fourth'], 'somehandler');
 
         $rewriteCollection = new RewriteCollection();
         $rewriteCollection->add($one);
@@ -91,35 +91,6 @@ class RewriteCollectionTest extends TestCase
             'first' => 'index.php?first=first',
             'second' => 'index.php?second=second',
             'third' => 'index.php?third=third&fourth=fourth',
-        ], $rewriteCollection->getRewriteRules());
-        $this->assertSame(
-            [$one, $two, $three],
-            iterator_to_array($rewriteCollection->getRewrites())
-        );
-    }
-
-    public function testGettersWithPrefixedRewrites()
-    {
-        $prefix = 'pfx_';
-
-        $one = new Rewrite(['GET', 'HEAD'], 'first', 'index.php?first=first', 'somehandler', $prefix);
-        $two = new Rewrite(['POST'], 'second', 'index.php?second=second', 'somehandler', $prefix);
-        $two->setIsActiveCallback(fn () => false);
-        $three = new Rewrite(['POST'], 'third', 'index.php?third=third&fourth=fourth', 'somehandler', $prefix);
-
-        $rewriteCollection = new RewriteCollection();
-        $rewriteCollection->add($one);
-        $rewriteCollection->add($two);
-        $rewriteCollection->add($three);
-
-        $this->assertSame(
-            ['pfx_first', 'pfx_second', 'pfx_third', 'pfx_fourth'],
-            $rewriteCollection->getQueryVariables()
-        );
-        $this->assertSame([
-            'first' => 'index.php?pfx_first=first',
-            'second' => 'index.php?pfx_second=second',
-            'third' => 'index.php?pfx_third=third&pfx_fourth=fourth',
         ], $rewriteCollection->getRewriteRules());
         $this->assertSame(
             [$one, $two, $three],

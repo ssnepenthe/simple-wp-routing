@@ -15,13 +15,13 @@ class RewriteListDefinitionsCompilerTest extends TestCase
 
     public function testCompile()
     {
-        $one = new Rewrite(['GET', 'HEAD'], '^getregex$', 'index.php?var=get', function () {
-        }, 'pfx_');
+        $one = new Rewrite(['GET', 'HEAD'], '^getregex$', 'index.php?pfx_var=get', ['pfx_var' => 'var'], function () {
+        });
         $one->setIsActiveCallback(function () {
         });
 
-        $two = new Rewrite(['POST'], '^postregex$', 'index.php?var=post', function () {
-        }, 'pfx_');
+        $two = new Rewrite(['POST'], '^postregex$', 'index.php?pfx_var=post', ['pfx_var' => 'var'], function () {
+        });
 
         $this->assertMatchesSnapshot((new RewriteListDefinitionsCompiler([$one, $two]))->compile());
     }

@@ -13,8 +13,8 @@ require_once __DIR__ . '/../vendor/autoload.php';
 // Regular
 $rewriteCollection = new RewriteCollection();
 
-$rewriteCollection->add(new Rewrite(['GET', 'HEAD'], '^first$', 'index.php?var=first', 'firsthandler'));
-$rewriteCollection->add(new Rewrite(['POST'], '^second$', 'index.php?var=second', 'secondhandler'))->setIsActiveCallback('secondisactivecallback');
+$rewriteCollection->add(new Rewrite(['GET', 'HEAD'], '^first$', 'index.php?var=first', ['var' => 'var'], 'firsthandler'));
+$rewriteCollection->add(new Rewrite(['POST'], '^second$', 'index.php?var=second', ['var' => 'var'], 'secondhandler'))->setIsActiveCallback('secondisactivecallback');
 
 $rewriteCollectionCache = new RewriteCollectionCache(__DIR__ . '/../tests/fixtures', 'rewrite-cache.php');
 $rewriteCollectionCache->put($rewriteCollection);
@@ -22,7 +22,7 @@ $rewriteCollectionCache->put($rewriteCollection);
 // Closures
 $rewriteCollection = new RewriteCollection('pfx_');
 
-$rewriteCollection->add(new Rewrite(['GET', 'HEAD'], '^regex$', 'index.php?var=val', function () {}, 'pfx_'))->setIsActiveCallback(function () {});
+$rewriteCollection->add(new Rewrite(['GET', 'HEAD'], '^regex$', 'index.php?pfx_var=val', ['pfx_var' => 'var'], function () {}, 'pfx_'))->setIsActiveCallback(function () {});
 
 $rewriteCollectionCache = new RewriteCollectionCache(__DIR__ . '/../tests/fixtures', 'rewrite-cache-serialized-closures.php');
 $rewriteCollectionCache->put($rewriteCollection);
