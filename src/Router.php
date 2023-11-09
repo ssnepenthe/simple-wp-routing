@@ -11,14 +11,21 @@ final class Router
     private bool $autoSlash = true;
 
     private string $cacheDirectory = '';
-    private string $currentGroup = '';
-    private bool $initialized = false;
 
     private ?CallableResolverInterface $callableResolver = null;
+
+    private string $currentGroup = '';
+
+    private bool $initialized = false;
+
     private ?InvocationStrategyInterface $invocationStrategy = null;
+
     private ?RouteParserInterface $parser = null;
+
     private string $prefix = '';
+
     private ?RewriteCollection $rewriteCollection = null;
+
     private ?RewriteCollectionCache $rewriteCollectionCache = null;
 
     public function add(array $methods, string $route, $handler): Rewrite
@@ -127,6 +134,20 @@ final class Router
         return $this->rewriteCollection;
     }
 
+    public function rewriteCollectionCache(): RewriteCollectionCache
+    {
+        if ('' === $this->cacheDirectory) {
+            throw new LogicException('Cache directory has not been configured - must call enableCache method first');
+        }
+
+        if (! $this->rewriteCollectionCache instanceof RewriteCollectionCache) {
+            // @todo Configurable cache file?
+            $this->rewriteCollectionCache = new RewriteCollectionCache($this->cacheDirectory);
+        }
+
+        return $this->rewriteCollectionCache;
+    }
+
     public function setPrefix(string $prefix)
     {
         $this->prefix = $prefix;
@@ -173,6 +194,16 @@ final class Router
         return $rewrite;
     }
 
+    private function createOrchestrator(): Orchestrator
+    {
+        return new Orchestrator(
+            $this->rewriteCollection(),
+            $this->invocationStrategy(),
+            $this->callableResolver(),
+            RequestContext::fromGlobals()
+        );
+    }
+
     private function invocationStrategy(): InvocationStrategyInterface
     {
         if (! $this->invocationStrategy instanceof InvocationStrategyInterface) {
@@ -189,29 +220,5 @@ final class Router
         }
 
         return $this->parser;
-    }
-
-    public function rewriteCollectionCache(): RewriteCollectionCache
-    {
-        if ('' === $this->cacheDirectory) {
-            throw new LogicException('Cache directory has not been configured - must call enableCache method first');
-        }
-
-        if (! $this->rewriteCollectionCache instanceof RewriteCollectionCache) {
-            // @todo Configurable cache file?
-            $this->rewriteCollectionCache = new RewriteCollectionCache($this->cacheDirectory);
-        }
-
-        return $this->rewriteCollectionCache;
-    }
-
-    private function createOrchestrator(): Orchestrator
-    {
-        return new Orchestrator(
-            $this->rewriteCollection(),
-            $this->invocationStrategy(),
-            $this->callableResolver(),
-            RequestContext::fromGlobals()
-        );
     }
 }
