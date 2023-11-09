@@ -63,6 +63,11 @@ class RewriteCollection
         return $rewrite;
     }
 
+    public function empty(): bool
+    {
+        return empty($this->rewrites);
+    }
+
     public function findByRegex(string $regex): array
     {
         if (! array_key_exists($regex, $this->rewritesByRegexAndMethod)) {

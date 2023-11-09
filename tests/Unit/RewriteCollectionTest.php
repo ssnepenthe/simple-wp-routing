@@ -45,6 +45,17 @@ class RewriteCollectionTest extends TestCase
         $rewriteCollection->add(new Rewrite(['GET'], 'someregex', 'index.php?var=value', ['var' => 'var'], 'somehandler'));
     }
 
+    public function testEmpty()
+    {
+        $rewriteCollection = new RewriteCollection();
+
+        $this->assertTrue($rewriteCollection->empty());
+
+        $rewriteCollection->add(new Rewrite(['GET'], 'regex', 'query', [], 'handler'));
+
+        $this->assertFalse($rewriteCollection->empty());
+    }
+
     public function testFindByRegex()
     {
         $regex = 'someregex';

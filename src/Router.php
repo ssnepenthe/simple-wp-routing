@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace ToyWpRouting;
 
+use LogicException;
+
 final class Router
 {
     private bool $autoSlash = true;
-    private bool $cacheEnabled = false;
 
+    private string $cacheDirectory = '';
     private string $currentGroup = '';
     private bool $initialized = false;
 
@@ -33,6 +35,11 @@ final class Router
         );
     }
 
+    public function enableCache(string $directory): void
+    {
+        $this->cacheDirectory = $directory;
+    }
+
     public function get(string $route, $handler): Rewrite
     {
         return $this->add(
@@ -50,31 +57,44 @@ final class Router
         $this->currentGroup = $previousGroup;
     }
 
-    public function initialize(callable $callback)
+    public function initialize(?callable $callback = null)
     {
         if ($this->initialized) {
-            // @todo Throw?
-            return;
+            throw new LogicException('Router already initialized');
         }
 
         $this->initialized = true;
 
-        if ($this->cacheEnabled) {
-            if ($this->rewriteCollectionCache()->exists()) {
-                $this->loadRewritesFromCache();
+        if (is_callable($callback)) {
+            if ('' !== $this->cacheDirectory) {
+                if ($this->rewriteCollection instanceof RewriteCollection) {
+                    throw new LogicException('@todo');
+                }
+
+                if ($this->rewriteCollectionCache()->exists()) {
+                    $this->rewriteCollection = $this->rewriteCollectionCache()->get();
+                } else {
+                    // @todo RewriteCollection must be empty at this point - should be fine since we verified above that it hasn't been instantiated yet.
+                    $callback($this);
+
+                    add_action('shutdown', function () {
+                        $this->rewriteCollectionCache()->put($this->rewriteCollection());
+                    });
+                }
             } else {
                 $callback($this);
-
-                // @todo Is this the correct action name?
-                add_action('shutdown', function () {
-                    // @todo Should we have some sort of "cacheNeedsSave" flag?
-                    $this->rewriteCollectionCache()->put($this->rewriteCollection());
-                });
             }
         } else {
-            $callback($this);
+            if ('' !== $this->cacheDirectory) {
+                throw new LogicException('$callback must be callable to use cache');
+            }
+
+            if ($this->rewriteCollection()->empty()) {
+                throw new LogicException('All routes must be registered before calling initialize method');
+            }
         }
 
+        $this->rewriteCollection()->lock();
         $this->createOrchestrator()->initialize();
     }
 
@@ -185,10 +205,15 @@ final class Router
         return $this->parser;
     }
 
-    private function rewriteCollectionCache(): RewriteCollectionCache
+    public function rewriteCollectionCache(): RewriteCollectionCache
     {
+        if ('' === $this->cacheDirectory) {
+            throw new LogicException('Cache directory has not been configured - must call enableCache method first');
+        }
+
         if (! $this->rewriteCollectionCache instanceof RewriteCollectionCache) {
-            $this->rewriteCollectionCache = new RewriteCollectionCache('', ''); // @todo
+            // @todo Configurable cache file?
+            $this->rewriteCollectionCache = new RewriteCollectionCache($this->cacheDirectory);
         }
 
         return $this->rewriteCollectionCache;
@@ -200,7 +225,7 @@ final class Router
             $this->rewriteCollection(),
             $this->invocationStrategy(),
             $this->callableResolver(),
-            $this->requestContext()
+            RequestContext::fromGlobals()
         );
     }
 }
