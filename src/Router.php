@@ -21,18 +21,20 @@ final class Router
     private ?RewriteCollection $rewriteCollection = null;
     private ?RewriteCollectionCache $rewriteCollectionCache = null;
 
+    public function add(array $methods, string $route, $handler): Rewrite
+    {
+        // @todo Return some sort of parsed route helper object?
+        return $this->rewriteCollection()->add($this->create($methods, $route, $handler));
+    }
+
     public function any(string $route, $handler): Rewrite
     {
-        return $this->add(
-            $this->create(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], $route, $handler)
-        );
+        return $this->add(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], $route, $handler);
     }
 
     public function delete(string $route, $handler): Rewrite
     {
-        return $this->add(
-            $this->create(['DELETE'], $route, $handler)
-        );
+        return $this->add(['DELETE'], $route, $handler);
     }
 
     public function enableCache(string $directory): void
@@ -42,9 +44,7 @@ final class Router
 
     public function get(string $route, $handler): Rewrite
     {
-        return $this->add(
-            $this->create(['GET', 'HEAD'], $route, $handler)
-        );
+        return $this->add(['GET', 'HEAD'], $route, $handler);
     }
 
     public function group(string $group, callable $callback)
@@ -100,30 +100,22 @@ final class Router
 
     public function options(string $route, $handler): Rewrite
     {
-        return $this->add(
-            $this->create(['OPTIONS'], $route, $handler)
-        );
+        return $this->add(['OPTIONS'], $route, $handler);
     }
 
     public function patch(string $route, $handler): Rewrite
     {
-        return $this->add(
-            $this->create(['PATCH'], $route, $handler)
-        );
+        return $this->add(['PATCH'], $route, $handler);
     }
 
     public function post(string $route, $handler): Rewrite
     {
-        return $this->add(
-            $this->create(['POST'], $route, $handler)
-        );
+        return $this->add(['POST'], $route, $handler);
     }
 
     public function put(string $route, $handler): Rewrite
     {
-        return $this->add(
-            $this->create(['PUT'], $route, $handler)
-        );
+        return $this->add(['PUT'], $route, $handler);
     }
 
     public function rewriteCollection(): RewriteCollection
@@ -138,12 +130,6 @@ final class Router
     public function setPrefix(string $prefix)
     {
         $this->prefix = $prefix;
-    }
-
-    private function add(Rewrite $rewrite): Rewrite
-    {
-        // @todo Return some sort of parsed route helper object?
-        return $this->rewriteCollection()->add($rewrite);
     }
 
     // @todo method to allow user to define custom methods list

@@ -34,12 +34,12 @@ class RouterTest extends TestCase
     {
         $router = new Router();
 
-        // Indirectly via get.
-        $router->get('one/{two}', 'onehandler');
+        // Indirectly via add.
+        $router->add(['GET'], 'one/{two}', 'onehandler');
 
         // Also groups + autoslash.
         $router->group('three', function ($router) {
-            $router->get('{four}', 'threehandler');
+            $router->add(['GET'], '{four}', 'threehandler');
         });
 
         [$rewriteOne, $rewriteTwo] = $router->rewriteCollection()->getRewrites();
@@ -76,6 +76,7 @@ class RouterTest extends TestCase
     public function testHttpMethodShorthandMethods()
     {
         $router = new Router();
+        $router->add(['GET', 'POST'], 'customroute', 'handler');
         $router->any('anyroute', 'handler');
         $router->delete('deleteroute', 'handler');
         $router->get('getroute', 'handler');
@@ -86,13 +87,14 @@ class RouterTest extends TestCase
 
         $methods = array_map(fn ($rewrite) => $rewrite->getMethods(), $router->rewriteCollection()->getRewrites());
 
-        $this->assertSame(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], $methods[0]);
-        $this->assertSame(['DELETE'], $methods[1]);
-        $this->assertSame(['GET', 'HEAD'], $methods[2]);
-        $this->assertSame(['OPTIONS'], $methods[3]);
-        $this->assertSame(['PATCH'], $methods[4]);
-        $this->assertSame(['POST'], $methods[5]);
-        $this->assertSame(['PUT'], $methods[6]);
+        $this->assertSame(['GET', 'POST'], $methods[0]);
+        $this->assertSame(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], $methods[1]);
+        $this->assertSame(['DELETE'], $methods[2]);
+        $this->assertSame(['GET', 'HEAD'], $methods[3]);
+        $this->assertSame(['OPTIONS'], $methods[4]);
+        $this->assertSame(['PATCH'], $methods[5]);
+        $this->assertSame(['POST'], $methods[6]);
+        $this->assertSame(['PUT'], $methods[7]);
     }
 
     public function testGroup()
