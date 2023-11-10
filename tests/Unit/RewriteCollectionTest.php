@@ -19,7 +19,7 @@ class RewriteCollectionTest extends TestCase
 
         $rewriteCollection->add($rewrite);
 
-        $this->assertSame([$rewrite], iterator_to_array($rewriteCollection->getRewrites()));
+        $this->assertSame([$rewrite], $rewriteCollection->getRewrites());
     }
 
     public function testAddDuplicateRewrites()
@@ -99,10 +99,7 @@ class RewriteCollectionTest extends TestCase
             'second' => 'index.php?second=second',
             'third' => 'index.php?third=third&fourth=fourth',
         ], $rewriteCollection->getRewriteRules());
-        $this->assertSame(
-            [$one, $two, $three],
-            iterator_to_array($rewriteCollection->getRewrites())
-        );
+        $this->assertSame([$one, $two, $three], $rewriteCollection->getRewrites());
     }
 
     public function testLock()
