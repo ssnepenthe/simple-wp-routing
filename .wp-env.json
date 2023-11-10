@@ -1,5 +1,8 @@
 {
     "plugins": ["."],
+    "config": {
+        "TWR_DEV": true
+    },
     "env": {
         "tests": {
             "mappings": {
