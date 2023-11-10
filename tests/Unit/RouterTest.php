@@ -97,6 +97,19 @@ class RouterTest extends TestCase
         $this->assertSame(['PUT'], $methods[7]);
     }
 
+    public function testWithAutoSlashDisabled()
+    {
+        $router = new Router();
+        $router->disableAutoSlash();
+        $router->group('one', function ($router) {
+            $router->group('two', function ($router) {
+                $router->get('three', 'handler');
+            });
+        });
+
+        $this->assertSame('^(?|onetwothree)$', $router->rewriteCollection()->getRewrites()[0]->getRegex());
+    }
+
     public function testGroup()
     {
         $router = new Router();

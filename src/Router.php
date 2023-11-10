@@ -44,6 +44,21 @@ final class Router
         return $this->add(['DELETE'], $route, $handler);
     }
 
+    public function disableAutoSlash(): void
+    {
+        $this->autoSlash = false;
+    }
+
+    public function disableCache(): void
+    {
+        $this->cacheDirectory = '';
+    }
+
+    public function enableAutoSlash(): void
+    {
+        $this->autoSlash = true;
+    }
+
     public function enableCache(string $directory): void
     {
         $this->cacheDirectory = $directory;
@@ -148,9 +163,24 @@ final class Router
         return $this->rewriteCollectionCache;
     }
 
+    public function setCallableResolver(CallableResolverInterface $callableResolver): void
+    {
+        $this->callableResolver = $callableResolver;
+    }
+
+    public function setInvocationStrategy(InvocationStrategyInterface $invocationStrategy): void
+    {
+        $this->invocationStrategy = $invocationStrategy;
+    }
+
     public function setPrefix(string $prefix)
     {
         $this->prefix = $prefix;
+    }
+
+    public function setRouteParser(RouteParserInterface $routeParser): void
+    {
+        $this->parser = $routeParser;
     }
 
     // @todo method to allow user to define custom methods list
