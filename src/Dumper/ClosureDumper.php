@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Compiler;
+namespace ToyWpRouting\Dumper;
 
 use Closure;
 use Laravel\SerializableClosure\Support\ReflectionClosure;
 use RuntimeException;
 
-class ClosureCompiler
+class ClosureDumper
 {
     private Closure $closure;
 
@@ -19,10 +19,10 @@ class ClosureCompiler
 
     public function __toString(): string
     {
-        return $this->compile();
+        return $this->dump();
     }
 
-    public function compile(): string
+    public function dump(): string
     {
         $ref = new ReflectionClosure($this->closure);
 

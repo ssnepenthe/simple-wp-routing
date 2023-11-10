@@ -1,4 +1,4 @@
-$rewrite0 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+$rewrite0 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^getregex$', 'index.php?pfx_var=get', array (
@@ -6,7 +6,7 @@ $rewrite0 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
 ), static function () {
         }, static function () {
         });
-$rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+$rewrite1 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'POST',
 ), '^postregex$', 'index.php?pfx_var=post', array (
   'pfx_var' => 'var',

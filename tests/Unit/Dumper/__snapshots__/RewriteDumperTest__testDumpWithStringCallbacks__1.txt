@@ -1,7 +1,6 @@
-new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'POST',
 ), '^regex$', 'index.php?pfx_var=value', array (
   'pfx_var' => 'var',
-), static function () {
-        }, NULL)
+), 'handler', 'isactivecallback')

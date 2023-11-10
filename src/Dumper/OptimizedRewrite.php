@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Compiler;
+namespace ToyWpRouting\Dumper;
 
 use RuntimeException;
 use ToyWpRouting\Rewrite;

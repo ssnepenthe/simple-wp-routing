@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests\Unit\Compiler;
+namespace ToyWpRouting\Tests\Unit\Dumper;
 
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use ToyWpRouting\Compiler\OptimizedRewrite;
+use ToyWpRouting\Dumper\OptimizedRewrite;
 
 class OptimizedRewriteTest extends TestCase
 {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ToyWpRouting;
 
 use Closure;
-use ToyWpRouting\Compiler\RewriteCollectionCompiler;
+use ToyWpRouting\Dumper\RewriteCollectionDumper;
 
 class RewriteCollectionCache
 {
@@ -51,8 +51,8 @@ class RewriteCollectionCache
 
         $this->delete();
 
-        $compiled = (string) (new RewriteCollectionCompiler($rewriteCollection));
+        $dumped = (string) (new RewriteCollectionDumper($rewriteCollection));
 
-        file_put_contents("{$this->dir}/{$this->file}", $compiled);
+        file_put_contents("{$this->dir}/{$this->file}", $dumped);
     }
 }

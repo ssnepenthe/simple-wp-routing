@@ -21,14 +21,14 @@ return function (): \ToyWpRouting\RewriteCollection {
   '^(?|orchestrator/hierarchical-responder)$' => 'index.php?orchestrator___routeType=static',
 );
 
-            $rewrite0 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+            $rewrite0 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^(?|orchestrator/active/([^/]+))$', 'index.php?orchestrator_activeVar=$matches[1]&orchestrator___routeType=variable', array (
   'orchestrator_activeVar' => 'activeVar',
   'orchestrator___routeType' => '__routeType',
 ), static function () {}, NULL);
-$rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+$rewrite1 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^(?|orchestrator/inactive/([^/]+))$', 'index.php?orchestrator_inactiveVar=$matches[1]&orchestrator___routeType=variable', array (
@@ -39,7 +39,7 @@ $rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
                 echo '<span class="twr-orchestrator-inactive"></span>';
             });
         }, '__return_false');
-$rewrite2 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+$rewrite2 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^(?|orchestrator/responder)$', 'index.php?orchestrator___routeType=static', array (
@@ -47,7 +47,7 @@ $rewrite2 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
 ), static function () {
             return new \ToyWpRouting\Responder\JsonResponder('hello from the orchestrator responder route');
         }, NULL);
-$rewrite3 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+$rewrite3 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^(?|orchestrator/hierarchical-responder)$', 'index.php?orchestrator___routeType=static', array (

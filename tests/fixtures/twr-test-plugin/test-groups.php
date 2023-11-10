@@ -72,7 +72,7 @@ class HttpMethodsGroup extends TestGroup
         $router->post('http-method/post', function () {});
         $router->put('http-method/put', function () {});
 
-        return $router->rewriteCollection();
+        return $router->getRewriteCollection();
     }
 
     protected function getCacheFileName(): string
@@ -107,7 +107,7 @@ class OrchestratorGroup extends TestGroup
             return $responder->getPartialSet()->get(HeadersPartial::class);
         });
 
-        return $router->rewriteCollection();
+        return $router->getRewriteCollection();
     }
 
     protected function getCacheFileName(): string
@@ -159,7 +159,7 @@ class ResponderGroup extends TestGroup
             return new TemplateResponder(__DIR__ . '/templates/hello-world.php');
         });
 
-        return $router->rewriteCollection();
+        return $router->getRewriteCollection();
     }
 
     protected function getCacheFileName(): string

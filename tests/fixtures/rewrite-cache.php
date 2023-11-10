@@ -17,13 +17,13 @@ return function (): \ToyWpRouting\RewriteCollection {
   '^second$' => 'index.php?var=second',
 );
 
-            $rewrite0 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+            $rewrite0 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^first$', 'index.php?var=first', array (
   'var' => 'var',
 ), 'firsthandler', NULL);
-$rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+$rewrite1 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'POST',
 ), '^second$', 'index.php?var=second', array (
   'var' => 'var',

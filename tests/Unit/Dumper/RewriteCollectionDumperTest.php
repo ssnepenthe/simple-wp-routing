@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests\Unit\Compiler;
+namespace ToyWpRouting\Tests\Unit\Dumper;
 
 use PHPUnit\Framework\TestCase;
 use Spatie\Snapshots\MatchesSnapshots;
-use ToyWpRouting\Compiler\RewriteCollectionCompiler;
+use ToyWpRouting\Dumper\RewriteCollectionDumper;
 use ToyWpRouting\Rewrite;
 use ToyWpRouting\RewriteCollection;
 
-class RewriteCollectionCompilerTest extends TestCase
+class RewriteCollectionDumperTest extends TestCase
 {
     use MatchesSnapshots;
 
-    public function testCompile()
+    public function testDump()
     {
         $rewrites = new RewriteCollection();
         $rewrite = new Rewrite(['POST'], '^regex$', 'index.php?some=var', ['some' => 'some'], function () {
@@ -22,6 +22,6 @@ class RewriteCollectionCompilerTest extends TestCase
 
         $rewrites->add($rewrite);
 
-        $this->assertMatchesSnapshot((new RewriteCollectionCompiler($rewrites))->compile());
+        $this->assertMatchesSnapshot((new RewriteCollectionDumper($rewrites))->dump());
     }
 }

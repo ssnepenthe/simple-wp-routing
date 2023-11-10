@@ -16,7 +16,7 @@ return function (): \ToyWpRouting\RewriteCollection {
   '^regex$' => 'index.php?some=var',
 );
 
-            $rewrite0 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+            $rewrite0 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'POST',
 ), '^regex$', 'index.php?some=var', array (
   'some' => 'some',

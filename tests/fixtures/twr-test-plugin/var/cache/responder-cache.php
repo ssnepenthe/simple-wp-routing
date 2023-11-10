@@ -21,7 +21,7 @@ return function (): \ToyWpRouting\RewriteCollection {
   '^(?|responders/template)$' => 'index.php?responders___routeType=static',
 );
 
-            $rewrite0 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+            $rewrite0 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^(?|responders/http-exception/not-found)$', 'index.php?responders___routeType=static', array (
@@ -30,7 +30,7 @@ return function (): \ToyWpRouting\RewriteCollection {
             // @todo custom additional headers
             throw new \ToyWpRouting\Exception\NotFoundHttpException();
         }, NULL);
-$rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+$rewrite1 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^(?|responders/http-exception/method-not-allowed)$', 'index.php?responders___routeType=static', array (
@@ -39,7 +39,7 @@ $rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
             // @todo custom additional headers, custom theme template (body class and title), ensure query flags are reset
             throw new \ToyWpRouting\Exception\MethodNotAllowedHttpException(['POST', 'PUT']);
         }, NULL);
-$rewrite2 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+$rewrite2 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^(?|responders/json)$', 'index.php?responders___routeType=static', array (
@@ -48,7 +48,7 @@ $rewrite2 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
             // @todo custom status codes, error vs success status codes, json options, non-enveloped response, custom additional headers
             return new \ToyWpRouting\Responder\JsonResponder('hello from the json responder route');
         }, NULL);
-$rewrite3 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+$rewrite3 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^(?|responders/query)$', 'index.php?responders___routeType=static', array (
@@ -63,7 +63,7 @@ $rewrite3 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
 
             return new \ToyWpRouting\Responder\QueryResponder(['custom-query-variable' => 'from-the-query-route']);
         }, NULL);
-$rewrite4 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+$rewrite4 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^(?|responders/redirect)$', 'index.php?responders___routeType=static', array (
@@ -72,7 +72,7 @@ $rewrite4 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
             // @todo custom status code, custom redirect-by, external (unsafe) redirect both allowed and not, custom headers
             return new \ToyWpRouting\Responder\RedirectResponder('/responders/query/');
         }, NULL);
-$rewrite5 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+$rewrite5 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^(?|responders/template)$', 'index.php?responders___routeType=static', array (

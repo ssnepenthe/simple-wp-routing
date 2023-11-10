@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Compiler;
+namespace ToyWpRouting\Dumper;
 
 use ToyWpRouting\RewriteCollection;
 
-class RewriteCollectionCompiler
+class RewriteCollectionDumper
 {
     private const TEMPLATE = <<<'TPL'
     <?php
@@ -44,10 +44,10 @@ class RewriteCollectionCompiler
 
     public function __toString(): string
     {
-        return $this->compile();
+        return $this->dump();
     }
 
-    public function compile(): string
+    public function dump(): string
     {
         return sprintf(
             self::TEMPLATE,
@@ -83,7 +83,7 @@ class RewriteCollectionCompiler
 
     private function rewrites(): string
     {
-        return (string) (new RewriteListDefinitionsCompiler(
+        return (string) (new RewriteListDefinitionsDumper(
             $this->rewriteCollection->getRewrites()
         ));
     }

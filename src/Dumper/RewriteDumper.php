@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Compiler;
+namespace ToyWpRouting\Dumper;
 
 use Closure;
 use RuntimeException;
 use ToyWpRouting\Rewrite;
 
-class RewriteCompiler
+class RewriteDumper
 {
-    private const TEMPLATE = 'new \\ToyWpRouting\\Compiler\\OptimizedRewrite(%s, %s, %s, %s, %s, %s)';
+    private const TEMPLATE = 'new \\ToyWpRouting\\Dumper\\OptimizedRewrite(%s, %s, %s, %s, %s, %s)';
 
     private Rewrite $rewrite;
 
@@ -21,10 +21,10 @@ class RewriteCompiler
 
     public function __toString(): string
     {
-        return $this->compile();
+        return $this->dump();
     }
 
-    public function compile(): string
+    public function dump(): string
     {
         return sprintf(
             self::TEMPLATE,
@@ -40,10 +40,10 @@ class RewriteCompiler
     /**
      * @param mixed $value
      */
-    private function compileCallbackIfSupported($value): string
+    private function dumpCallbackIfSupported($value): string
     {
         if ($value instanceof Closure) {
-            return (string) (new ClosureCompiler($value));
+            return (string) (new ClosureDumper($value));
         }
 
         if (is_string($value) || (
@@ -63,7 +63,7 @@ class RewriteCompiler
 
     private function handler(): string
     {
-        return $this->compileCallbackIfSupported($this->rewrite->getHandler());
+        return $this->dumpCallbackIfSupported($this->rewrite->getHandler());
     }
 
     private function isActiveCallback(): string
@@ -74,7 +74,7 @@ class RewriteCompiler
             return var_export($isActiveCallback, true);
         }
 
-        return $this->compileCallbackIfSupported($isActiveCallback);
+        return $this->dumpCallbackIfSupported($isActiveCallback);
     }
 
     private function methods(): string

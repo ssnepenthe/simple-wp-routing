@@ -7,7 +7,7 @@ namespace ToyWpRouting\Tests\Unit;
 use Closure;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
-use ToyWpRouting\Compiler\OptimizedRewrite;
+use ToyWpRouting\Dumper\OptimizedRewrite;
 use ToyWpRouting\Rewrite;
 use ToyWpRouting\RewriteCollection;
 use ToyWpRouting\RewriteCollectionCache;

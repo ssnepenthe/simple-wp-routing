@@ -16,7 +16,7 @@ return function (): \ToyWpRouting\RewriteCollection {
   '^regex$' => 'index.php?pfx_var=val',
 );
 
-            $rewrite0 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+            $rewrite0 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^regex$', 'index.php?pfx_var=val', array (

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Compiler;
+namespace ToyWpRouting\Dumper;
 
 use ToyWpRouting\Rewrite;
 
-class RewriteListDefinitionsCompiler
+class RewriteListDefinitionsDumper
 {
     /**
      * @var Rewrite[]
@@ -20,13 +20,13 @@ class RewriteListDefinitionsCompiler
 
     public function __toString(): string
     {
-        return $this->compile();
+        return $this->dump();
     }
 
-    public function compile(): string
+    public function dump(): string
     {
         return vsprintf($this->prepareTemplate(), array_map(
-            fn (Rewrite $rewrite) => (string) (new RewriteCompiler($rewrite)),
+            fn (Rewrite $rewrite) => (string) (new RewriteDumper($rewrite)),
             $this->rewrites
         ));
     }
