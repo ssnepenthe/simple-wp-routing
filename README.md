@@ -1,7 +1,9 @@
 # toy-wp-routing
-Provides a more modern experience for working with the WP Rewrite API
+
+Syntactic sugar over `WP_Rewrite` so we can pretend that WordPress has a modern router.
 
 ## Warning
+
 This package is currently in development and is subject to breaking changes without notice until v1.0 has been tagged.
 
 It is one in a series of [WordPress toys](https://github.com/ssnepenthe?tab=repositories&q=topic%3Atoy+topic%3Awordpress&type=&language=&sort=) I have been working on with the intention of exploring ways to modernize the feel of working with WordPress.
@@ -9,108 +11,90 @@ It is one in a series of [WordPress toys](https://github.com/ssnepenthe?tab=repo
 As the label suggests, it should be treated as a toy.
 
 ## Basic Usage
-There are two intended ways to use this package -
 
-### Rewrites
-Rewrites are similar to the core rewrite API.
+Intended usage is via the Router class.
 
-Rules are associated with a request method and a handler function.
-
-If the regex and request method match, the handler is automatically invoked.
-
-If the regex is matched but there is no rewrite registered for the request method, a 405 response is
-returned instead.
-
-Additionally, it is not ever necessary to flush rewrite rules or manually register query variables.
+### Overview
 
 ```php
-// RewriteCollection accepts an optional prefix which is automatically prepended to query variables.
-$rewrites = new \ToyWpRouting\RewriteCollection('pfx_');
+use ToyWpRouting\Exception\NotFoundHttpException;
+use ToyWpRouting\Responder\JsonResponder;
+use ToyWpRouting\Router;
 
-$rewrites->get('^api/users/([^/]+)$', 'index.php?id=$matches[1]', function($attrs) {
-  // Matched query variables will be available in the $attrs array.
-  $id = (int) $attrs['id'];
+// Create a router instance.
+$router = new Router();
 
-  // Do something with the user ID - e.g. lookup user by ID and send JSON response.
-});
+// Optional - configure your router.
+// At a minimum it is recommended to set a route prefix in order to avoid conflicts with core and other plugins.
+$router->setPrefix('pfx_');
 
-// Optionally add a callback to enable/disable a given rewrite.
-// Notice in this example that the '$query' param can optionally be left empty.
-$rewrites->get('^api/products$', '', function() { /** */ })->setIsActiveCallback(function() {
-  // This function should return true to enable this rule, false to disable it.
-});
+// Wire your router up with WordPress.
+$router->initialize(
 
-// Hook everything in to WordPress.
-(new \ToyWpRouting\Orchestrator($rewrites))->initialize();
-```
+  // The initialize method accepts a callback which is where you should add all of your routes.
+  function (Router $router) {
 
-Note that if you are using the same regex for multiple request methods, their query strings must all match.
+    // Routes are registered via HTTP method shortcuts on the router instance.
+    $route = $router->get(
 
-### Routes
-Routes can be used to more closely mimic the experience of a modern router. The route syntax comes
-from [nikic/fast-route](https://github.com/nikic/FastRoute).
+      // Route syntax comes from FastRoute.
+      'api/users/{user}',
 
-To use the default route syntax you must install `nikic/fast-route`:
+      // Route handlers are automatically invoked for their corresponding route/HTTP method pair.
+      function (array $vars) {
 
-```sh
-composer require nikic/fast-route
-```
+        // Handlers receive an array of matched query variables by default.
+        $user = getUserDataById((int) $vars['user']);
 
-Alternatively you can use a custom route syntax by implementing
-`\ToyWpRouting\RouteParserInterface`. Refer to the bundled `FastRouteRouteParser` implementation and
-corresponding tests to understand route parser requirements.
+        // HTTP exceptions are automatically converted to error responses.
+        if (null === $user) {
+          throw new NotFoundHttpException();
+        }
 
-The route parser can optionally be installed as a dev dependency if rewrites are pre-cached on a dev
-environment and synced separately to production.
+        // Handlers can optionally return a responder instance.
+        return new JsonResponder($user);
+      }
+    );
 
-```php
-// Route collection also accepts an optional prefix.
-$routes = new \ToyWpRouting\RouteCollection('pfx_');
+    // Routes can optionally be configured with an active callback.
+    $route->setIsActiveCallback(function () {
 
-$routes->get('api/users/{id}', function($attrs) {
-  // Matched query variables will be available in the $attrs array.
-  $id = (int) $attrs['id'];
-
-  // ...
-});
-
-// We can still add a callback to enable/disable a given route, but the method name is different.
-$routes->get('api/products', function() { /** */ })->when(function() {
-  // Return true to enable, false to disable.
-});
-
-$rewrites = (new \ToyWpRouting\RouteConverter())->convertCollection($routes);
-
-(new \ToyWpRouting\Orchestrator($rewrites))->initialize();
+      // Return true to enable this route, false to disable it.
+      // When disabled, the rewrite rules for this route are still registered but visiting the route will result in a 404.
+      return isApiUserEndpointEnabled();
+    });
+  }
+);
 ```
 
 ### Responders
-Rewrite handlers can optionally return an instance of `ToyWpRouting\Responder\ResponderInterface`. The `respond` method on the returned responder will automatically be invoked on the `request` filter.
+
+Route handlers can optionally return an instance of `ToyWpRouting\Responder\ResponderInterface`. The `respond` method on the returned responder will automatically be invoked on the WordPress `parse_request` action.
 
 This allows common behavior to easily be wrapped up for reuse.
 
 The following basic responder implementations are included:
 
 #### ToyWpRouting\Responder\JsonResponder
-```php
-$routes->get('api/products', function () {
-  $products = getAllProducts();
 
-  return new JsonResponder(['products' => $products]);
+```php
+$router->get('api/products', function () {
+  return new JsonResponder(['products' => getAllProducts()]);
 });
 ```
 
 Responses are sent using `wp_send_json_success` or `wp_send_json_error` depending on the status code, so data will be available at `response.data`.
 
 #### ToyWpRouting\Responder\QueryResponder
+
 ```php
-$routes->get('products/random[/{count}]', function ($attrs) {
-  $count = min(max((int) ($attrs['count'] ?? 5), 1), 10);
+$router->get('products/random[/{count}]', function (array $vars) {
+  $count = (int) ($vars['count'] ?? 5);
 
   return new QueryResponder([
     'post_type' => 'pfx_product',
     'orderby' => 'rand',
-    'posts_per_page' => $count,
+    'posts_per_page' => clamp($count, 1, 10),
   ]);
 });
 ```
@@ -118,9 +102,10 @@ $routes->get('products/random[/{count}]', function ($attrs) {
 Query variables are applied on the `parse_request` hook, before the main query is run.
 
 #### ToyWpRouting\Responder\RedirectResponder
+
 ```php
-$routes->get('r/{redirect}', function ($attrs) {
-  $location = getRedirectLocationById($attrs['redirect']);
+$router->get('r/{redirect}', function (array $vars) {
+  $location = getRedirectLocationById($vars['redirect']);
 
   return new RedirectResponder($location);
 });
@@ -132,15 +117,10 @@ Redirects are sent using `wp_safe_redirect` by default. You can pass `false` as 
 return new RedirectResponder($location, 302, 'WordPress', false);
 ```
 
-Or call `allowUnsafeRedirects` on the underlying redirect partial:
-
-```php
-return (new RedirectResponder($location))->redirect()->allowUnsafeRedirects();
-```
-
 #### ToyWpRouting\Responder\TemplateResponder
+
 ```php
-$routes->get('thank-you', function () {
+$router->get('thank-you', function () {
   return new TemplateResponder(__DIR__ . '/templates/thank-you.php');
 });
 ```
@@ -148,14 +128,16 @@ $routes->get('thank-you', function () {
 Templates are loaded via the `template_include` filter.
 
 ### HTTP exceptions
+
 HTTP exceptions can be used as a convenient escape hatch from handlers.
 
 #### ToyWpRouting\Exception\NotFoundHttpException
-Sets the main query to 404 status and sends 404 status header and nocache headers.
+
+This is currently the only non-internal HTTP exception and can be used to show a 404 page.
 
 ```php
-$routes->get('books/{book}', function ($attrs) {
-  if (! $book = getBookById($attrs['book'])) {
+$router->get('books/{book}', function (array $vars) {
+  if (! $book = getBookById($vars['book'])) {
     throw new NotFoundHttpException();
   }
 
@@ -164,60 +146,7 @@ $routes->get('books/{book}', function ($attrs) {
 ```
 
 ### Templates
-A basic 405 template is included with styling loosely modeled after the twentytwentytwo 404 template.
 
-This can be overridden in themes by creating a `405.php` template or `405.html` block template.
+Basic 400 and 405 error templates are included with styling loosely modeled after the twentytwentytwo 404 template.
 
-### Caching
-If you have opcache enabled, you may see improved performance by enabling rewrite caching.
-
-```php
-$cache = new \ToyWpRouting\RewriteCollectionCache(__DIR__ . '/var/cache');
-
-if ($cache->exists()) {
-  $rewrites = $cache->get();
-} else {
-  // Use your preferred method to create and populate a RewriteCollection instance.
-}
-
-(new \ToyWpRouting\Orchestrator($rewrites))->initialize();
-```
-
-Caching is not automatic - You will want to use something like WP-CLI to manage the cache.
-
-Use `RewriteCollectionCache->put(RewriteCollection)` to cache rewrites. Existing cache will be
-overwritten.
-
-Use `RewriteCollectionCache->delete()` to clear the rewrite cache.
-
-If you are using closures for rewrite handlers or active callbacks, you must install `laravel/serializable-closure`:
-
-```sh
-composer require laravel/serializable-closure
-```
-
-The caching mechanism does not support using instance methods for rewrite handlers or active callbacks.
-Instead, you should set a callable resolver on the invocation strategy instance:
-
-```php
-$rewrites = new \ToyWpRouting\RewriteCollection('pfx_');
-$rewrites->get('^users$', '', 'usersIndex');
-
-$orchestrator = new \ToyWpRouting\Orchestrator($rewrites);
-
-$orchestrator->getInvocationStrategy()->setCallableResolver(function ($potentialCallable) {
-  if ('usersIndex' === $potentialCallable) {
-    return [new UsersController(), 'index'];
-  }
-
-  // Etc...
-
-  return $potentialCallable;
-});
-
-$orchestrator->initialize();
-```
-
-Please note that if opcache is not enabled performance will likely suffer by using the rewrite cache.
-
-That said - It is always best to perform some sort of profiling on a case-by-case base in order to determine what is best for your specific environment.
+These can be overridden in themes by creating `400.php` and `405.php` templates or `400.html` and `405.html` block templates.

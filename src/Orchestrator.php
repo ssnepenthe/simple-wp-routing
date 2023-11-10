@@ -111,9 +111,17 @@ class Orchestrator
         return array_merge($this->rewriteCollection->getQueryVariables(), $vars);
     }
 
-    public function onParseRequest($wp)
+    public function onParseRequest($wp): void
     {
-        $this->respondToMatchedRegex($wp);
+        if (
+            is_object($wp)
+            && property_exists($wp, 'matched_rule')
+            && is_string($wp->matched_rule)
+            && property_exists($wp, 'query_vars')
+            && is_array($wp->query_vars)
+        ) {
+            $this->respondToMatchedRegex($wp);
+        }
     }
 
     /**
