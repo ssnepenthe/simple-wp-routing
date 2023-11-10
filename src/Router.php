@@ -210,9 +210,6 @@ final class Router
         $this->routeParser = $routeParser;
     }
 
-    // @todo method to allow user to define custom methods list
-    // @todo any reason for head method?
-
     private function autoSlash(string $left, string $right): string
     {
         if ('' === $left) {

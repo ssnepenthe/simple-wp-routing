@@ -22,7 +22,7 @@ REGEX;
     const DEFAULT_DISPATCH_REGEX = '[^/]+';
 
     /**
-     * @return array{0: string, 1: string}
+     * @return array{0: string, 1: array}
      */
     public function parse(string $route): array
     {
@@ -60,6 +60,8 @@ REGEX;
     }
 
     /**
+     * @todo Merge convertSegments and parsePlaceholders methods.
+     *
      * @param array<int, string|array{0: string, 1: string}> $segments
      *
      * @return array{0: string, 1: string}
