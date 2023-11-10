@@ -42,7 +42,7 @@ class RouterTest extends TestCase
             $router->add(['GET'], '{four}', 'threehandler');
         });
 
-        [$rewriteOne, $rewriteTwo] = $router->rewriteCollection()->getRewrites();
+        [$rewriteOne, $rewriteTwo] = $router->getRewriteCollection()->getRewrites();
 
         $this->assertSame('^(?|one/([^/]+))$', $rewriteOne->getRegex());
         $this->assertSame('index.php?two=$matches[1]&__routeType=variable', $rewriteOne->getQuery());
@@ -64,7 +64,7 @@ class RouterTest extends TestCase
             $router->get('{four}', 'threehandler');
         });
 
-        [$rewriteOne, $rewriteTwo] = $router->rewriteCollection()->getRewrites();
+        [$rewriteOne, $rewriteTwo] = $router->getRewriteCollection()->getRewrites();
 
         $this->assertSame('^(?|one/([^/]+))$', $rewriteOne->getRegex());
         $this->assertSame('index.php?pfx_two=$matches[1]&pfx___routeType=variable', $rewriteOne->getQuery());
@@ -85,7 +85,7 @@ class RouterTest extends TestCase
         $router->post('postroute', 'handler');
         $router->put('putroute', 'handler');
 
-        $methods = array_map(fn ($rewrite) => $rewrite->getMethods(), $router->rewriteCollection()->getRewrites());
+        $methods = array_map(fn ($rewrite) => $rewrite->getMethods(), $router->getRewriteCollection()->getRewrites());
 
         $this->assertSame(['GET', 'POST'], $methods[0]);
         $this->assertSame(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], $methods[1]);
@@ -107,7 +107,7 @@ class RouterTest extends TestCase
             });
         });
 
-        $this->assertSame('^(?|onetwothree)$', $router->rewriteCollection()->getRewrites()[0]->getRegex());
+        $this->assertSame('^(?|onetwothree)$', $router->getRewriteCollection()->getRewrites()[0]->getRegex());
     }
 
     public function testGroup()
@@ -122,7 +122,7 @@ class RouterTest extends TestCase
             });
         });
 
-        $regexes = array_map(fn ($rewrite) => $rewrite->getRegex(), $router->rewriteCollection()->getRewrites());
+        $regexes = array_map(fn ($rewrite) => $rewrite->getRegex(), $router->getRewriteCollection()->getRewrites());
 
         $this->assertSame('^(?|one/two)$', $regexes[0]);
         $this->assertSame('^(?|one/three)$', $regexes[1]);
@@ -173,7 +173,7 @@ class RouterTest extends TestCase
 
         $router->initialize();
 
-        $this->assertTrue($router->rewriteCollection()->isLocked());
+        $this->assertTrue($router->getRewriteCollection()->isLocked());
     }
 
     public function testInitializeWithCallbackAndCacheEnabledAndRewriteCollectionAlreadyInstantiated()
@@ -204,7 +204,7 @@ class RouterTest extends TestCase
             $router->get('irrelevant', 'handler');
         });
 
-        $router->rewriteCollectionCache()->put($router->rewriteCollection());
+        $router->getRewriteCollectionCache()->put($router->getRewriteCollection());
 
         // Sanity.
         $this->assertTrue($root->hasChild('rewrite-cache.php'));
@@ -222,7 +222,7 @@ class RouterTest extends TestCase
         // If the test variable remains unchanged we know that the closure was not called.
         $this->assertSame(0, $test);
         // And if the rewrite collection is an anonymous class we know that it was loaded from cache.
-        $this->assertTrue((new ReflectionClass($router->rewriteCollection()))->isAnonymous());
+        $this->assertTrue((new ReflectionClass($router->getRewriteCollection()))->isAnonymous());
     }
 
     public function testInitializeWithCallbackAndCacheEnabledAndCacheDoesNotExist()
@@ -249,7 +249,7 @@ class RouterTest extends TestCase
         // If test variable is changed we know that the closure was called.
         $this->assertSame(1, $test);
         // And if the rewrite collection is not an anonymous class we know that is was not loaded from cache.
-        $this->assertFalse((new ReflectionClass($router->rewriteCollection()))->isAnonymous());
+        $this->assertFalse((new ReflectionClass($router->getRewriteCollection()))->isAnonymous());
     }
 
     public function testInitializeWithCallbackAndCacheDisabled()
@@ -265,7 +265,7 @@ class RouterTest extends TestCase
             $router->get('also-irrelevant', 'handler');
         });
 
-        $this->assertTrue($router->rewriteCollection()->isLocked());
+        $this->assertTrue($router->getRewriteCollection()->isLocked());
     }
 
     private function expectOrchestratorInitializeMethodToBeCalled()

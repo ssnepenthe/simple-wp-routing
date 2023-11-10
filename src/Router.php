@@ -20,18 +20,18 @@ final class Router
 
     private ?InvocationStrategyInterface $invocationStrategy = null;
 
-    private ?RouteParserInterface $parser = null;
-
     private string $prefix = '';
 
     private ?RewriteCollection $rewriteCollection = null;
 
     private ?RewriteCollectionCache $rewriteCollectionCache = null;
 
+    private ?RouteParserInterface $routeParser = null;
+
     public function add(array $methods, string $route, $handler): Rewrite
     {
         // @todo Return some sort of parsed route helper object?
-        return $this->rewriteCollection()->add($this->create($methods, $route, $handler));
+        return $this->getRewriteCollection()->add($this->create($methods, $route, $handler));
     }
 
     public function any(string $route, $handler): Rewrite
@@ -69,6 +69,56 @@ final class Router
         return $this->add(['GET', 'HEAD'], $route, $handler);
     }
 
+    public function getCallableResolver(): CallableResolverInterface
+    {
+        if (! $this->callableResolver instanceof CallableResolverInterface) {
+            $this->callableResolver = new NullCallableResolver();
+        }
+
+        return $this->callableResolver;
+    }
+
+    public function getInvocationStrategy(): InvocationStrategyInterface
+    {
+        if (! $this->invocationStrategy instanceof InvocationStrategyInterface) {
+            $this->invocationStrategy = new DefaultInvocationStrategy();
+        }
+
+        return $this->invocationStrategy;
+    }
+
+    public function getRewriteCollection(): RewriteCollection
+    {
+        if (! $this->rewriteCollection instanceof RewriteCollection) {
+            $this->rewriteCollection = new RewriteCollection();
+        }
+
+        return $this->rewriteCollection;
+    }
+
+    public function getRewriteCollectionCache(): RewriteCollectionCache
+    {
+        if ('' === $this->cacheDirectory) {
+            throw new LogicException('Cache directory has not been configured - must call enableCache method first');
+        }
+
+        if (! $this->rewriteCollectionCache instanceof RewriteCollectionCache) {
+            // @todo Configurable cache file?
+            $this->rewriteCollectionCache = new RewriteCollectionCache($this->cacheDirectory);
+        }
+
+        return $this->rewriteCollectionCache;
+    }
+
+    public function getRouteParser(): RouteParserInterface
+    {
+        if (! $this->routeParser instanceof RouteParserInterface) {
+            $this->routeParser = new FastRouteRouteParser();
+        }
+
+        return $this->routeParser;
+    }
+
     public function group(string $group, callable $callback)
     {
         $previousGroup = $this->currentGroup;
@@ -93,14 +143,14 @@ final class Router
                     throw new LogicException('@todo');
                 }
 
-                if ($this->rewriteCollectionCache()->exists()) {
-                    $this->rewriteCollection = $this->rewriteCollectionCache()->get();
+                if ($this->getRewriteCollectionCache()->exists()) {
+                    $this->rewriteCollection = $this->getRewriteCollectionCache()->get();
                 } else {
                     // @todo RewriteCollection must be empty at this point - should be fine since we verified above that it hasn't been instantiated yet.
                     $callback($this);
 
                     add_action('shutdown', function () {
-                        $this->rewriteCollectionCache()->put($this->rewriteCollection());
+                        $this->getRewriteCollectionCache()->put($this->getRewriteCollection());
                     });
                 }
             } else {
@@ -111,12 +161,12 @@ final class Router
                 throw new LogicException('$callback must be callable to use cache');
             }
 
-            if ($this->rewriteCollection()->empty()) {
+            if ($this->getRewriteCollection()->empty()) {
                 throw new LogicException('All routes must be registered before calling initialize method');
             }
         }
 
-        $this->rewriteCollection()->lock();
+        $this->getRewriteCollection()->lock();
         $this->createOrchestrator()->initialize();
     }
 
@@ -140,29 +190,6 @@ final class Router
         return $this->add(['PUT'], $route, $handler);
     }
 
-    public function rewriteCollection(): RewriteCollection
-    {
-        if (! $this->rewriteCollection instanceof RewriteCollection) {
-            $this->rewriteCollection = new RewriteCollection();
-        }
-
-        return $this->rewriteCollection;
-    }
-
-    public function rewriteCollectionCache(): RewriteCollectionCache
-    {
-        if ('' === $this->cacheDirectory) {
-            throw new LogicException('Cache directory has not been configured - must call enableCache method first');
-        }
-
-        if (! $this->rewriteCollectionCache instanceof RewriteCollectionCache) {
-            // @todo Configurable cache file?
-            $this->rewriteCollectionCache = new RewriteCollectionCache($this->cacheDirectory);
-        }
-
-        return $this->rewriteCollectionCache;
-    }
-
     public function setCallableResolver(CallableResolverInterface $callableResolver): void
     {
         $this->callableResolver = $callableResolver;
@@ -180,7 +207,7 @@ final class Router
 
     public function setRouteParser(RouteParserInterface $routeParser): void
     {
-        $this->parser = $routeParser;
+        $this->routeParser = $routeParser;
     }
 
     // @todo method to allow user to define custom methods list
@@ -199,20 +226,11 @@ final class Router
         return rtrim($left, '/') . '/' . ltrim($right, '/');
     }
 
-    private function callableResolver(): CallableResolverInterface
-    {
-        if (! $this->callableResolver instanceof CallableResolverInterface) {
-            $this->callableResolver = new NullCallableResolver();
-        }
-
-        return $this->callableResolver;
-    }
-
     private function create(array $methods, string $route, $handler)
     {
         $route = $this->autoSlash($this->currentGroup, $route);
 
-        [$regex, $queryArray] = $this->parser()->parse($route);
+        [$regex, $queryArray] = $this->getRouteParser()->parse($route);
 
         $prefixedQueryArray = Support::applyPrefixToKeys($queryArray, $this->prefix);
         $query = Support::buildQuery($prefixedQueryArray);
@@ -227,28 +245,10 @@ final class Router
     private function createOrchestrator(): Orchestrator
     {
         return new Orchestrator(
-            $this->rewriteCollection(),
-            $this->invocationStrategy(),
-            $this->callableResolver(),
+            $this->getRewriteCollection(),
+            $this->getInvocationStrategy(),
+            $this->getCallableResolver(),
             RequestContext::fromGlobals()
         );
-    }
-
-    private function invocationStrategy(): InvocationStrategyInterface
-    {
-        if (! $this->invocationStrategy instanceof InvocationStrategyInterface) {
-            $this->invocationStrategy = new DefaultInvocationStrategy();
-        }
-
-        return $this->invocationStrategy;
-    }
-
-    private function parser(): RouteParserInterface
-    {
-        if (! $this->parser instanceof RouteParserInterface) {
-            $this->parser = new FastRouteRouteParser();
-        }
-
-        return $this->parser;
     }
 }
