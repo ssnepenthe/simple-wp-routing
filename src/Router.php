@@ -72,7 +72,7 @@ final class Router
     public function getCallableResolver(): CallableResolverInterface
     {
         if (! $this->callableResolver instanceof CallableResolverInterface) {
-            $this->callableResolver = new NullCallableResolver();
+            $this->callableResolver = new DefaultCallableResolver();
         }
 
         return $this->callableResolver;

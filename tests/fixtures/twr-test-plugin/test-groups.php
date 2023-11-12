@@ -6,7 +6,7 @@ use RuntimeException;
 use ToyWpRouting\DefaultInvocationStrategy;
 use ToyWpRouting\Exception\MethodNotAllowedHttpException;
 use ToyWpRouting\Exception\NotFoundHttpException;
-use ToyWpRouting\NullCallableResolver;
+use ToyWpRouting\DefaultCallableResolver;
 use ToyWpRouting\Orchestrator;
 use ToyWpRouting\Responder\JsonResponder;
 use ToyWpRouting\Responder\Partial\HeadersPartial;
@@ -45,7 +45,7 @@ abstract class TestGroup
             $rewrites = $this->createRewrites();
         }
 
-        (new Orchestrator($rewrites, new DefaultInvocationStrategy(), new NullCallableResolver()))->initialize();
+        (new Orchestrator($rewrites, new DefaultInvocationStrategy(), new DefaultCallableResolver()))->initialize();
     }
 
     public function createCache(): RewriteCollectionCache

@@ -6,7 +6,7 @@ namespace ToyWpRouting\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use ToyWpRouting\DefaultInvocationStrategy;
-use ToyWpRouting\NullCallableResolver;
+use ToyWpRouting\DefaultCallableResolver;
 use ToyWpRouting\Orchestrator;
 use ToyWpRouting\RequestContext;
 use ToyWpRouting\Responder\ResponderInterface;
@@ -218,7 +218,7 @@ class OrchestratorTest extends TestCase
         return new Orchestrator(
             $rewrites,
             new DefaultInvocationStrategy(),
-            new NullCallableResolver(),
+            new DefaultCallableResolver(),
             new RequestContext('GET', [])
         );
     }
