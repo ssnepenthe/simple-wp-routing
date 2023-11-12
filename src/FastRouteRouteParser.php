@@ -11,15 +11,16 @@ use ToyWpRouting\Exception\BadRouteException;
  */
 class FastRouteRouteParser implements RouteParserInterface
 {
-    const VARIABLE_REGEX = <<<'REGEX'
-\{
-    \s* ([a-zA-Z_][a-zA-Z0-9_-]*) \s*
-    (?:
-        : \s* ([^{}]*(?:\{(?-1)\}[^{}]*)*)
-    )?
-\}
-REGEX;
-    const DEFAULT_DISPATCH_REGEX = '[^/]+';
+    private const VARIABLE_REGEX = <<<'REGEX'
+    \{
+        \s* ([a-zA-Z_][a-zA-Z0-9_-]*) \s*
+        (?:
+            : \s* ([^{}]*(?:\{(?-1)\}[^{}]*)*)
+        )?
+    \}
+    REGEX;
+
+    private const DEFAULT_DISPATCH_REGEX = '[^/]+';
 
     /**
      * @return array{0: string, 1: array}
@@ -35,24 +36,29 @@ REGEX;
 
         // Split on [ while skipping placeholders
         $segments = preg_split('~' . self::VARIABLE_REGEX . '(*SKIP)(*F) | \[~x', $routeWithoutClosingOptionals);
+
         if ($numOptionals !== count($segments) - 1) {
             // If there are any ] in the middle of the route, throw a more specific error message
             if (preg_match('~' . self::VARIABLE_REGEX . '(*SKIP)(*F) | \]~x', $routeWithoutClosingOptionals)) {
                 throw new BadRouteException('Optional segments can only occur at the end of a route');
             }
+
             throw new BadRouteException("Number of opening '[' and closing ']' does not match");
         }
 
         $currentRoute = '';
         $rewrites = [];
         $finalQuery = [];
+
         foreach ($segments as $n => $segment) {
             if ($segment === '' && $n !== 0) {
                 throw new BadRouteException('Empty optional part');
             }
 
             $currentRoute .= $segment;
+
             [$regex, $finalQuery] = $this->parsePlaceholders($currentRoute);
+
             $rewrites[] = $regex;
         }
 
@@ -81,10 +87,12 @@ REGEX;
         $offset = 0;
         $regex = '';
         $queryArray = [];
+
         foreach ($matches as $n => $set) {
             if ($set[0][1] > $offset) {
                 $regex .= substr($route, $offset, $set[0][1] - $offset);
             }
+
             $regex .= '(' . (isset($set[2]) ? trim($set[2][0]) : self::DEFAULT_DISPATCH_REGEX) . ')';
             $queryArray[$set[1][0]] = '$matches[' . $n + 1 . ']';
             $offset = $set[0][1] + strlen($set[0][0]);
