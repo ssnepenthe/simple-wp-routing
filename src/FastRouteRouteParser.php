@@ -52,7 +52,7 @@ REGEX;
             }
 
             $currentRoute .= $segment;
-            [$regex, $finalQuery] = $this->convertSegments($this->parsePlaceholders($currentRoute));
+            [$regex, $finalQuery] = $this->parsePlaceholders($currentRoute);
             $rewrites[] = $regex;
         }
 
@@ -60,73 +60,42 @@ REGEX;
     }
 
     /**
-     * @todo Merge convertSegments and parsePlaceholders methods.
-     *
-     * @param array<int, string|array{0: string, 1: string}> $segments
-     *
-     * @return array{0: string, 1: string}
-     */
-    protected function convertSegments(array $segments): array
-    {
-        if ('' === $segments[0]) {
-            throw new BadRouteException('Empty routes not allowed');
-        }
-
-        $regex = '';
-        $queryArray = [];
-        $position = 1;
-
-        foreach ($segments as $segment) {
-            if (\is_string($segment)) {
-                $regex .= $segment;
-
-                continue;
-            }
-
-            [$name, $pattern] = $segment;
-
-            $regex .= "({$pattern})";
-            $queryArray[$name] = "\$matches[{$position}]";
-            $position++;
-        }
-
-        $queryArray['__routeType'] = ([] === $queryArray) ? 'static' : 'variable';
-
-        return [$regex, $queryArray];
-    }
-
-    /**
      * Parses a route string that does not contain optional segments.
      *
-     * @param string
-     * @return mixed[]
+     * @param string $route
+     * @return array{0: string, 1: array}
      */
     private function parsePlaceholders($route)
     {
+        if ('' === $route) {
+            throw new BadRouteException('Empty routes not allowed');
+        }
+
         if (!preg_match_all(
             '~' . self::VARIABLE_REGEX . '~x', $route, $matches,
             PREG_OFFSET_CAPTURE | PREG_SET_ORDER
         )) {
-            return [$route];
+            return [$route, ['__routeType' => 'static']];
         }
 
         $offset = 0;
-        $routeData = [];
-        foreach ($matches as $set) {
+        $regex = '';
+        $queryArray = [];
+        foreach ($matches as $n => $set) {
             if ($set[0][1] > $offset) {
-                $routeData[] = substr($route, $offset, $set[0][1] - $offset);
+                $regex .= substr($route, $offset, $set[0][1] - $offset);
             }
-            $routeData[] = [
-                $set[1][0],
-                isset($set[2]) ? trim($set[2][0]) : self::DEFAULT_DISPATCH_REGEX
-            ];
+            $regex .= '(' . (isset($set[2]) ? trim($set[2][0]) : self::DEFAULT_DISPATCH_REGEX) . ')';
+            $queryArray[$set[1][0]] = '$matches[' . $n + 1 . ']';
             $offset = $set[0][1] + strlen($set[0][0]);
         }
 
         if ($offset !== strlen($route)) {
-            $routeData[] = substr($route, $offset);
+            $regex .= substr($route, $offset);
         }
 
-        return $routeData;
+        $queryArray['__routeType'] = 'variable';
+
+        return [$regex, $queryArray];
     }
 }
