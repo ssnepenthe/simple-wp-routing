@@ -19,7 +19,7 @@ class Orchestrator
     protected InvocationStrategyInterface $invocationStrategy;
 
     /**
-     * @var ?RequestContext
+     * @var RequestContext
      */
     protected $requestContext;
 
@@ -29,26 +29,12 @@ class Orchestrator
         RewriteCollection $rewriteCollection,
         InvocationStrategyInterface $invocationStrategy,
         CallableResolverInterface $callableResolver,
-        ?RequestContext $requestContext = null
+        RequestContext $requestContext
     ) {
         $this->callableResolver = $callableResolver;
         $this->invocationStrategy = $invocationStrategy;
         $this->requestContext = $requestContext;
         $this->rewriteCollection = $rewriteCollection;
-    }
-
-    public function getRequestContext(): RequestContext
-    {
-        if (null === $this->requestContext) {
-            $this->requestContext = RequestContext::fromGlobals();
-        }
-
-        return $this->requestContext;
-    }
-
-    public function getRewriteCollection(): RewriteCollection
-    {
-        return $this->rewriteCollection;
     }
 
     public function initialize(): self
@@ -161,7 +147,7 @@ class Orchestrator
         }
 
         try {
-            $method = $this->getRequestContext()->getIntendedMethod();
+            $method = $this->requestContext->getIntendedMethod();
 
             if (! array_key_exists($method, $rewrites)) {
                 throw new MethodNotAllowedHttpException(array_keys($rewrites));
