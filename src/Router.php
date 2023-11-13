@@ -12,6 +12,8 @@ final class Router
 
     private string $cacheDirectory = '';
 
+    private string $cacheFile = '';
+
     private ?CallableResolverInterface $callableResolver = null;
 
     private string $currentGroup = '';
@@ -68,9 +70,10 @@ final class Router
         $this->autoSlash = true;
     }
 
-    public function enableCache(string $directory): void
+    public function enableCache(string $directory, string $file = 'rewrite-cache.php'): void
     {
         $this->cacheDirectory = $directory;
+        $this->cacheFile = $file;
     }
 
     /**
@@ -116,7 +119,7 @@ final class Router
 
         if (! $this->rewriteCollectionCache instanceof RewriteCollectionCache) {
             // @todo Configurable cache file?
-            $this->rewriteCollectionCache = new RewriteCollectionCache($this->cacheDirectory);
+            $this->rewriteCollectionCache = new RewriteCollectionCache($this->cacheDirectory, $this->cacheFile);
         }
 
         return $this->rewriteCollectionCache;

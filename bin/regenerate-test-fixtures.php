@@ -35,9 +35,5 @@ use TwrTestPlugin\TestGroup;
 require_once __DIR__ . '/../tests/fixtures/twr-test-plugin/test-groups.php';
 
 foreach (TestGroup::createTestGroups() as $testGroup) {
-    $cache = $testGroup->createCache();
-
-    $cache->delete();
-
-    $cache->put($testGroup->createRewrites());
+    $testGroup->refreshCache();
 }
