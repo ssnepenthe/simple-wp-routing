@@ -28,17 +28,26 @@ final class Router
 
     private ?RouteParserInterface $routeParser = null;
 
+    /**
+     * @param mixed $handler
+     */
     public function add(array $methods, string $route, $handler): Rewrite
     {
         // @todo Return some sort of parsed route helper object?
         return $this->getRewriteCollection()->add($this->create($methods, $route, $handler));
     }
 
+    /**
+     * @param mixed $handler
+     */
     public function any(string $route, $handler): Rewrite
     {
         return $this->add(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], $route, $handler);
     }
 
+    /**
+     * @param mixed $handler
+     */
     public function delete(string $route, $handler): Rewrite
     {
         return $this->add(['DELETE'], $route, $handler);
@@ -64,6 +73,9 @@ final class Router
         $this->cacheDirectory = $directory;
     }
 
+    /**
+     * @param mixed $handler
+     */
     public function get(string $route, $handler): Rewrite
     {
         return $this->add(['GET', 'HEAD'], $route, $handler);
@@ -119,7 +131,7 @@ final class Router
         return $this->routeParser;
     }
 
-    public function group(string $group, callable $callback)
+    public function group(string $group, callable $callback): void
     {
         $previousGroup = $this->currentGroup;
         $this->currentGroup = $this->autoSlash($previousGroup, $group);
@@ -129,7 +141,7 @@ final class Router
         $this->currentGroup = $previousGroup;
     }
 
-    public function initialize(?callable $callback = null)
+    public function initialize(?callable $callback = null): void
     {
         if ($this->initialized) {
             throw new LogicException('Router already initialized');
@@ -170,21 +182,33 @@ final class Router
         $this->createOrchestrator()->initialize();
     }
 
+    /**
+     * @param mixed $handler
+     */
     public function options(string $route, $handler): Rewrite
     {
         return $this->add(['OPTIONS'], $route, $handler);
     }
 
+    /**
+     * @param mixed $handler
+     */
     public function patch(string $route, $handler): Rewrite
     {
         return $this->add(['PATCH'], $route, $handler);
     }
 
+    /**
+     * @param mixed $handler
+     */
     public function post(string $route, $handler): Rewrite
     {
         return $this->add(['POST'], $route, $handler);
     }
 
+    /**
+     * @param mixed $handler
+     */
     public function put(string $route, $handler): Rewrite
     {
         return $this->add(['PUT'], $route, $handler);
@@ -200,7 +224,7 @@ final class Router
         $this->invocationStrategy = $invocationStrategy;
     }
 
-    public function setPrefix(string $prefix)
+    public function setPrefix(string $prefix): void
     {
         $this->prefix = $prefix;
     }
@@ -223,7 +247,10 @@ final class Router
         return rtrim($left, '/') . '/' . ltrim($right, '/');
     }
 
-    private function create(array $methods, string $route, $handler)
+    /**
+     * @param mixed $handler
+     */
+    private function create(array $methods, string $route, $handler): Rewrite
     {
         $route = $this->autoSlash($this->currentGroup, $route);
 

@@ -94,7 +94,7 @@ class FastRouteRouteParser implements RouteParserInterface
             }
 
             $regex .= '(' . (isset($set[2]) ? trim($set[2][0]) : self::DEFAULT_DISPATCH_REGEX) . ')';
-            $queryArray[$set[1][0]] = '$matches[' . $n + 1 . ']';
+            $queryArray[$set[1][0]] = '$matches[' . ($n + 1) . ']';
             $offset = $set[0][1] + strlen($set[0][0]);
         }
 

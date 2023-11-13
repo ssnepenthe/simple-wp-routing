@@ -111,6 +111,9 @@ class Orchestrator
         return array_merge($this->rewriteCollection->getQueryVariables(), $vars);
     }
 
+    /**
+     * @param \WP|mixed $wp
+     */
     public function onParseRequest($wp): void
     {
         if (
@@ -120,6 +123,7 @@ class Orchestrator
             && property_exists($wp, 'query_vars')
             && is_array($wp->query_vars)
         ) {
+            /** @var object{matched_rule: string, query_vars: array} $wp */
             $this->respondToMatchedRegex($wp);
         }
     }
@@ -145,6 +149,9 @@ class Orchestrator
         return array_merge($this->rewriteCollection->getRewriteRules(), $rules);
     }
 
+    /**
+     * @psalm-param object{matched_rule: string, query_vars: array} $wp
+     */
     protected function respondToMatchedRegex($wp): void
     {
         $rewrites = $this->rewriteCollection->findByRegex($wp->matched_rule);
@@ -207,6 +214,9 @@ class Orchestrator
         return (bool) $this->invocationStrategy->invoke($callback);
     }
 
+    /**
+     * @return mixed
+     */
     protected function callHandler(Rewrite $rewrite, array $queryVariables)
     {
         return $this->invocationStrategy->invoke(
