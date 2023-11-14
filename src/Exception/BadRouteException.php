@@ -6,6 +6,6 @@ namespace ToyWpRouting\Exception;
 
 use LogicException;
 
-class BadRouteException extends LogicException
+final class BadRouteException extends LogicException
 {
 }

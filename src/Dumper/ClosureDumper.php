@@ -8,7 +8,7 @@ use Closure;
 use Laravel\SerializableClosure\Support\ReflectionClosure;
 use RuntimeException;
 
-class ClosureDumper
+final class ClosureDumper
 {
     private Closure $closure;
 

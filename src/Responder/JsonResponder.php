@@ -6,7 +6,7 @@ namespace ToyWpRouting\Responder;
 
 use ToyWpRouting\Responder\Partial\JsonPartial;
 
-class JsonResponder extends Responder
+final class JsonResponder extends Responder
 {
     /**
      * @param mixed $data

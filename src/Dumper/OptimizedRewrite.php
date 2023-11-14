@@ -7,7 +7,7 @@ namespace ToyWpRouting\Dumper;
 use RuntimeException;
 use ToyWpRouting\Support\Rewrite;
 
-class OptimizedRewrite extends Rewrite
+final class OptimizedRewrite extends Rewrite
 {
     /**
      * @param array<int, "GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS"> $methods

@@ -14,15 +14,15 @@ use ToyWpRouting\Responder\HierarchicalResponderInterface;
 use ToyWpRouting\Responder\HttpExceptionResponder;
 use ToyWpRouting\Responder\ResponderInterface;
 
-class Orchestrator
+final class Orchestrator
 {
-    protected CallableResolverInterface $callableResolver;
+    private CallableResolverInterface $callableResolver;
 
-    protected InvocationStrategyInterface $invocationStrategy;
+    private InvocationStrategyInterface $invocationStrategy;
 
-    protected RequestContext $requestContext;
+    private RequestContext $requestContext;
 
-    protected RewriteCollection $rewriteCollection;
+    private RewriteCollection $rewriteCollection;
 
     public function __construct(
         RewriteCollection $rewriteCollection,
@@ -132,7 +132,7 @@ class Orchestrator
     /**
      * @return mixed
      */
-    protected function callHandler(Rewrite $rewrite, array $queryVariables)
+    private function callHandler(Rewrite $rewrite, array $queryVariables)
     {
         return $this->invocationStrategy->invoke(
             $this->callableResolver->resolve($rewrite->getHandler()),
@@ -140,14 +140,14 @@ class Orchestrator
         );
     }
 
-    protected function isRewriteActive(Rewrite $rewrite): bool
+    private function isRewriteActive(Rewrite $rewrite): bool
     {
         $callback = $this->callableResolver->resolve($rewrite->getIsActiveCallback());
 
         return (bool) $this->invocationStrategy->invoke($callback);
     }
 
-    protected function mergeActiveRewriteRules(array $rules): array
+    private function mergeActiveRewriteRules(array $rules): array
     {
         return array_merge($this->rewriteCollection->getRewriteRules(), $rules);
     }
@@ -155,7 +155,7 @@ class Orchestrator
     /**
      * @psalm-param object{matched_rule: string, query_vars: array} $wp
      */
-    protected function respondToMatchedRegex($wp): void
+    private function respondToMatchedRegex($wp): void
     {
         $rewrites = $this->rewriteCollection->findByRegex($wp->matched_rule);
 
@@ -198,7 +198,7 @@ class Orchestrator
     /**
      * @param mixed $rules
      */
-    protected function shouldModifyRules($rules): bool
+    private function shouldModifyRules($rules): bool
     {
         return is_array($rules) && count($rules) > 0;
     }

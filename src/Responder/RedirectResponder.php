@@ -6,7 +6,7 @@ namespace ToyWpRouting\Responder;
 
 use ToyWpRouting\Responder\Partial\RedirectPartial;
 
-class RedirectResponder extends Responder
+final class RedirectResponder extends Responder
 {
     public function __construct(
         string $location,

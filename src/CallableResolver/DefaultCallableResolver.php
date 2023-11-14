@@ -6,7 +6,7 @@ namespace ToyWpRouting\CallableResolver;
 
 use ToyWpRouting\Exception\BadCallableException;
 
-class DefaultCallableResolver implements CallableResolverInterface
+final class DefaultCallableResolver implements CallableResolverInterface
 {
     public function resolve($value): callable
     {

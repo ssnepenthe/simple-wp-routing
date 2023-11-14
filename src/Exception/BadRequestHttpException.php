@@ -10,7 +10,7 @@ use ToyWpRouting\Responder\Partial\HeadersPartial;
 use ToyWpRouting\Responder\Partial\ThemePartial;
 use ToyWpRouting\Responder\Partial\WpQueryPartial;
 
-class BadRequestHttpException extends HttpException
+final class BadRequestHttpException extends HttpException
 {
     public function __construct(
         string $message = '',

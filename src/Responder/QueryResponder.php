@@ -6,7 +6,7 @@ namespace ToyWpRouting\Responder;
 
 use ToyWpRouting\Responder\Partial\WpPartial;
 
-class QueryResponder extends Responder
+final class QueryResponder extends Responder
 {
     public function __construct(array $queryVariables, bool $overwriteExisting = false)
     {

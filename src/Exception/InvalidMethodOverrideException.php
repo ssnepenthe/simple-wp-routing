@@ -6,7 +6,7 @@ namespace ToyWpRouting\Exception;
 
 use UnexpectedValueException;
 
-class InvalidMethodOverrideException extends UnexpectedValueException implements RewriteInvocationExceptionInterface
+final class InvalidMethodOverrideException extends UnexpectedValueException implements RewriteInvocationExceptionInterface
 {
     public function toHttpException(): HttpExceptionInterface
     {

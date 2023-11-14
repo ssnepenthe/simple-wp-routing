@@ -9,7 +9,7 @@ use ToyWpRouting\Responder\HttpExceptionResponder;
 use ToyWpRouting\Responder\Partial\HeadersPartial;
 use WP_Query;
 
-class NotFoundHttpException extends HttpException
+final class NotFoundHttpException extends HttpException
 {
     public function __construct(
         string $message = '',

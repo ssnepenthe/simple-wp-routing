@@ -6,14 +6,14 @@ namespace ToyWpRouting\Support;
 
 use ToyWpRouting\Exception\InvalidMethodOverrideException;
 
-class RequestContext
+final class RequestContext
 {
     /**
      * @var array<string, string>
      */
-    protected array $headers = [];
+    private array $headers = [];
 
-    protected string $method;
+    private string $method;
 
     /**
      * @param array<string, string> $headers
@@ -109,7 +109,7 @@ class RequestContext
         return $this->method;
     }
 
-    protected function setHeader(string $key, string $value): void
+    private function setHeader(string $key, string $value): void
     {
         $this->headers[strtolower(str_replace('_', '-', $key))] = $value;
     }

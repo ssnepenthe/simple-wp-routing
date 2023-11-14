@@ -6,7 +6,7 @@ namespace ToyWpRouting\Responder;
 
 use ToyWpRouting\Exception\HttpExceptionInterface;
 
-class HttpExceptionResponder extends Responder
+final class HttpExceptionResponder extends Responder
 {
     public function __construct(HttpExceptionInterface $exception)
     {

@@ -10,7 +10,7 @@ use ToyWpRouting\Responder\Partial\HeadersPartial;
 use ToyWpRouting\Responder\Partial\ThemePartial;
 use ToyWpRouting\Responder\Partial\WpQueryPartial;
 
-class MethodNotAllowedHttpException extends HttpException
+final class MethodNotAllowedHttpException extends HttpException
 {
     public function __construct(
         array $allowedMethods,

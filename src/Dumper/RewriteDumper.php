@@ -8,7 +8,7 @@ use Closure;
 use RuntimeException;
 use ToyWpRouting\Support\Rewrite;
 
-class RewriteDumper
+final class RewriteDumper
 {
     private const TEMPLATE = 'new \\ToyWpRouting\\Dumper\\OptimizedRewrite(%s, %s, %s, %s, %s, %s)';
 

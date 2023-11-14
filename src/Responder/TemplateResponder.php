@@ -6,7 +6,7 @@ namespace ToyWpRouting\Responder;
 
 use ToyWpRouting\Responder\Partial\TemplatePartial;
 
-class TemplateResponder extends Responder
+final class TemplateResponder extends Responder
 {
     public function __construct(string $templatePath)
     {

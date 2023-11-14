@@ -6,7 +6,7 @@ namespace ToyWpRouting\Dumper;
 
 use ToyWpRouting\Support\Rewrite;
 
-class RewriteListDumper
+final class RewriteListDumper
 {
     /**
      * @var Rewrite[]

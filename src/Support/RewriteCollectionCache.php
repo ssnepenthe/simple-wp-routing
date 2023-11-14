@@ -7,11 +7,11 @@ namespace ToyWpRouting\Support;
 use Closure;
 use ToyWpRouting\Dumper\RewriteCollectionDumper;
 
-class RewriteCollectionCache
+final class RewriteCollectionCache
 {
-    protected string $dir;
+    private string $dir;
 
-    protected string $file;
+    private string $file;
 
     public function __construct(string $dir, string $file = 'rewrite-cache.php')
     {

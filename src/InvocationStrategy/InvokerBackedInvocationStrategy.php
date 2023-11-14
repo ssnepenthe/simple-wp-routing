@@ -7,9 +7,9 @@ namespace ToyWpRouting\InvocationStrategy;
 use Invoker\Invoker;
 use Invoker\InvokerInterface;
 
-class InvokerBackedInvocationStrategy implements InvocationStrategyInterface
+final class InvokerBackedInvocationStrategy implements InvocationStrategyInterface
 {
-    protected InvokerInterface $invoker;
+    private InvokerInterface $invoker;
 
     public function __construct(?InvokerInterface $invoker = null)
     {

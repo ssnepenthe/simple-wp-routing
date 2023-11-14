@@ -6,7 +6,7 @@ namespace ToyWpRouting\Dumper;
 
 use ToyWpRouting\Support\RewriteCollection;
 
-class RewriteCollectionDumper
+final class RewriteCollectionDumper
 {
     private const TEMPLATE = <<<'TPL'
     <?php

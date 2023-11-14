@@ -6,7 +6,7 @@ use Psr\Container\ContainerInterface;
 use ReflectionMethod;
 use ToyWpRouting\Exception\BadCallableException;
 
-class PsrContainerCallableResolver implements CallableResolverInterface
+final class PsrContainerCallableResolver implements CallableResolverInterface
 {
     private ContainerInterface $container;
 

@@ -7,9 +7,9 @@ namespace ToyWpRouting\Exception;
 use RuntimeException;
 use Throwable;
 
-class RequiredQueryVariablesMissingException extends RuntimeException implements RewriteInvocationExceptionInterface
+final class RequiredQueryVariablesMissingException extends RuntimeException implements RewriteInvocationExceptionInterface
 {
-    protected array $missingQueryVariables;
+    private array $missingQueryVariables;
 
     /**
      * @param string[] $missingQueryVariables
