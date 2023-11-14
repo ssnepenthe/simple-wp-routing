@@ -61,7 +61,7 @@ final class Router
 
     public function disableCache(): void
     {
-        if ($this->initialized || $this->rewriteCollection instanceof RewriteCollection) {
+        if ($this->initialized || $this->routesHaveBeenAdded()) {
             throw new LogicException('Cache must be disabled before any routes are added and router is initialized');
         }
 
@@ -75,7 +75,7 @@ final class Router
 
     public function enableCache(string $directory, string $file = 'rewrite-cache.php'): void
     {
-        if ($this->initialized || $this->rewriteCollection instanceof RewriteCollection) {
+        if ($this->initialized || $this->routesHaveBeenAdded()) {
             throw new LogicException('Cache must be enabled before any routes are added and router is initialized');
         }
 
@@ -160,7 +160,7 @@ final class Router
 
         if (is_callable($callback)) {
             if ('' !== $this->cacheDirectory) {
-                if ($this->rewriteCollection instanceof RewriteCollection) {
+                if ($this->routesHaveBeenAdded()) {
                     throw new LogicException('Routes must only be registered within $callback when cache enabled');
                 }
 
@@ -241,7 +241,7 @@ final class Router
 
     public function setPrefix(string $prefix): void
     {
-        if ($this->rewriteCollection instanceof RewriteCollection) {
+        if ($this->routesHaveBeenAdded()) {
             throw new LogicException('Prefix cannot be changed after routes have been added');
         }
 
@@ -250,7 +250,7 @@ final class Router
 
     public function setRouteParser(RouteParserInterface $routeParser): void
     {
-        if ($this->rewriteCollection instanceof RewriteCollection) {
+        if ($this->routesHaveBeenAdded()) {
             throw new LogicException('Route parser cannot be changed after routes have been added');
         }
 
@@ -301,5 +301,10 @@ final class Router
             $this->getCallableResolver(),
             RequestContext::fromGlobals()
         );
+    }
+
+    private function routesHaveBeenAdded(): bool
+    {
+        return $this->rewriteCollection instanceof RewriteCollection && ! $this->rewriteCollection->empty();
     }
 }
