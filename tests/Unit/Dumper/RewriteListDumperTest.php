@@ -6,10 +6,10 @@ namespace ToyWpRouting\Tests\Unit\Dumper;
 
 use PHPUnit\Framework\TestCase;
 use Spatie\Snapshots\MatchesSnapshots;
-use ToyWpRouting\Dumper\RewriteListDefinitionsDumper;
+use ToyWpRouting\Dumper\RewriteListDumper;
 use ToyWpRouting\Rewrite;
 
-class RewriteListDefinitionsDumperTest extends TestCase
+class RewriteListDumperTest extends TestCase
 {
     use MatchesSnapshots;
 
@@ -23,6 +23,6 @@ class RewriteListDefinitionsDumperTest extends TestCase
         $two = new Rewrite(['POST'], '^postregex$', 'index.php?pfx_var=post', ['pfx_var' => 'var'], function () {
         });
 
-        $this->assertMatchesSnapshot((new RewriteListDefinitionsDumper([$one, $two]))->dump());
+        $this->assertMatchesSnapshot((new RewriteListDumper([$one, $two]))->dump());
     }
 }

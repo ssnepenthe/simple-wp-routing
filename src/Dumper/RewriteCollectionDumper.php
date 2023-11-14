@@ -83,8 +83,6 @@ class RewriteCollectionDumper
 
     private function rewrites(): string
     {
-        return (string) (new RewriteListDefinitionsDumper(
-            $this->rewriteCollection->getRewrites()
-        ));
+        return (string) (new RewriteListDumper($this->rewriteCollection->getRewrites()));
     }
 }
