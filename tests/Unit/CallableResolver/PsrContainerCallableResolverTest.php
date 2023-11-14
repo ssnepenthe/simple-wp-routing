@@ -128,12 +128,12 @@ class Container implements ContainerInterface
         ];
     }
 
-    public function has(string $id): bool
+    public function has($id): bool
     {
         return array_key_exists($id, $this->entries);
     }
 
-    public function get(string $id)
+    public function get($id)
     {
         if (! $this->has($id)) {
             throw new LogicException('Ya dun goofed');
