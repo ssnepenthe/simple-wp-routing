@@ -11,6 +11,8 @@ use ToyWpRouting\Exception\BadRouteException;
  */
 class FastRouteRouteParser implements RouteParserInterface
 {
+    private const DEFAULT_DISPATCH_REGEX = '[^/]+';
+
     private const VARIABLE_REGEX = <<<'REGEX'
     \{
         \s* ([a-zA-Z_][a-zA-Z0-9_-]*) \s*
@@ -19,8 +21,6 @@ class FastRouteRouteParser implements RouteParserInterface
         )?
     \}
     REGEX;
-
-    private const DEFAULT_DISPATCH_REGEX = '[^/]+';
 
     /**
      * @return array{0: string, 1: array}
@@ -78,7 +78,9 @@ class FastRouteRouteParser implements RouteParserInterface
         }
 
         if (!preg_match_all(
-            '~' . self::VARIABLE_REGEX . '~x', $route, $matches,
+            '~' . self::VARIABLE_REGEX . '~x',
+            $route,
+            $matches,
             PREG_OFFSET_CAPTURE | PREG_SET_ORDER
         )) {
             return [$route, []];

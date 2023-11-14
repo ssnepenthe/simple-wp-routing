@@ -65,6 +65,23 @@ class Orchestrator
     }
 
     /**
+     * @param \WP|mixed $wp
+     */
+    public function onParseRequest($wp): void
+    {
+        if (
+            is_object($wp)
+            && property_exists($wp, 'matched_rule')
+            && is_string($wp->matched_rule)
+            && property_exists($wp, 'query_vars')
+            && is_array($wp->query_vars)
+        ) {
+            /** @var object{matched_rule: string, query_vars: array} $wp */
+            $this->respondToMatchedRegex($wp);
+        }
+    }
+
+    /**
      * @template T
      *
      * @psalm-param T $rules
@@ -97,23 +114,6 @@ class Orchestrator
     }
 
     /**
-     * @param \WP|mixed $wp
-     */
-    public function onParseRequest($wp): void
-    {
-        if (
-            is_object($wp)
-            && property_exists($wp, 'matched_rule')
-            && is_string($wp->matched_rule)
-            && property_exists($wp, 'query_vars')
-            && is_array($wp->query_vars)
-        ) {
-            /** @var object{matched_rule: string, query_vars: array} $wp */
-            $this->respondToMatchedRegex($wp);
-        }
-    }
-
-    /**
      * @template T
      *
      * @psalm-param T $rules
@@ -127,6 +127,24 @@ class Orchestrator
         }
 
         return $this->mergeActiveRewriteRules($rules);
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function callHandler(Rewrite $rewrite, array $queryVariables)
+    {
+        return $this->invocationStrategy->invoke(
+            $this->callableResolver->resolve($rewrite->getHandler()),
+            $rewrite->getConcernedQueryVariablesWithoutPrefix($queryVariables)
+        );
+    }
+
+    protected function isRewriteActive(Rewrite $rewrite): bool
+    {
+        $callback = $this->callableResolver->resolve($rewrite->getIsActiveCallback());
+
+        return (bool) $this->invocationStrategy->invoke($callback);
     }
 
     protected function mergeActiveRewriteRules(array $rules): array
@@ -183,23 +201,5 @@ class Orchestrator
     protected function shouldModifyRules($rules): bool
     {
         return is_array($rules) && count($rules) > 0;
-    }
-
-    protected function isRewriteActive(Rewrite $rewrite): bool
-    {
-        $callback = $this->callableResolver->resolve($rewrite->getIsActiveCallback());
-
-        return (bool) $this->invocationStrategy->invoke($callback);
-    }
-
-    /**
-     * @return mixed
-     */
-    protected function callHandler(Rewrite $rewrite, array $queryVariables)
-    {
-        return $this->invocationStrategy->invoke(
-            $this->callableResolver->resolve($rewrite->getHandler()),
-            $rewrite->getConcernedQueryVariablesWithoutPrefix($queryVariables)
-        );
     }
 }

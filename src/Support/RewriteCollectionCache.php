@@ -13,7 +13,8 @@ class RewriteCollectionCache
 
     protected string $file;
 
-    public function __construct(string $dir, string $file = 'rewrite-cache.php') {
+    public function __construct(string $dir, string $file = 'rewrite-cache.php')
+    {
         $this->dir = $dir;
         $this->file = $file;
     }

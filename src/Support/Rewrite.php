@@ -24,14 +24,14 @@ class Rewrite
      */
     protected array $methods;
 
-    protected string $regex;
-
     protected string $query;
 
     /**
      * @var array<string, string>
      */
     protected array $queryVariables;
+
+    protected string $regex;
 
     /**
      * @param array<int, "GET"|"HEAD"|"POST"|"PUT"|"PATCH"|"DELETE"|"OPTIONS"> $methods
@@ -59,6 +59,25 @@ class Rewrite
         $this->queryVariables = $queryVariables;
         $this->handler = $handler;
         $this->isActiveCallback = $isActiveCallback;
+    }
+
+    public function getConcernedQueryVariablesWithoutPrefix(array $queryVariables): array
+    {
+        $return = $missing = [];
+
+        foreach ($this->queryVariables as $prefixed => $unprefixed) {
+            if (! array_key_exists($prefixed, $queryVariables)) {
+                $missing[] = $prefixed;
+            } else {
+                $return[$unprefixed] = $queryVariables[$prefixed];
+            }
+        }
+
+        if ([] !== $missing) {
+            throw new RequiredQueryVariablesMissingException($missing);
+        }
+
+        return $return;
     }
 
     /**
@@ -89,11 +108,6 @@ class Rewrite
         return $this->methods;
     }
 
-    public function getRegex(): string
-    {
-        return $this->regex;
-    }
-
     public function getQuery(): string
     {
         return $this->query;
@@ -102,6 +116,11 @@ class Rewrite
     public function getQueryVariables(): array
     {
         return $this->queryVariables;
+    }
+
+    public function getRegex(): string
+    {
+        return $this->regex;
     }
 
     public function hasIsActiveCallback(): bool
@@ -117,24 +136,5 @@ class Rewrite
         $this->isActiveCallback = $isActiveCallback;
 
         return $this;
-    }
-
-    public function getConcernedQueryVariablesWithoutPrefix(array $queryVariables): array
-    {
-        $return = $missing = [];
-
-        foreach ($this->queryVariables as $prefixed => $unprefixed) {
-            if (! array_key_exists($prefixed, $queryVariables)) {
-                $missing[] = $prefixed;
-            } else {
-                $return[$unprefixed] = $queryVariables[$prefixed];
-            }
-        }
-
-        if ([] !== $missing) {
-            throw new RequiredQueryVariablesMissingException($missing);
-        }
-
-        return $return;
     }
 }

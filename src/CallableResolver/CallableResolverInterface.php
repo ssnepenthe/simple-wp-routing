@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ToyWpRouting\CallableResolver;
 
 use ToyWpRouting\Exception\BadCallableException;
