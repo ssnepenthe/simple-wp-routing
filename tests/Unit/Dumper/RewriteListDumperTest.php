@@ -7,7 +7,7 @@ namespace ToyWpRouting\Tests\Unit\Dumper;
 use PHPUnit\Framework\TestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 use ToyWpRouting\Dumper\RewriteListDumper;
-use ToyWpRouting\Rewrite;
+use ToyWpRouting\Support\Rewrite;
 
 class RewriteListDumperTest extends TestCase
 {

@@ -1,9 +1,9 @@
 #!/usr/bin/env php
 <?php
 
-use ToyWpRouting\Rewrite;
-use ToyWpRouting\RewriteCollection;
-use ToyWpRouting\RewriteCollectionCache;
+use ToyWpRouting\Support\Rewrite;
+use ToyWpRouting\Support\RewriteCollection;
+use ToyWpRouting\Support\RewriteCollectionCache;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 

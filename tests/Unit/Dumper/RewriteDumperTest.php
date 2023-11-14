@@ -9,7 +9,7 @@ use RuntimeException;
 use Spatie\Snapshots\MatchesSnapshots;
 use stdClass;
 use ToyWpRouting\Dumper\RewriteDumper;
-use ToyWpRouting\Rewrite;
+use ToyWpRouting\Support\Rewrite;
 
 class RewriteDumperTest extends TestCase
 {

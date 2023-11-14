@@ -6,7 +6,7 @@ namespace ToyWpRouting\Dumper;
 
 use Closure;
 use RuntimeException;
-use ToyWpRouting\Rewrite;
+use ToyWpRouting\Support\Rewrite;
 
 class RewriteDumper
 {

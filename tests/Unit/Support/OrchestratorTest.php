@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests\Unit;
+namespace ToyWpRouting\Tests\Unit\Support;
 
 use PHPUnit\Framework\TestCase;
-use ToyWpRouting\DefaultInvocationStrategy;
-use ToyWpRouting\DefaultCallableResolver;
-use ToyWpRouting\Orchestrator;
-use ToyWpRouting\RequestContext;
+use ToyWpRouting\InvocationStrategy\DefaultInvocationStrategy;
+use ToyWpRouting\CallableResolver\DefaultCallableResolver;
+use ToyWpRouting\Support\Orchestrator;
+use ToyWpRouting\Support\RequestContext;
 use ToyWpRouting\Responder\ResponderInterface;
-use ToyWpRouting\Rewrite;
-use ToyWpRouting\RewriteCollection;
+use ToyWpRouting\Support\Rewrite;
+use ToyWpRouting\Support\RewriteCollection;
 
 // @todo Test custom prefix? Test custom invoker?
 class OrchestratorTest extends TestCase

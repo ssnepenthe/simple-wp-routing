@@ -7,8 +7,8 @@ namespace ToyWpRouting\Tests\Unit\Dumper;
 use PHPUnit\Framework\TestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 use ToyWpRouting\Dumper\RewriteCollectionDumper;
-use ToyWpRouting\Rewrite;
-use ToyWpRouting\RewriteCollection;
+use ToyWpRouting\Support\Rewrite;
+use ToyWpRouting\Support\RewriteCollection;
 
 class RewriteCollectionDumperTest extends TestCase
 {

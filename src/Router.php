@@ -5,6 +5,18 @@ declare(strict_types=1);
 namespace ToyWpRouting;
 
 use LogicException;
+use ToyWpRouting\CallableResolver\CallableResolverInterface;
+use ToyWpRouting\CallableResolver\DefaultCallableResolver;
+use ToyWpRouting\InvocationStrategy\DefaultInvocationStrategy;
+use ToyWpRouting\InvocationStrategy\InvocationStrategyInterface;
+use ToyWpRouting\Parser\FastRouteRouteParser;
+use ToyWpRouting\Parser\RouteParserInterface;
+use ToyWpRouting\Support\Orchestrator;
+use ToyWpRouting\Support\RequestContext;
+use ToyWpRouting\Support\Rewrite;
+use ToyWpRouting\Support\RewriteCollection;
+use ToyWpRouting\Support\RewriteCollectionCache;
+use ToyWpRouting\Support\Support;
 
 final class Router
 {

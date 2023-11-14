@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests\Unit;
+namespace ToyWpRouting\Tests\Unit\Support;
 
 use PHPUnit\Framework\TestCase;
 use ToyWpRouting\Exception\InvalidMethodOverrideException;
-use ToyWpRouting\RequestContext;
+use ToyWpRouting\Support\RequestContext;
 
 class RequestContextTest extends TestCase
 {

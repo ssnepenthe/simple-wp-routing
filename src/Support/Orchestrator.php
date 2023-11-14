@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting;
+namespace ToyWpRouting\Support;
 
+use ToyWpRouting\CallableResolver\CallableResolverInterface;
 use ToyWpRouting\Exception\HttpExceptionInterface;
 use ToyWpRouting\Exception\MethodNotAllowedHttpException;
 use ToyWpRouting\Exception\RewriteDisabledException;
 use ToyWpRouting\Exception\RewriteInvocationExceptionInterface;
+use ToyWpRouting\InvocationStrategy\InvocationStrategyInterface;
 use ToyWpRouting\Responder\HierarchicalResponderInterface;
 use ToyWpRouting\Responder\HttpExceptionResponder;
 use ToyWpRouting\Responder\ResponderInterface;
@@ -18,10 +20,7 @@ class Orchestrator
 
     protected InvocationStrategyInterface $invocationStrategy;
 
-    /**
-     * @var RequestContext
-     */
-    protected $requestContext;
+    protected RequestContext $requestContext;
 
     protected RewriteCollection $rewriteCollection;
 

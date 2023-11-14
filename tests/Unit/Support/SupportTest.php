@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests\Unit;
+namespace ToyWpRouting\Tests\Unit\Support;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use ToyWpRouting\Support;
+use ToyWpRouting\Support\Support;
 
 class SupportTest extends TestCase
 {

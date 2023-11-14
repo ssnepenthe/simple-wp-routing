@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-return function (): \ToyWpRouting\RewriteCollection {
-    return new class() extends \ToyWpRouting\RewriteCollection
+return function (): \ToyWpRouting\Support\RewriteCollection {
+    return new class() extends \ToyWpRouting\Support\RewriteCollection
     {
         protected bool $locked = true;
 

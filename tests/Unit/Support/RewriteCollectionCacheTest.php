@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests\Unit;
+namespace ToyWpRouting\Tests\Unit\Support;
 
 use Closure;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use ToyWpRouting\Dumper\OptimizedRewrite;
-use ToyWpRouting\Rewrite;
-use ToyWpRouting\RewriteCollection;
-use ToyWpRouting\RewriteCollectionCache;
+use ToyWpRouting\Support\Rewrite;
+use ToyWpRouting\Support\RewriteCollection;
+use ToyWpRouting\Support\RewriteCollectionCache;
 
 class RewriteCollectionCacheTest extends TestCase
 {
@@ -46,7 +46,7 @@ class RewriteCollectionCacheTest extends TestCase
     public function testGet()
     {
         // @todo Why are we using actual filesystem here instead of vfsStream?
-        $cache = new RewriteCollectionCache(__DIR__ . '/../fixtures');
+        $cache = new RewriteCollectionCache(__DIR__ . '/../../fixtures');
 
         $rewriteCollection = $cache->get();
 
@@ -71,7 +71,7 @@ class RewriteCollectionCacheTest extends TestCase
     public function testGetWithSerializedClosures()
     {
         $cache = new RewriteCollectionCache(
-            __DIR__ . '/../fixtures',
+            __DIR__ . '/../../fixtures',
             'rewrite-cache-serialized-closures.php'
         );
 

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests\Unit;
+namespace ToyWpRouting\Tests\Unit\Support;
 
 use Closure;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ToyWpRouting\Exception\RequiredQueryVariablesMissingException;
-use ToyWpRouting\Rewrite;
+use ToyWpRouting\Support\Rewrite;
 
 class RewriteTest extends TestCase
 {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Dumper;
 
-use ToyWpRouting\RewriteCollection;
+use ToyWpRouting\Support\RewriteCollection;
 
 class RewriteCollectionDumper
 {
@@ -13,8 +13,8 @@ class RewriteCollectionDumper
 
     declare(strict_types=1);
 
-    return function (): \ToyWpRouting\RewriteCollection {
-        return new class() extends \ToyWpRouting\RewriteCollection
+    return function (): \ToyWpRouting\Support\RewriteCollection {
+        return new class() extends \ToyWpRouting\Support\RewriteCollection
         {
             protected bool $locked = true;
 

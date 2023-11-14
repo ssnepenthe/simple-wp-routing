@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Dumper;
 
-use ToyWpRouting\Rewrite;
+use ToyWpRouting\Support\Rewrite;
 
 class RewriteListDumper
 {

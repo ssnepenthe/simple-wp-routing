@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests\Unit;
+namespace ToyWpRouting\Tests\Unit\InvocationStrategy;
 
 use PHPUnit\Framework\TestCase;
-use ToyWpRouting\DefaultInvocationStrategy;
+use ToyWpRouting\InvocationStrategy\DefaultInvocationStrategy;
 
 class DefaultInvocationStrategyTest extends TestCase
 {

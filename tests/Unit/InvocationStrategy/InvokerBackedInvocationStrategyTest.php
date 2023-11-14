@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests\Unit;
+namespace ToyWpRouting\Tests\Unit\InvocationStrategy;
 
 use PHPUnit\Framework\TestCase;
-use ToyWpRouting\InvokerBackedInvocationStrategy;
+use ToyWpRouting\InvocationStrategy\InvokerBackedInvocationStrategy;
 
 // @todo Test with custom resolver set on Invoker instance?
 class InvokerBackedInvocationStrategyTest extends TestCase

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting;
+namespace ToyWpRouting\Support;
 
 use InvalidArgumentException;
 use ToyWpRouting\Exception\RequiredQueryVariablesMissingException;
