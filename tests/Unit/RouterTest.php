@@ -183,7 +183,7 @@ class RouterTest extends TestCase
     public function testInitializeWithCallbackAndCacheEnabledAndRewriteCollectionAlreadyInstantiated()
     {
         $this->expectException(LogicException::class);
-        // $this->expectExceptionMessage('@todo');
+        $this->expectExceptionMessage('only be registered within $callback');
 
         $root = vfsStream::setup();
 

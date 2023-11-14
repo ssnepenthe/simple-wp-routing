@@ -161,7 +161,7 @@ final class Router
         if (is_callable($callback)) {
             if ('' !== $this->cacheDirectory) {
                 if ($this->rewriteCollection instanceof RewriteCollection) {
-                    throw new LogicException('@todo');
+                    throw new LogicException('Routes must only be registered within $callback when cache enabled');
                 }
 
                 if ($this->getRewriteCollectionCache()->exists()) {
