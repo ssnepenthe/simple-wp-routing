@@ -68,13 +68,11 @@ class RewriteDumper
 
     private function isActiveCallback(): string
     {
-        $isActiveCallback = $this->rewrite->getIsActiveCallback();
-
-        if (null === $isActiveCallback) {
-            return var_export($isActiveCallback, true);
+        if (! $this->rewrite->hasIsActiveCallback()) {
+            return var_export(null, true);
         }
 
-        return $this->dumpCallbackIfSupported($isActiveCallback);
+        return $this->dumpCallbackIfSupported($this->rewrite->getIsActiveCallback());
     }
 
     private function methods(): string

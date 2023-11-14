@@ -70,6 +70,10 @@ class Rewrite
      */
     public function getIsActiveCallback()
     {
+        if (null === $this->isActiveCallback) {
+            return fn () => true;
+        }
+
         return $this->isActiveCallback;
     }
 
@@ -94,6 +98,11 @@ class Rewrite
     public function getQueryVariables(): array
     {
         return $this->queryVariables;
+    }
+
+    public function hasIsActiveCallback(): bool
+    {
+        return null !== $this->isActiveCallback;
     }
 
     /**

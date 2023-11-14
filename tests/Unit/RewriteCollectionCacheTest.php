@@ -57,7 +57,7 @@ class RewriteCollectionCacheTest extends TestCase
 
         $this->assertInstanceOf(OptimizedRewrite::class, $first);
         $this->assertSame('firsthandler', $first->getHandler());
-        $this->assertNull($first->getIsActiveCallback());
+        $this->assertFalse($first->hasIsActiveCallback());
         $this->assertSame(['GET', 'HEAD'], $first->getMethods());
 
         $this->assertInstanceOf(OptimizedRewrite::class, $second);

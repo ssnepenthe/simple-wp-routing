@@ -188,14 +188,7 @@ class Orchestrator
 
     protected function isRewriteActive(Rewrite $rewrite): bool
     {
-        $callback = $rewrite->getIsActiveCallback();
-
-        // @todo Default callback instead of null?
-        if (null === $callback) {
-            return true;
-        }
-
-        $callback = $this->callableResolver->resolve($callback);
+        $callback = $this->callableResolver->resolve($rewrite->getIsActiveCallback());
 
         return (bool) $this->invocationStrategy->invoke($callback);
     }

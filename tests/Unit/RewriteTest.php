@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Tests\Unit;
 
+use Closure;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ToyWpRouting\Exception\RequiredQueryVariablesMissingException;
@@ -16,11 +17,20 @@ class RewriteTest extends TestCase
         $rewrite = new Rewrite(['GET'], 'someregex', 'index.php?var=value', ['var' => 'var'], 'somehandler');
 
         $this->assertSame('somehandler', $rewrite->getHandler());
-        $this->assertNull($rewrite->getIsActiveCallback());
         $this->assertSame(['GET'], $rewrite->getMethods());
         $this->assertSame('someregex', $rewrite->getRegex());
         $this->assertSame('index.php?var=value', $rewrite->getQuery());
         $this->assertSame(['var' => 'var'], $rewrite->getQueryVariables());
+
+        $this->assertFalse($rewrite->hasIsActiveCallback());
+        $this->assertInstanceOf(Closure::class, $rewrite->getIsActiveCallback());
+
+        $isActiveCallback = 'irrelevant';
+
+        $rewrite->setIsActiveCallback($isActiveCallback);
+
+        $this->assertTrue($rewrite->hasIsActiveCallback());
+        $this->assertSame($isActiveCallback, $rewrite->getIsActiveCallback());
     }
 
     public function testCreateWithPrefix()
@@ -76,8 +86,14 @@ class RewriteTest extends TestCase
 
         $three = new Rewrite(['GET'], 'yetanotherregex', 'index.php?var=value', ['var' => 'var'], 'yetanotherhandler', 'yetanotherisactivecallback');
 
-        $this->assertNull($one->getIsActiveCallback());
+        $this->assertFalse($one->hasIsActiveCallback());
+        $this->assertInstanceOf(Closure::class, $one->getIsActiveCallback());
+        $this->assertTrue(($one->getIsActiveCallback())());
+
+        $this->assertTrue($two->hasIsActiveCallback());
         $this->assertSame('anotherisactivecallback', $two->getIsActiveCallback());
+
+        $this->assertTrue($three->hasIsActiveCallback());
         $this->assertSame('yetanotherisactivecallback', $three->getIsActiveCallback());
     }
 }
