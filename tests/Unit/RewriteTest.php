@@ -69,6 +69,14 @@ class RewriteTest extends TestCase
         $rewrite->getConcernedQueryVariablesWithoutPrefix(['one' => 'valone']);
     }
 
+    public function testWithEmptyQuery()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('non-empty string');
+
+        new Rewrite(['GET'], 'someregex', '', ['some' => 'some'], 'somehandler');
+    }
+
     public function testWithInvalidMethods()
     {
         $this->expectException(InvalidArgumentException::class);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ToyWpRouting;
 
+use InvalidArgumentException;
 use ToyWpRouting\Exception\RequiredQueryVariablesMissingException;
 
 class Rewrite
@@ -46,8 +47,11 @@ class Rewrite
         $handler,
         $isActiveCallback = null
     ) {
-        // @todo Verify query and queryVariables are not empty?
         Support::assertValidMethodsList($methods);
+
+        if ('' === $query) {
+            throw new InvalidArgumentException('$query must be a non-empty string');
+        }
 
         $this->methods = $methods;
         $this->regex = $regex;

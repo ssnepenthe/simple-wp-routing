@@ -157,13 +157,13 @@ class OrchestratorTest extends TestCase
         $count = 0;
 
         $rewrites = new RewriteCollection();
-        $rewrites->add(new Rewrite(['GET', 'HEAD'], $this->regex, '', [], function () use (&$count) {
+        $rewrites->add(new Rewrite(['GET', 'HEAD'], $this->regex, 'var=val', ['var' => 'var'], function () use (&$count) {
             $count++;
         }));
 
         $orchestrator = $this->createOrchestrator($rewrites);
 
-        $orchestrator->onParseRequest($this->createWpDouble($this->regex));
+        $orchestrator->onParseRequest($this->createWpDouble($this->regex, ['var' => 'val']));
 
         $this->assertSame(1, $count);
     }
@@ -179,13 +179,13 @@ class OrchestratorTest extends TestCase
         };
 
         $rewrites = new RewriteCollection();
-        $rewrites->add(new Rewrite(['GET', 'HEAD'], $this->regex, '', [], function () use ($responder) {
+        $rewrites->add(new Rewrite(['GET', 'HEAD'], $this->regex, 'var=val', ['var' => 'var'], function () use ($responder) {
             return $responder;
         }));
 
         $orchestrator = $this->createOrchestrator($rewrites);
 
-        $orchestrator->onParseRequest($this->createWpDouble($this->regex));
+        $orchestrator->onParseRequest($this->createWpDouble($this->regex, ['var' => 'val']));
 
         $this->assertSame(1, $responder->count);
     }
