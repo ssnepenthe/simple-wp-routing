@@ -35,7 +35,6 @@ final class Router
      */
     public function add(array $methods, string $route, $handler): Rewrite
     {
-        // @todo Return some sort of parsed route helper object?
         return $this->getRewriteCollection()->add($this->create($methods, $route, $handler));
     }
 
@@ -126,7 +125,6 @@ final class Router
         }
 
         if (! $this->rewriteCollectionCache instanceof RewriteCollectionCache) {
-            // @todo Configurable cache file?
             $this->rewriteCollectionCache = new RewriteCollectionCache($this->cacheDirectory, $this->cacheFile);
         }
 

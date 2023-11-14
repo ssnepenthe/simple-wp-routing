@@ -213,7 +213,7 @@ class OrchestratorTest extends TestCase
         $this->assertSame('json', $foundFormat);
     }
 
-    private function createOrchestrator(RewriteCollection $rewrites, ?RequestContext $request = null): Orchestrator
+    private function createOrchestrator(RewriteCollection $rewrites): Orchestrator
     {
         return new Orchestrator(
             $rewrites,
