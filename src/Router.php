@@ -260,13 +260,17 @@ final class Router
         [$regex, $queryArray] = $this->getRouteParser()->parse($route);
 
         $prefixedQueryArray = Support::applyPrefixToKeys($queryArray, $this->prefix);
-        $query = Support::buildQuery($prefixedQueryArray);
+
+        $query = Support::buildQuery($prefixedQueryArray + [
+            // We add an additional __routeType variable to ensure we never have an empty query string.
+            // __routeType is not registered as a public query variable with WordPress.
+            // If a __routeType variable already exists it is not overwritten.
+            Support::applyPrefix('__routeType', $this->prefix) => ([] === $prefixedQueryArray ? 'static' : 'variable')
+        ]);
+
         $queryVariables = array_combine(array_keys($prefixedQueryArray), array_keys($queryArray));
 
-        $rewrite = new Rewrite($methods, $regex, $query, $queryVariables, $handler);
-
-        // @todo ParsedRewrite, PendingRewrite, RewriteHelper? whats in a name?
-        return $rewrite;
+        return new Rewrite($methods, $regex, $query, $queryVariables, $handler);
     }
 
     private function createOrchestrator(): Orchestrator

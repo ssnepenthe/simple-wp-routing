@@ -223,7 +223,7 @@ class OrchestratorTest extends TestCase
         );
     }
 
-    private function createWpDouble(string $matchedRule, array $queryVars = ['__routeType' => 'static']): object
+    private function createWpDouble(string $matchedRule, array $queryVars = []): object
     {
         return (object) [
             'matched_rule' => $matchedRule,

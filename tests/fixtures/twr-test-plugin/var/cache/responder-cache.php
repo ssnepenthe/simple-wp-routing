@@ -10,7 +10,6 @@ return function (): \ToyWpRouting\RewriteCollection {
         public function __construct()
         {
             $this->queryVariables = array (
-  'responders___routeType' => '__routeType',
 );
             $this->rewriteRules = array (
   '^(?|responders/http-exception/not-found)$' => 'index.php?responders___routeType=static',
@@ -25,7 +24,6 @@ return function (): \ToyWpRouting\RewriteCollection {
   0 => 'GET',
   1 => 'HEAD',
 ), '^(?|responders/http-exception/not-found)$', 'index.php?responders___routeType=static', array (
-  'responders___routeType' => '__routeType',
 ), static function () {
             // @todo custom additional headers
             throw new \ToyWpRouting\Exception\NotFoundHttpException();
@@ -34,7 +32,6 @@ $rewrite1 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^(?|responders/http-exception/method-not-allowed)$', 'index.php?responders___routeType=static', array (
-  'responders___routeType' => '__routeType',
 ), static function () {
             // @todo custom additional headers, custom theme template (body class and title), ensure query flags are reset
             throw new \ToyWpRouting\Exception\MethodNotAllowedHttpException(['POST', 'PUT']);
@@ -43,7 +40,6 @@ $rewrite2 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^(?|responders/json)$', 'index.php?responders___routeType=static', array (
-  'responders___routeType' => '__routeType',
 ), static function () {
             // @todo custom status codes, error vs success status codes, json options, non-enveloped response, custom additional headers
             return new \ToyWpRouting\Responder\JsonResponder('hello from the json responder route');
@@ -52,7 +48,6 @@ $rewrite3 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^(?|responders/query)$', 'index.php?responders___routeType=static', array (
-  'responders___routeType' => '__routeType',
 ), static function () {
             // @todo overwrite query variables
             add_action('twr_test_data', function () {
@@ -67,7 +62,6 @@ $rewrite4 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^(?|responders/redirect)$', 'index.php?responders___routeType=static', array (
-  'responders___routeType' => '__routeType',
 ), static function () {
             // @todo custom status code, custom redirect-by, external (unsafe) redirect both allowed and not, custom headers
             return new \ToyWpRouting\Responder\RedirectResponder('/responders/query/');
@@ -76,7 +70,6 @@ $rewrite5 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^(?|responders/template)$', 'index.php?responders___routeType=static', array (
-  'responders___routeType' => '__routeType',
 ), static function () {
             // @todo body class, document title, enqueue assets, dequeue assets, custom headers, query vars, query flags
             return new \ToyWpRouting\Responder\TemplateResponder('/var/www/html/wp-content/plugins/toy-wp-routing/tests/fixtures/twr-test-plugin' . '/templates/hello-world.php');

@@ -10,7 +10,6 @@ return function (): \ToyWpRouting\RewriteCollection {
         public function __construct()
         {
             $this->queryVariables = array (
-  'httpmethod___routeType' => '__routeType',
 );
             $this->rewriteRules = array (
   '^(?|http-method/any)$' => 'index.php?httpmethod___routeType=static',
@@ -31,38 +30,31 @@ return function (): \ToyWpRouting\RewriteCollection {
   5 => 'DELETE',
   6 => 'OPTIONS',
 ), '^(?|http-method/any)$', 'index.php?httpmethod___routeType=static', array (
-  'httpmethod___routeType' => '__routeType',
 ), static function () {}, NULL);
 $rewrite1 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'DELETE',
 ), '^(?|http-method/delete)$', 'index.php?httpmethod___routeType=static', array (
-  'httpmethod___routeType' => '__routeType',
 ), static function () {}, NULL);
 $rewrite2 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^(?|http-method/get)$', 'index.php?httpmethod___routeType=static', array (
-  'httpmethod___routeType' => '__routeType',
 ), static function () {}, NULL);
 $rewrite3 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'OPTIONS',
 ), '^(?|http-method/options)$', 'index.php?httpmethod___routeType=static', array (
-  'httpmethod___routeType' => '__routeType',
 ), static function () {}, NULL);
 $rewrite4 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'PATCH',
 ), '^(?|http-method/patch)$', 'index.php?httpmethod___routeType=static', array (
-  'httpmethod___routeType' => '__routeType',
 ), static function () {}, NULL);
 $rewrite5 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'POST',
 ), '^(?|http-method/post)$', 'index.php?httpmethod___routeType=static', array (
-  'httpmethod___routeType' => '__routeType',
 ), static function () {}, NULL);
 $rewrite6 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
   0 => 'PUT',
 ), '^(?|http-method/put)$', 'index.php?httpmethod___routeType=static', array (
-  'httpmethod___routeType' => '__routeType',
 ), static function () {}, NULL);
 $this->rewritesByRegexAndMethod = array (
   '^(?|http-method/any)$' => 

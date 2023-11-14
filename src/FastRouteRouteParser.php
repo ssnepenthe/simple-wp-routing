@@ -81,7 +81,7 @@ class FastRouteRouteParser implements RouteParserInterface
             '~' . self::VARIABLE_REGEX . '~x', $route, $matches,
             PREG_OFFSET_CAPTURE | PREG_SET_ORDER
         )) {
-            return [$route, ['__routeType' => 'static']];
+            return [$route, []];
         }
 
         $offset = 0;
@@ -101,8 +101,6 @@ class FastRouteRouteParser implements RouteParserInterface
         if ($offset !== strlen($route)) {
             $regex .= substr($route, $offset);
         }
-
-        $queryArray['__routeType'] = 'variable';
 
         return [$regex, $queryArray];
     }

@@ -46,9 +46,11 @@ class RouterTest extends TestCase
 
         $this->assertSame('^(?|one/([^/]+))$', $rewriteOne->getRegex());
         $this->assertSame('index.php?two=$matches[1]&__routeType=variable', $rewriteOne->getQuery());
+        $this->assertSame(['two' => 'two'], $rewriteOne->getQueryVariables());
 
         $this->assertSame('^(?|three/([^/]+))$', $rewriteTwo->getRegex());
         $this->assertSame('index.php?four=$matches[1]&__routeType=variable', $rewriteTwo->getQuery());
+        $this->assertSame(['four' => 'four'], $rewriteTwo->getQueryVariables());
     }
 
     public function testCreateWithPrefix()
@@ -68,9 +70,11 @@ class RouterTest extends TestCase
 
         $this->assertSame('^(?|one/([^/]+))$', $rewriteOne->getRegex());
         $this->assertSame('index.php?pfx_two=$matches[1]&pfx___routeType=variable', $rewriteOne->getQuery());
+        $this->assertSame(['pfx_two' => 'two'], $rewriteOne->getQueryVariables());
 
         $this->assertSame('^(?|three/([^/]+))$', $rewriteTwo->getRegex());
         $this->assertSame('index.php?pfx_four=$matches[1]&pfx___routeType=variable', $rewriteTwo->getQuery());
+        $this->assertSame(['pfx_four' => 'four'], $rewriteTwo->getQueryVariables());
     }
 
     public function testHttpMethodShorthandMethods()

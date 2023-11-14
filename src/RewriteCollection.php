@@ -41,7 +41,6 @@ class RewriteCollection
 
         $this->rewriteRules[$regex] = $rewrite->getQuery();
 
-        // @todo prevent merging of "__routeType" var?
         foreach ($rewrite->getQueryVariables() as $prefixed => $unprefixed) {
             $this->queryVariables[$prefixed] = $unprefixed;
         }
