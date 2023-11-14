@@ -62,6 +62,10 @@ final class Router
 
     public function disableCache(): void
     {
+        if ($this->initialized || $this->rewriteCollection instanceof RewriteCollection) {
+            throw new LogicException('Cache must be disabled before any routes are added and router is initialized');
+        }
+
         $this->cacheDirectory = '';
     }
 
@@ -72,6 +76,10 @@ final class Router
 
     public function enableCache(string $directory, string $file = 'rewrite-cache.php'): void
     {
+        if ($this->initialized || $this->rewriteCollection instanceof RewriteCollection) {
+            throw new LogicException('Cache must be enabled before any routes are added and router is initialized');
+        }
+
         $this->cacheDirectory = $directory;
         $this->cacheFile = $file;
     }
@@ -219,21 +227,37 @@ final class Router
 
     public function setCallableResolver(CallableResolverInterface $callableResolver): void
     {
+        if ($this->initialized) {
+            throw new LogicException('Callable resolver cannot be set after router has been initialized');
+        }
+
         $this->callableResolver = $callableResolver;
     }
 
     public function setInvocationStrategy(InvocationStrategyInterface $invocationStrategy): void
     {
+        if ($this->initialized) {
+            throw new LogicException('Invocation strategy cannot be set after router has been initialized');
+        }
+
         $this->invocationStrategy = $invocationStrategy;
     }
 
     public function setPrefix(string $prefix): void
     {
+        if ($this->rewriteCollection instanceof RewriteCollection) {
+            throw new LogicException('Prefix cannot be changed after routes have been added');
+        }
+
         $this->prefix = $prefix;
     }
 
     public function setRouteParser(RouteParserInterface $routeParser): void
     {
+        if ($this->rewriteCollection instanceof RewriteCollection) {
+            throw new LogicException('Route parser cannot be changed after routes have been added');
+        }
+
         $this->routeParser = $routeParser;
     }
 
