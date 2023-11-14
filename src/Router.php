@@ -167,7 +167,6 @@ final class Router
                 if ($this->getRewriteCollectionCache()->exists()) {
                     $this->rewriteCollection = $this->getRewriteCollectionCache()->get();
                 } else {
-                    // @todo RewriteCollection must be empty at this point - should be fine since we verified above that it hasn't been instantiated yet.
                     $callback($this);
 
                     $this->getRewriteCollectionCache()->put($this->getRewriteCollection());
