@@ -170,9 +170,7 @@ final class Router
                     // @todo RewriteCollection must be empty at this point - should be fine since we verified above that it hasn't been instantiated yet.
                     $callback($this);
 
-                    add_action('shutdown', function () {
-                        $this->getRewriteCollectionCache()->put($this->getRewriteCollection());
-                    });
+                    $this->getRewriteCollectionCache()->put($this->getRewriteCollection());
                 }
             } else {
                 $callback($this);

@@ -231,8 +231,6 @@ class RouterTest extends TestCase
 
     public function testInitializeWithCallbackAndCacheEnabledAndCacheDoesNotExist()
     {
-        // Shutdown action is used to save cache.
-        Actions\expectAdded('shutdown');
         $this->expectOrchestratorInitializeMethodToBeCalled();
 
         $root = vfsStream::setup();
