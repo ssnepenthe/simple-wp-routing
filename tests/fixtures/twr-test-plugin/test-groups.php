@@ -2,6 +2,7 @@
 
 namespace TwrTestPlugin;
 
+use LogicException;
 use ToyWpRouting\Exception\MethodNotAllowedHttpException;
 use ToyWpRouting\Exception\NotFoundHttpException;
 use ToyWpRouting\Responder\JsonResponder;
@@ -42,6 +43,10 @@ abstract class TestGroup
 
         if (filter_var($_REQUEST['twr_enable_cache'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
             $router->enableCache($this->getCacheDirectory(), $this->getCacheFileName());
+
+            if (! $router->getRewriteCollectionCache()->exists()) {
+                throw new LogicException('Test plugin cache does not exist - run the bin/regenerate-test-fixtures.php script');
+            }
         }
 
         $router->initialize(fn ($r) => $this->registerRoutes($r));
