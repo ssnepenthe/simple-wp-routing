@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use ToyWpRouting\Dumper\OptimizedRewrite;
-use ToyWpRouting\Dumper\OptimizedRewriteCollection;
+use SimpleWpRouting\Dumper\OptimizedRewrite;
+use SimpleWpRouting\Dumper\OptimizedRewriteCollection;
 
 if (! class_exists('CachedRewriteCollection4f83d40597bd5f6b2bf93bf6fb45d092b9b5ac8599f3a07323a6d621259b1dec')) {
     class CachedRewriteCollection4f83d40597bd5f6b2bf93bf6fb45d092b9b5ac8599f3a07323a6d621259b1dec extends OptimizedRewriteCollection

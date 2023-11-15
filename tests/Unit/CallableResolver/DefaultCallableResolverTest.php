@@ -1,10 +1,10 @@
 <?php
 
-namespace ToyWpRouting\Tests\Unit\CallableResolver;
+namespace SimpleWpRouting\Tests\Unit\CallableResolver;
 
 use PHPUnit\Framework\TestCase;
-use ToyWpRouting\CallableResolver\DefaultCallableResolver;
-use ToyWpRouting\Exception\BadCallableException;
+use SimpleWpRouting\CallableResolver\DefaultCallableResolver;
+use SimpleWpRouting\Exception\BadCallableException;
 
 class DefaultCallableResolverTest extends TestCase
 {

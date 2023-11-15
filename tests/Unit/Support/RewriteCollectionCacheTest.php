@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests\Unit\Support;
+namespace SimpleWpRouting\Tests\Unit\Support;
 
 use Closure;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
-use ToyWpRouting\Dumper\OptimizedRewrite;
-use ToyWpRouting\Dumper\OptimizedRewriteCollection;
-use ToyWpRouting\Support\Rewrite;
-use ToyWpRouting\Support\RewriteCollection;
-use ToyWpRouting\Support\RewriteCollectionCache;
+use SimpleWpRouting\Dumper\OptimizedRewrite;
+use SimpleWpRouting\Dumper\OptimizedRewriteCollection;
+use SimpleWpRouting\Support\Rewrite;
+use SimpleWpRouting\Support\RewriteCollection;
+use SimpleWpRouting\Support\RewriteCollectionCache;
 
 class RewriteCollectionCacheTest extends TestCase
 {

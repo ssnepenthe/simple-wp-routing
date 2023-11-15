@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\InvocationStrategy;
+namespace SimpleWpRouting\InvocationStrategy;
 
 interface InvocationStrategyInterface
 {

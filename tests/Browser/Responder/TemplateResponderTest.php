@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests\Browser\Responder;
+namespace SimpleWpRouting\Tests\Browser\Responder;
 
-use ToyWpRouting\Tests\Browser\TestCase;
+use SimpleWpRouting\Tests\Browser\TestCase;
 
 class TemplateResponderTest extends TestCase
 {

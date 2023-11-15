@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests\Unit\Parser;
+namespace SimpleWpRouting\Tests\Unit\Parser;
 
 use PHPUnit\Framework\TestCase;
-use ToyWpRouting\Exception\BadRouteException;
-use ToyWpRouting\Parser\FastRouteRouteParser;
+use SimpleWpRouting\Exception\BadRouteException;
+use SimpleWpRouting\Parser\FastRouteRouteParser;
 
 /**
  * Adapted from FastRoute tests.

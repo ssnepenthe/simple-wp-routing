@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use ToyWpRouting\Dumper\OptimizedRewrite;
-use ToyWpRouting\Dumper\OptimizedRewriteCollection;
+use SimpleWpRouting\Dumper\OptimizedRewrite;
+use SimpleWpRouting\Dumper\OptimizedRewriteCollection;
 
 if (! class_exists('CachedRewriteCollection53448928746610bc130e42f72a15b14f613297b2abcfca21e07640eb8d70c3f3')) {
     class CachedRewriteCollection53448928746610bc130e42f72a15b14f613297b2abcfca21e07640eb8d70c3f3 extends OptimizedRewriteCollection
@@ -58,7 +58,7 @@ $rewrite6 = new OptimizedRewrite(array (
 ), '^(?|http-method/put)$', 'index.php?httpmethod___routeType=static', array (
 ), static function () {}, NULL);
 $this->rewritesByRegexAndMethod = array (
-  '^(?|http-method/any)$' => 
+  '^(?|http-method/any)$' =>
   array (
     'GET' => $rewrite0,
     'HEAD' => $rewrite0,
@@ -68,28 +68,28 @@ $this->rewritesByRegexAndMethod = array (
     'DELETE' => $rewrite0,
     'OPTIONS' => $rewrite0,
   ),
-  '^(?|http-method/delete)$' => 
+  '^(?|http-method/delete)$' =>
   array (
     'DELETE' => $rewrite1,
   ),
-  '^(?|http-method/get)$' => 
+  '^(?|http-method/get)$' =>
   array (
     'GET' => $rewrite2,
     'HEAD' => $rewrite2,
   ),
-  '^(?|http-method/options)$' => 
+  '^(?|http-method/options)$' =>
   array (
     'OPTIONS' => $rewrite3,
   ),
-  '^(?|http-method/patch)$' => 
+  '^(?|http-method/patch)$' =>
   array (
     'PATCH' => $rewrite4,
   ),
-  '^(?|http-method/post)$' => 
+  '^(?|http-method/post)$' =>
   array (
     'POST' => $rewrite5,
   ),
-  '^(?|http-method/put)$' => 
+  '^(?|http-method/put)$' =>
   array (
     'PUT' => $rewrite6,
   ),

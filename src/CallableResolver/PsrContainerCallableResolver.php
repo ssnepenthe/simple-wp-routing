@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\CallableResolver;
+namespace SimpleWpRouting\CallableResolver;
 
 use Psr\Container\ContainerInterface;
 use ReflectionMethod;
-use ToyWpRouting\Exception\BadCallableException;
+use SimpleWpRouting\Exception\BadCallableException;
 
 final class PsrContainerCallableResolver implements CallableResolverInterface
 {

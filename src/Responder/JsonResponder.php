@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder;
+namespace SimpleWpRouting\Responder;
 
-use ToyWpRouting\Responder\Partial\JsonPartial;
+use SimpleWpRouting\Responder\Partial\JsonPartial;
 
 final class JsonResponder extends Responder
 {

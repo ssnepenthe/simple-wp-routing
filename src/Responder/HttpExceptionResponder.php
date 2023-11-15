@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder;
+namespace SimpleWpRouting\Responder;
 
-use ToyWpRouting\Exception\HttpExceptionInterface;
+use SimpleWpRouting\Exception\HttpExceptionInterface;
 
 final class HttpExceptionResponder extends Responder
 {

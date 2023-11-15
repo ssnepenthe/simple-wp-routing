@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests\Unit\Dumper;
+namespace SimpleWpRouting\Tests\Unit\Dumper;
 
 use PHPUnit\Framework\TestCase;
 use Spatie\Snapshots\MatchesSnapshots;
-use ToyWpRouting\Dumper\RewriteCollectionDumper;
-use ToyWpRouting\Support\Rewrite;
-use ToyWpRouting\Support\RewriteCollection;
+use SimpleWpRouting\Dumper\RewriteCollectionDumper;
+use SimpleWpRouting\Support\Rewrite;
+use SimpleWpRouting\Support\RewriteCollection;
 
 class RewriteCollectionDumperTest extends TestCase
 {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder;
+namespace SimpleWpRouting\Responder;
 
-use ToyWpRouting\Responder\Partial\PartialInterface;
+use SimpleWpRouting\Responder\Partial\PartialInterface;
 
 class Responder extends ComposableResponder
 {

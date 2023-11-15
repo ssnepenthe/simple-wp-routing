@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests\Browser;
+namespace SimpleWpRouting\Tests\Browser;
 
 use PHPUnit\Framework\TestCase as FrameworkTestCase;
 use Symfony\Component\BrowserKit\AbstractBrowser;

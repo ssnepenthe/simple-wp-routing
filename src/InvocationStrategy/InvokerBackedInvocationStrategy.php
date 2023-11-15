@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\InvocationStrategy;
+namespace SimpleWpRouting\InvocationStrategy;
 
 use Invoker\Invoker;
 use Invoker\InvokerInterface;

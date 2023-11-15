@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use ToyWpRouting\Dumper\OptimizedRewrite;
-use ToyWpRouting\Dumper\OptimizedRewriteCollection;
+use SimpleWpRouting\Dumper\OptimizedRewrite;
+use SimpleWpRouting\Dumper\OptimizedRewriteCollection;
 
 if (! class_exists('CachedRewriteCollectiond870e2f0a516a50e9661e34d430b2e666e47c2a2b39fe2cc18c9a4db424fbee4')) {
     class CachedRewriteCollectiond870e2f0a516a50e9661e34d430b2e666e47c2a2b39fe2cc18c9a4db424fbee4 extends OptimizedRewriteCollection
@@ -24,7 +24,7 @@ if (! class_exists('CachedRewriteCollectiond870e2f0a516a50e9661e34d430b2e666e47c
   'pfx_var' => 'var',
 ), static function () {}, static function () {});
 $this->rewritesByRegexAndMethod = array (
-  '^regex$' => 
+  '^regex$' =>
   array (
     'GET' => $rewrite0,
     'HEAD' => $rewrite0,

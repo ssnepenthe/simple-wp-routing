@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Parser;
+namespace SimpleWpRouting\Parser;
 
 interface RouteParserInterface
 {

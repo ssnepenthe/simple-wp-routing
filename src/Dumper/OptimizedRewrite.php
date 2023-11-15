@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Dumper;
+namespace SimpleWpRouting\Dumper;
 
 use RuntimeException;
-use ToyWpRouting\Support\Rewrite;
+use SimpleWpRouting\Support\Rewrite;
 
 final class OptimizedRewrite extends Rewrite
 {

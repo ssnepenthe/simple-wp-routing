@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use ToyWpRouting\Dumper\OptimizedRewrite;
-use ToyWpRouting\Dumper\OptimizedRewriteCollection;
+use SimpleWpRouting\Dumper\OptimizedRewrite;
+use SimpleWpRouting\Dumper\OptimizedRewriteCollection;
 
 if (! class_exists('CachedRewriteCollectionf767d562c1ab18b24e14886de398917e213c07bbc06638ecbfb52961499c9490')) {
     class CachedRewriteCollectionf767d562c1ab18b24e14886de398917e213c07bbc06638ecbfb52961499c9490 extends OptimizedRewriteCollection
@@ -30,12 +30,12 @@ $rewrite1 = new OptimizedRewrite(array (
   'var' => 'var',
 ), 'secondhandler', 'secondisactivecallback');
 $this->rewritesByRegexAndMethod = array (
-  '^first$' => 
+  '^first$' =>
   array (
     'GET' => $rewrite0,
     'HEAD' => $rewrite0,
   ),
-  '^second$' => 
+  '^second$' =>
   array (
     'POST' => $rewrite1,
   ),

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Parser;
+namespace SimpleWpRouting\Parser;
 
-use ToyWpRouting\Exception\BadRouteException;
+use SimpleWpRouting\Exception\BadRouteException;
 
 /**
  * Adapted from https://github.com/nikic/FastRoute/blob/181d480e08d9476e61381e04a71b34dc0432e812/src/RouteParser/Std.php

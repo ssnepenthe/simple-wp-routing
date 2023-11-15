@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests\Unit\Support;
+namespace SimpleWpRouting\Tests\Unit\Support;
 
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use ToyWpRouting\Support\Rewrite;
-use ToyWpRouting\Support\RewriteCollection;
+use SimpleWpRouting\Support\Rewrite;
+use SimpleWpRouting\Support\RewriteCollection;
 
 class RewriteCollectionTest extends TestCase
 {

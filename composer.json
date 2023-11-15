@@ -1,6 +1,6 @@
 {
-    "name": "ssnepenthe/toy-wp-routing",
-    "description": "Provides a more modern routing syntax to interact with the WP Rewrite API",
+    "name": "ssnepenthe/simple-wp-routing",
+    "description": "Syntactic sugar over the WP_Rewrite API so we can pretend that WordPress has a modern router.",
     "license": "MIT",
     "type": "library",
     "require": {
@@ -28,12 +28,12 @@
     },
     "autoload": {
         "psr-4": {
-            "ToyWpRouting\\": "src/"
+            "SimpleWpRouting\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "ToyWpRouting\\Tests\\": "tests/"
+            "SimpleWpRouting\\Tests\\": "tests/"
         }
     },
     "config": {

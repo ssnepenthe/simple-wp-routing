@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\CallableResolver;
+namespace SimpleWpRouting\CallableResolver;
 
-use ToyWpRouting\Exception\BadCallableException;
+use SimpleWpRouting\Exception\BadCallableException;
 
 interface CallableResolverInterface
 {

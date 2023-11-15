@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Support;
+namespace SimpleWpRouting\Support;
 
-use ToyWpRouting\Exception\InvalidMethodOverrideException;
+use SimpleWpRouting\Exception\InvalidMethodOverrideException;
 
 final class RequestContext
 {

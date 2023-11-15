@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use ToyWpRouting\Dumper\OptimizedRewrite;
-use ToyWpRouting\Dumper\OptimizedRewriteCollection;
+use SimpleWpRouting\Dumper\OptimizedRewrite;
+use SimpleWpRouting\Dumper\OptimizedRewriteCollection;
 
 if (! class_exists('%s')) {
     class %s extends OptimizedRewriteCollection

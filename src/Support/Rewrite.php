@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Support;
+namespace SimpleWpRouting\Support;
 
 use InvalidArgumentException;
-use ToyWpRouting\Exception\RequiredQueryVariablesMissingException;
+use SimpleWpRouting\Exception\RequiredQueryVariablesMissingException;
 
 class Rewrite
 {

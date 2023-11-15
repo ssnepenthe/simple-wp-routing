@@ -3,14 +3,14 @@
 namespace TwrTestPlugin;
 
 use LogicException;
-use ToyWpRouting\Exception\MethodNotAllowedHttpException;
-use ToyWpRouting\Exception\NotFoundHttpException;
-use ToyWpRouting\Responder\JsonResponder;
-use ToyWpRouting\Responder\Partial\HeadersPartial;
-use ToyWpRouting\Responder\QueryResponder;
-use ToyWpRouting\Responder\RedirectResponder;
-use ToyWpRouting\Responder\TemplateResponder;
-use ToyWpRouting\Router;
+use SimpleWpRouting\Exception\MethodNotAllowedHttpException;
+use SimpleWpRouting\Exception\NotFoundHttpException;
+use SimpleWpRouting\Responder\JsonResponder;
+use SimpleWpRouting\Responder\Partial\HeadersPartial;
+use SimpleWpRouting\Responder\QueryResponder;
+use SimpleWpRouting\Responder\RedirectResponder;
+use SimpleWpRouting\Responder\TemplateResponder;
+use SimpleWpRouting\Router;
 
 abstract class TestGroup
 {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder;
+namespace SimpleWpRouting\Responder;
 
-use ToyWpRouting\Responder\Partial\WpPartial;
+use SimpleWpRouting\Responder\Partial\WpPartial;
 
 final class QueryResponder extends Responder
 {

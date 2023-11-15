@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Support;
+namespace SimpleWpRouting\Support;
 
 use InvalidArgumentException;
 

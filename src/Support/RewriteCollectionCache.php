@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Support;
+namespace SimpleWpRouting\Support;
 
-use ToyWpRouting\Dumper\OptimizedRewriteCollection;
-use ToyWpRouting\Dumper\RewriteCollectionDumper;
+use SimpleWpRouting\Dumper\OptimizedRewriteCollection;
+use SimpleWpRouting\Dumper\RewriteCollectionDumper;
 
 final class RewriteCollectionCache
 {

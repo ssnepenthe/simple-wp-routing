@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Exception;
+namespace SimpleWpRouting\Exception;
 
 use RuntimeException;
 use Throwable;
-use ToyWpRouting\Responder\HttpExceptionResponder;
-use ToyWpRouting\Responder\Partial\HeadersPartial;
+use SimpleWpRouting\Responder\HttpExceptionResponder;
+use SimpleWpRouting\Responder\Partial\HeadersPartial;
 
 class HttpException extends RuntimeException implements HttpExceptionInterface
 {

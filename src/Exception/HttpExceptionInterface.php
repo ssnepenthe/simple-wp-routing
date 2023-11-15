@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Exception;
+namespace SimpleWpRouting\Exception;
 
 use Throwable;
-use ToyWpRouting\Responder\HttpExceptionResponder;
+use SimpleWpRouting\Responder\HttpExceptionResponder;
 
 interface HttpExceptionInterface extends Throwable
 {

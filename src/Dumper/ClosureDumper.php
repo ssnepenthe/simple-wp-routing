@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Dumper;
+namespace SimpleWpRouting\Dumper;
 
 use Closure;
 use Laravel\SerializableClosure\Support\ReflectionClosure;

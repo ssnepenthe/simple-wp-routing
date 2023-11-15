@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Dumper;
+namespace SimpleWpRouting\Dumper;
 
 use Closure;
 use RuntimeException;
-use ToyWpRouting\Support\Rewrite;
+use SimpleWpRouting\Support\Rewrite;
 
 final class RewriteDumper
 {

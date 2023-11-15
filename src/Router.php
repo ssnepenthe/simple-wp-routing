@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting;
+namespace SimpleWpRouting;
 
 use LogicException;
-use ToyWpRouting\CallableResolver\CallableResolverInterface;
-use ToyWpRouting\CallableResolver\DefaultCallableResolver;
-use ToyWpRouting\InvocationStrategy\DefaultInvocationStrategy;
-use ToyWpRouting\InvocationStrategy\InvocationStrategyInterface;
-use ToyWpRouting\Parser\FastRouteRouteParser;
-use ToyWpRouting\Parser\RouteParserInterface;
-use ToyWpRouting\Support\Orchestrator;
-use ToyWpRouting\Support\RequestContext;
-use ToyWpRouting\Support\Rewrite;
-use ToyWpRouting\Support\RewriteCollection;
-use ToyWpRouting\Support\RewriteCollectionCache;
-use ToyWpRouting\Support\Support;
+use SimpleWpRouting\CallableResolver\CallableResolverInterface;
+use SimpleWpRouting\CallableResolver\DefaultCallableResolver;
+use SimpleWpRouting\InvocationStrategy\DefaultInvocationStrategy;
+use SimpleWpRouting\InvocationStrategy\InvocationStrategyInterface;
+use SimpleWpRouting\Parser\FastRouteRouteParser;
+use SimpleWpRouting\Parser\RouteParserInterface;
+use SimpleWpRouting\Support\Orchestrator;
+use SimpleWpRouting\Support\RequestContext;
+use SimpleWpRouting\Support\Rewrite;
+use SimpleWpRouting\Support\RewriteCollection;
+use SimpleWpRouting\Support\RewriteCollectionCache;
+use SimpleWpRouting\Support\Support;
 
 final class Router
 {

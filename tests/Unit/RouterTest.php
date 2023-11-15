@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests\Unit;
+namespace SimpleWpRouting\Tests\Unit;
 
 use Brain\Monkey;
 use Brain\Monkey\Actions;
@@ -12,8 +12,8 @@ use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
-use ToyWpRouting\Dumper\OptimizedRewriteCollection;
-use ToyWpRouting\Router;
+use SimpleWpRouting\Dumper\OptimizedRewriteCollection;
+use SimpleWpRouting\Router;
 
 class RouterTest extends TestCase
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Dumper;
+namespace SimpleWpRouting\Dumper;
 
 use LogicException;
-use ToyWpRouting\Support\RewriteCollection;
+use SimpleWpRouting\Support\RewriteCollection;
 
 class OptimizedRewriteCollection extends RewriteCollection
 {

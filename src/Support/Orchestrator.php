@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Support;
+namespace SimpleWpRouting\Support;
 
-use ToyWpRouting\CallableResolver\CallableResolverInterface;
-use ToyWpRouting\Exception\HttpExceptionInterface;
-use ToyWpRouting\Exception\MethodNotAllowedHttpException;
-use ToyWpRouting\Exception\RewriteDisabledException;
-use ToyWpRouting\Exception\RewriteInvocationExceptionInterface;
-use ToyWpRouting\InvocationStrategy\InvocationStrategyInterface;
-use ToyWpRouting\Responder\HierarchicalResponderInterface;
-use ToyWpRouting\Responder\HttpExceptionResponder;
-use ToyWpRouting\Responder\ResponderInterface;
+use SimpleWpRouting\CallableResolver\CallableResolverInterface;
+use SimpleWpRouting\Exception\HttpExceptionInterface;
+use SimpleWpRouting\Exception\MethodNotAllowedHttpException;
+use SimpleWpRouting\Exception\RewriteDisabledException;
+use SimpleWpRouting\Exception\RewriteInvocationExceptionInterface;
+use SimpleWpRouting\InvocationStrategy\InvocationStrategyInterface;
+use SimpleWpRouting\Responder\HierarchicalResponderInterface;
+use SimpleWpRouting\Responder\HttpExceptionResponder;
+use SimpleWpRouting\Responder\ResponderInterface;
 
 final class Orchestrator
 {

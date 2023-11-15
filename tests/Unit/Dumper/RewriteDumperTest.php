@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests\Unit\Dumper;
+namespace SimpleWpRouting\Tests\Unit\Dumper;
 
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Spatie\Snapshots\MatchesSnapshots;
 use stdClass;
-use ToyWpRouting\Dumper\RewriteDumper;
-use ToyWpRouting\Support\Rewrite;
+use SimpleWpRouting\Dumper\RewriteDumper;
+use SimpleWpRouting\Support\Rewrite;
 
 class RewriteDumperTest extends TestCase
 {

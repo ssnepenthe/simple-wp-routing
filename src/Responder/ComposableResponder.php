@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder;
+namespace SimpleWpRouting\Responder;
 
-use ToyWpRouting\Responder\Partial\PartialInterface;
-use ToyWpRouting\Responder\Partial\PartialSet;
+use SimpleWpRouting\Responder\Partial\PartialInterface;
+use SimpleWpRouting\Responder\Partial\PartialSet;
 
 abstract class ComposableResponder implements ResponderInterface
 {

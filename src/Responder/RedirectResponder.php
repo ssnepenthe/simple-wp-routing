@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder;
+namespace SimpleWpRouting\Responder;
 
-use ToyWpRouting\Responder\Partial\RedirectPartial;
+use SimpleWpRouting\Responder\Partial\RedirectPartial;
 
 final class RedirectResponder extends Responder
 {

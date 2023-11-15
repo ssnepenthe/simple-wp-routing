@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder\Partial;
+namespace SimpleWpRouting\Responder\Partial;
 
 use ArrayIterator;
 use InvalidArgumentException;
 use IteratorAggregate;
-use ToyWpRouting\Responder\HierarchicalResponderInterface;
-use ToyWpRouting\Responder\ResponderInterface;
+use SimpleWpRouting\Responder\HierarchicalResponderInterface;
+use SimpleWpRouting\Responder\ResponderInterface;
 use Traversable;
 
 final class PartialSet implements HierarchicalResponderInterface, IteratorAggregate

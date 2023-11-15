@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Exception;
+namespace SimpleWpRouting\Exception;
 
 use Throwable;
-use ToyWpRouting\Responder\HttpExceptionResponder;
-use ToyWpRouting\Responder\Partial\HeadersPartial;
+use SimpleWpRouting\Responder\HttpExceptionResponder;
+use SimpleWpRouting\Responder\Partial\HeadersPartial;
 use WP_Query;
 
 final class NotFoundHttpException extends HttpException

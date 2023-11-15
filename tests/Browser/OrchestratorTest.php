@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests\Browser;
+namespace SimpleWpRouting\Tests\Browser;
 
 class OrchestratorTest extends TestCase
 {

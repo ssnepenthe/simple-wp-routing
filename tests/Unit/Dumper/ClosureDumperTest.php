@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests\Unit\Dumper;
+namespace SimpleWpRouting\Tests\Unit\Dumper;
 
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use ToyWpRouting\Dumper\ClosureDumper;
+use SimpleWpRouting\Dumper\ClosureDumper;
 
 class ClosureDumperTest extends TestCase
 {

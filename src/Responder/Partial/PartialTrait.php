@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder\Partial;
+namespace SimpleWpRouting\Responder\Partial;
 
-use ToyWpRouting\Responder\ResponderInterface;
+use SimpleWpRouting\Responder\ResponderInterface;
 
 trait PartialTrait
 {

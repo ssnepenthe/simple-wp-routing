@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Dumper;
+namespace SimpleWpRouting\Dumper;
 
-use ToyWpRouting\Support\RewriteCollection;
+use SimpleWpRouting\Support\RewriteCollection;
 
 final class RewriteCollectionDumper
 {

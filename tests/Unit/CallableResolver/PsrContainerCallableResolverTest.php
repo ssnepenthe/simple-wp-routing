@@ -1,12 +1,12 @@
 <?php
 
-namespace ToyWpRouting\Tests\Unit\CallableResolver;
+namespace SimpleWpRouting\Tests\Unit\CallableResolver;
 
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
-use ToyWpRouting\CallableResolver\PsrContainerCallableResolver;
-use ToyWpRouting\Exception\BadCallableException;
+use SimpleWpRouting\CallableResolver\PsrContainerCallableResolver;
+use SimpleWpRouting\Exception\BadCallableException;
 
 class PsrContainerCallableResolverTest extends TestCase
 {
