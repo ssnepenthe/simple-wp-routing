@@ -9,8 +9,11 @@ final class AssetsPartial implements PartialInterface, RegistersConflictsInterfa
     use PartialTrait;
 
     private array $dequeuedScripts = [];
+
     private array $dequeuedStyles = [];
+
     private array $enqueuedScripts = [];
+
     private array $enqueuedStyles = [];
 
     public function dequeueScripts(string ...$handles): self

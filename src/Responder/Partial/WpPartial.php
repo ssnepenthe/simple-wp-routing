@@ -11,6 +11,7 @@ final class WpPartial implements PartialInterface
     use PartialTrait;
 
     private bool $overwriteQueryVariables = false;
+
     private array $queryVariables = [];
 
     public function dontOverwriteQueryVariables(): self

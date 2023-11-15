@@ -9,6 +9,7 @@ final class ThemePartial implements PartialInterface, RegistersConflictsInterfac
     use PartialTrait;
 
     private array $bodyClasses = [];
+
     private string $title = '';
 
     public function addBodyClass(string $class): self

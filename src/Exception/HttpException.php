@@ -12,6 +12,7 @@ use ToyWpRouting\Responder\Partial\HeadersPartial;
 class HttpException extends RuntimeException implements HttpExceptionInterface
 {
     protected array $headers;
+
     protected int $statusCode;
 
     public function __construct(

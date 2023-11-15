@@ -14,13 +14,18 @@ final class JsonPartial implements PartialInterface, RegistersConflictsInterface
      * @var mixed
      */
     private $data;
+
     private bool $envelopeResponse = true;
+
     private bool $hasData = false;
+
     private int $options = 0;
+
     /**
      * @var ?callable(mixed,int,int):never
      */
     private $responseFunction = null;
+
     private int $statusCode = 200;
 
     public function dontEnvelopeResponse(): self

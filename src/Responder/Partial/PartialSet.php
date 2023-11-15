@@ -14,10 +14,12 @@ use Traversable;
 final class PartialSet implements HierarchicalResponderInterface, IteratorAggregate
 {
     private Conflicts $conflicts;
+
     /**
      * @var array<class-string<PartialInterface>, PartialInterface>
      */
     private array $partials = [];
+
     private ?ResponderInterface $responder;
 
     public function __construct(?ResponderInterface $responder = null)

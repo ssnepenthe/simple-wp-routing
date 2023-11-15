@@ -12,8 +12,11 @@ final class HeadersPartial implements PartialInterface, RegistersConflictsInterf
     use PartialTrait;
 
     private array $headers = [];
+
     private bool $includeNocacheHeaders = false;
+
     private ?int $statusCode = null;
+
     private ?string $statusDescription = null;
 
     /**

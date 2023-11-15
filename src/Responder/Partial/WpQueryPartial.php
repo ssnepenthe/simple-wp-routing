@@ -42,9 +42,13 @@ final class WpQueryPartial implements PartialInterface
         'is_posts_page' => false,
         'is_post_type_archive' => false,
     ];
+
     private array $flags = [];
+
     private bool $overwriteQueryVariables = false;
+
     private array $queryVariables = [];
+
     private bool $resetFlags = false;
 
     public function addFlag(string $flag, bool $value): self

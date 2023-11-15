@@ -7,6 +7,7 @@ return (new Config())
 	->setRiskyAllowed(true)
 	->setRules([
 		'@PSR12' => true,
+		'class_attributes_separation' => true,
 		'ordered_class_elements' => [
 			'sort_algorithm' => 'alpha',
 		],
