@@ -13,7 +13,6 @@ use SimpleWpRouting\Responder\ResponderInterface;
 use SimpleWpRouting\Support\Rewrite;
 use SimpleWpRouting\Support\RewriteCollection;
 
-// @todo Test custom prefix? Test custom invoker?
 class OrchestratorTest extends TestCase
 {
     protected $regex;
