@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Plugin Name: Toy WP Routing Test Plugin
  * Plugin URI: https://github.com/ssnepenthe/toy-wp-routing

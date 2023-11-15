@@ -77,7 +77,7 @@ final class FastRouteRouteParser implements RouteParserInterface
             throw new BadRouteException('Empty routes not allowed');
         }
 
-        if (!preg_match_all(
+        if (! preg_match_all(
             '~' . self::VARIABLE_REGEX . '~x',
             $route,
             $matches,

@@ -14,6 +14,7 @@ return (new Config())
 		'ordered_imports' => [
 			'imports_order' => ['const', 'class', 'function'],
 		],
+		'not_operator_with_successor_space' => true,
 		'declare_strict_types' => true,
 	])
 	->setFinder(
