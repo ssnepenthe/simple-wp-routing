@@ -61,6 +61,11 @@ class Rewrite
         $this->isActiveCallback = $isActiveCallback;
     }
 
+    /**
+     * @param array<string, string> $queryVariables
+     *
+     * @return array<string, string>
+     */
     public function getConcernedQueryVariablesWithoutPrefix(array $queryVariables): array
     {
         $return = $missing = [];
@@ -113,6 +118,9 @@ class Rewrite
         return $this->query;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getQueryVariables(): array
     {
         return $this->queryVariables;

@@ -49,11 +49,9 @@ final class Orchestrator
     }
 
     /**
-     * @template T
+     * @param array|mixed $rules
      *
-     * @psalm-param T $rules
-     *
-     * @psalm-return T|array
+     * @return array|mixed
      */
     public function onOptionRewriteRules($rules)
     {
@@ -82,11 +80,9 @@ final class Orchestrator
     }
 
     /**
-     * @template T
+     * @param array|mixed $rules
      *
-     * @psalm-param T $rules
-     *
-     * @psalm-return T|array
+     * @return array|mixed
      */
     public function onPreUpdateOptionRewriteRules($rules)
     {
@@ -98,11 +94,9 @@ final class Orchestrator
     }
 
     /**
-     * @template T
+     * @param array|mixed $vars
      *
-     * @psalm-param T $vars
-     *
-     * @psalm-return T|array
+     * @return array|mixed
      */
     public function onQueryVars($vars)
     {
@@ -114,11 +108,9 @@ final class Orchestrator
     }
 
     /**
-     * @template T
+     * @param array|mixed $rules
      *
-     * @psalm-param T $rules
-     *
-     * @psalm-return T|array
+     * @return array|mixed
      */
     public function onRewriteRulesArray($rules)
     {
@@ -130,6 +122,8 @@ final class Orchestrator
     }
 
     /**
+     * @param array<string, string> $queryVariables
+     *
      * @return mixed
      */
     private function callHandler(Rewrite $rewrite, array $queryVariables)
@@ -147,13 +141,18 @@ final class Orchestrator
         return (bool) $this->invocationStrategy->invoke($callback);
     }
 
+    /**
+     * @param array<string, string> $rules
+     *
+     * @return array<string, string>
+     */
     private function mergeActiveRewriteRules(array $rules): array
     {
         return array_merge($this->rewriteCollection->getRewriteRules(), $rules);
     }
 
     /**
-     * @psalm-param object{matched_rule: string, query_vars: array} $wp
+     * @param object{matched_rule: string, query_vars: array} $wp
      */
     private function respondToMatchedRegex($wp): void
     {

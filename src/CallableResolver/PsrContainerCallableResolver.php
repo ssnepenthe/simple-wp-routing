@@ -15,6 +15,11 @@ final class PsrContainerCallableResolver implements CallableResolverInterface
         $this->container = $container;
     }
 
+    /**
+     * @param mixed $value
+     *
+     * @throws BadCallableException
+     */
     public function resolve($value): callable
     {
         $toResolve = $value;

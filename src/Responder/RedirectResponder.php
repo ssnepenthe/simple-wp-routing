@@ -8,6 +8,9 @@ use ToyWpRouting\Responder\Partial\RedirectPartial;
 
 final class RedirectResponder extends Responder
 {
+    /**
+     * @param int<300, 399> $statusCode
+     */
     public function __construct(
         string $location,
         int $statusCode = 302,

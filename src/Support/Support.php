@@ -21,6 +21,11 @@ class Support
         return "{$prefix}{$value}";
     }
 
+    /**
+     * @param array<string, mixed> $array
+     *
+     * @return array<string, mixed>
+     */
     public static function applyPrefixToKeys(array $array, string $prefix): array
     {
         if ('' === $prefix) {
@@ -63,6 +68,9 @@ class Support
         }
     }
 
+    /**
+     * @param array<string, string> $queryArray
+     */
     public static function buildQuery(array $queryArray): string
     {
         if (empty($queryArray)) {
@@ -92,6 +100,9 @@ class Support
         ));
     }
 
+    /**
+     * @return array<string, string>
+     */
     public static function parseQuery(string $query): array
     {
         if ('index.php?' === substr($query, 0, 10)) {

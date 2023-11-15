@@ -30,8 +30,8 @@ final class Conflicts
     }
 
     /**
-     * @psalm-param array{0: class-string<PartialInterface>, 1: string} $one
-     * @psalm-param array{0: class-string<PartialInterface>, 1: string} $two
+     * @param array{0: class-string<PartialInterface>, 1: string} $one
+     * @param array{0: class-string<PartialInterface>, 1: string} $two
      */
     public function register(array $one, array $two): self
     {

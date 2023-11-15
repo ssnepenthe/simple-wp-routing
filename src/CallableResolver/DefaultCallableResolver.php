@@ -8,6 +8,11 @@ use ToyWpRouting\Exception\BadCallableException;
 
 final class DefaultCallableResolver implements CallableResolverInterface
 {
+    /**
+     * @param mixed $value
+     *
+     * @throws BadCallableException
+     */
     public function resolve($value): callable
     {
         if (! is_callable($value)) {

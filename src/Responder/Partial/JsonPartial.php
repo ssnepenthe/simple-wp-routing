@@ -103,7 +103,7 @@ final class JsonPartial implements PartialInterface, RegistersConflictsInterface
     }
 
     /**
-     * @psalm-param callable(mixed,int,int):never $responseFunction
+     * @param callable(mixed,int,int):never $responseFunction
      */
     public function setResponseFunction(?callable $responseFunction): self
     {

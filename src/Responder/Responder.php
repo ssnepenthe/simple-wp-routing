@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Responder;
 
+use ToyWpRouting\Responder\Partial\PartialInterface;
+
 class Responder extends ComposableResponder
 {
+    /**
+     * @return PartialInterface[]
+     */
     protected function createPartials(): array
     {
         return [

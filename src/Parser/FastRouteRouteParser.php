@@ -23,7 +23,7 @@ final class FastRouteRouteParser implements RouteParserInterface
     REGEX;
 
     /**
-     * @return array{0: string, 1: array}
+     * @return array{0: string, 1: array<string, string>}
      */
     public function parse(string $route): array
     {
@@ -69,7 +69,7 @@ final class FastRouteRouteParser implements RouteParserInterface
      * Parses a route string that does not contain optional segments.
      *
      * @param string $route
-     * @return array{0: string, 1: array}
+     * @return array{0: string, 1: array<string, string>}
      */
     private function parsePlaceholders($route)
     {

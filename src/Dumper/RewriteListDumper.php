@@ -13,6 +13,9 @@ final class RewriteListDumper
      */
     private array $rewrites;
 
+    /**
+     * @param Rewrite[] $rewrites
+     */
     public function __construct(array $rewrites)
     {
         $this->rewrites = (fn (Rewrite ...$rewrites) => $rewrites)(...$rewrites);
