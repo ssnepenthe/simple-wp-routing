@@ -8,32 +8,7 @@ use ToyWpRouting\Support\RewriteCollection;
 
 final class RewriteCollectionDumper
 {
-    private const TEMPLATE = <<<'TPL'
-    <?php
-
-    declare(strict_types=1);
-
-    return function (): \ToyWpRouting\Support\RewriteCollection {
-        return new class() extends \ToyWpRouting\Support\RewriteCollection
-        {
-            protected bool $locked = true;
-
-            public function __construct()
-            {
-                $this->queryVariables = %s;
-                $this->rewriteRules = %s;
-
-                %s
-            }
-
-            public function getRewrites(): array
-            {
-                throw new LogicException('Rewrites list not accessible on cache rewrite collection');
-            }
-        };
-    };
-
-    TPL;
+    private string $className = '';
 
     private RewriteCollection $rewriteCollection;
 
@@ -50,11 +25,36 @@ final class RewriteCollectionDumper
     public function dump(): string
     {
         return sprintf(
-            self::TEMPLATE,
+            $this->template(),
+            $this->className(),
+            $this->className(),
             $this->queryVariables(),
             $this->rewriteRules(),
-            $this->rewrites()
+            $this->rewrites(),
+            $this->className()
         );
+    }
+
+    private function className(): string
+    {
+        if ('' === $this->className) {
+            $this->className = "CachedRewriteCollection{$this->hash()}";
+        }
+
+        return $this->className;
+    }
+
+    private function hash(): string
+    {
+        $ctx = hash_init('sha256');
+
+        foreach ($this->rewriteCollection->getRewrites() as $rewrite) {
+            foreach ((new RewriteDumper($rewrite))->summary() as $value) {
+                hash_update($ctx, $value);
+            }
+        }
+
+        return hash_final($ctx);
     }
 
     private function queryVariables(): string
@@ -84,5 +84,10 @@ final class RewriteCollectionDumper
     private function rewrites(): string
     {
         return (string) (new RewriteListDumper($this->rewriteCollection->getRewrites()));
+    }
+
+    private function template(): string
+    {
+        return file_get_contents(__DIR__ . '/dumped-rewrite-collection.tpl');
     }
 }

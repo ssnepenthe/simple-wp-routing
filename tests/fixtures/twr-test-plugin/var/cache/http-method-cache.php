@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-return function (): \ToyWpRouting\Support\RewriteCollection {
-    return new class() extends \ToyWpRouting\Support\RewriteCollection
-    {
-        protected bool $locked = true;
+use ToyWpRouting\Dumper\OptimizedRewrite;
+use ToyWpRouting\Dumper\OptimizedRewriteCollection;
 
+if (! class_exists('CachedRewriteCollection53448928746610bc130e42f72a15b14f613297b2abcfca21e07640eb8d70c3f3')) {
+    class CachedRewriteCollection53448928746610bc130e42f72a15b14f613297b2abcfca21e07640eb8d70c3f3 extends OptimizedRewriteCollection
+    {
         public function __construct()
         {
             $this->queryVariables = array (
@@ -21,7 +22,7 @@ return function (): \ToyWpRouting\Support\RewriteCollection {
   '^(?|http-method/put)$' => 'index.php?httpmethod___routeType=static',
 );
 
-            $rewrite0 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
+            $rewrite0 = new OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
   2 => 'POST',
@@ -31,28 +32,28 @@ return function (): \ToyWpRouting\Support\RewriteCollection {
   6 => 'OPTIONS',
 ), '^(?|http-method/any)$', 'index.php?httpmethod___routeType=static', array (
 ), static function () {}, NULL);
-$rewrite1 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
+$rewrite1 = new OptimizedRewrite(array (
   0 => 'DELETE',
 ), '^(?|http-method/delete)$', 'index.php?httpmethod___routeType=static', array (
 ), static function () {}, NULL);
-$rewrite2 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
+$rewrite2 = new OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^(?|http-method/get)$', 'index.php?httpmethod___routeType=static', array (
 ), static function () {}, NULL);
-$rewrite3 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
+$rewrite3 = new OptimizedRewrite(array (
   0 => 'OPTIONS',
 ), '^(?|http-method/options)$', 'index.php?httpmethod___routeType=static', array (
 ), static function () {}, NULL);
-$rewrite4 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
+$rewrite4 = new OptimizedRewrite(array (
   0 => 'PATCH',
 ), '^(?|http-method/patch)$', 'index.php?httpmethod___routeType=static', array (
 ), static function () {}, NULL);
-$rewrite5 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
+$rewrite5 = new OptimizedRewrite(array (
   0 => 'POST',
 ), '^(?|http-method/post)$', 'index.php?httpmethod___routeType=static', array (
 ), static function () {}, NULL);
-$rewrite6 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
+$rewrite6 = new OptimizedRewrite(array (
   0 => 'PUT',
 ), '^(?|http-method/put)$', 'index.php?httpmethod___routeType=static', array (
 ), static function () {}, NULL);
@@ -94,10 +95,7 @@ $this->rewritesByRegexAndMethod = array (
   ),
 );
         }
+    }
+}
 
-        public function getRewrites(): array
-        {
-            throw new LogicException('Rewrites list not accessible on cache rewrite collection');
-        }
-    };
-};
+return new CachedRewriteCollection53448928746610bc130e42f72a15b14f613297b2abcfca21e07640eb8d70c3f3();

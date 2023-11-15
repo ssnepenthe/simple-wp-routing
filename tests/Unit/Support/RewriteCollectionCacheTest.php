@@ -8,6 +8,7 @@ use Closure;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use ToyWpRouting\Dumper\OptimizedRewrite;
+use ToyWpRouting\Dumper\OptimizedRewriteCollection;
 use ToyWpRouting\Support\Rewrite;
 use ToyWpRouting\Support\RewriteCollection;
 use ToyWpRouting\Support\RewriteCollectionCache;
@@ -99,10 +100,7 @@ class RewriteCollectionCacheTest extends TestCase
         $cache->put($rewriteCollection);
 
         $this->assertTrue($root->hasChild('cache.php'));
-        $this->assertInstanceOf(
-            RewriteCollection::class,
-            (include $root->getChild('cache.php')->url())()
-        );
+        $this->assertInstanceOf(OptimizedRewriteCollection::class, include $root->getChild('cache.php')->url());
     }
 
     public function testPutDirectoryDoesNotExist()
@@ -129,10 +127,7 @@ class RewriteCollectionCacheTest extends TestCase
 
         $cache->put($rewriteCollection);
 
-        $this->assertInstanceOf(
-            RewriteCollection::class,
-            (include $root->getChild('cache.php')->url())()
-        );
+        $this->assertInstanceOf(OptimizedRewriteCollection::class, include $root->getChild('cache.php')->url());
 
         $rewriteCollection->add(new Rewrite(['GET'], 'first', 'index.php?first=first', ['first' => 'first'], 'somehandler'));
         $cache->put($rewriteCollection);
@@ -159,7 +154,7 @@ class RewriteCollectionCacheTest extends TestCase
 
         $cache->put($rewriteCollection);
 
-        $dumped = (include $root->getChild('cache.php')->url())();
+        $dumped = include $root->getChild('cache.php')->url();
         $dumpedOne = $dumped->findByRegex('first')['GET'];
         $dumpedTwo = $dumped->findByRegex('second')['POST'];
 

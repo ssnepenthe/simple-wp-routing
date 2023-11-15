@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-return function (): \ToyWpRouting\Support\RewriteCollection {
-    return new class() extends \ToyWpRouting\Support\RewriteCollection
-    {
-        protected bool $locked = true;
+use ToyWpRouting\Dumper\OptimizedRewrite;
+use ToyWpRouting\Dumper\OptimizedRewriteCollection;
 
+if (! class_exists('CachedRewriteCollectionf767d562c1ab18b24e14886de398917e213c07bbc06638ecbfb52961499c9490')) {
+    class CachedRewriteCollectionf767d562c1ab18b24e14886de398917e213c07bbc06638ecbfb52961499c9490 extends OptimizedRewriteCollection
+    {
         public function __construct()
         {
             $this->queryVariables = array (
@@ -17,13 +18,13 @@ return function (): \ToyWpRouting\Support\RewriteCollection {
   '^second$' => 'index.php?var=second',
 );
 
-            $rewrite0 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
+            $rewrite0 = new OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^first$', 'index.php?var=first', array (
   'var' => 'var',
 ), 'firsthandler', NULL);
-$rewrite1 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
+$rewrite1 = new OptimizedRewrite(array (
   0 => 'POST',
 ), '^second$', 'index.php?var=second', array (
   'var' => 'var',
@@ -40,10 +41,7 @@ $this->rewritesByRegexAndMethod = array (
   ),
 );
         }
+    }
+}
 
-        public function getRewrites(): array
-        {
-            throw new LogicException('Rewrites list not accessible on cache rewrite collection');
-        }
-    };
-};
+return new CachedRewriteCollectionf767d562c1ab18b24e14886de398917e213c07bbc06638ecbfb52961499c9490();

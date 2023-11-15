@@ -1,4 +1,4 @@
-new \ToyWpRouting\Dumper\OptimizedRewrite(array (
+new OptimizedRewrite(array (
   0 => 'GET',
   1 => 'POST',
 ), '^regex$', 'index.php?pfx_var=value', array (

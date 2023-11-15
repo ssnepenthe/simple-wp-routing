@@ -12,6 +12,7 @@ use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use ToyWpRouting\Dumper\OptimizedRewriteCollection;
 use ToyWpRouting\Router;
 
 class RouterTest extends TestCase
@@ -226,7 +227,7 @@ class RouterTest extends TestCase
         // If the test variable remains unchanged we know that the closure was not called.
         $this->assertSame(0, $test);
         // And if the rewrite collection is an anonymous class we know that it was loaded from cache.
-        $this->assertTrue((new ReflectionClass($router->getRewriteCollection()))->isAnonymous());
+        $this->assertInstanceOf(OptimizedRewriteCollection::class, $router->getRewriteCollection());
     }
 
     public function testInitializeWithCallbackAndCacheEnabledAndCacheDoesNotExist()

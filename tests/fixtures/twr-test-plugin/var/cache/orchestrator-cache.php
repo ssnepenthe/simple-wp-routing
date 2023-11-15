@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-return function (): \ToyWpRouting\Support\RewriteCollection {
-    return new class() extends \ToyWpRouting\Support\RewriteCollection
-    {
-        protected bool $locked = true;
+use ToyWpRouting\Dumper\OptimizedRewrite;
+use ToyWpRouting\Dumper\OptimizedRewriteCollection;
 
+if (! class_exists('CachedRewriteCollection3c95e90111a6fb2a7b1c9af68547483e1cb40c675e7d0f8de48ff88b8f982949')) {
+    class CachedRewriteCollection3c95e90111a6fb2a7b1c9af68547483e1cb40c675e7d0f8de48ff88b8f982949 extends OptimizedRewriteCollection
+    {
         public function __construct()
         {
             $this->queryVariables = array (
@@ -20,13 +21,13 @@ return function (): \ToyWpRouting\Support\RewriteCollection {
   '^(?|orchestrator/hierarchical-responder)$' => 'index.php?orchestrator___routeType=static',
 );
 
-            $rewrite0 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
+            $rewrite0 = new OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^(?|orchestrator/active/([^/]+))$', 'index.php?orchestrator_activeVar=$matches[1]&orchestrator___routeType=variable', array (
   'orchestrator_activeVar' => 'activeVar',
 ), static function () {}, NULL);
-$rewrite1 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
+$rewrite1 = new OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^(?|orchestrator/inactive/([^/]+))$', 'index.php?orchestrator_inactiveVar=$matches[1]&orchestrator___routeType=variable', array (
@@ -36,14 +37,14 @@ $rewrite1 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
                 echo '<span class="twr-orchestrator-inactive"></span>';
             });
         }, '__return_false');
-$rewrite2 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
+$rewrite2 = new OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^(?|orchestrator/responder)$', 'index.php?orchestrator___routeType=static', array (
 ), static function () {
             return new \ToyWpRouting\Responder\JsonResponder('hello from the orchestrator responder route');
         }, NULL);
-$rewrite3 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
+$rewrite3 = new OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^(?|orchestrator/hierarchical-responder)$', 'index.php?orchestrator___routeType=static', array (
@@ -76,10 +77,7 @@ $this->rewritesByRegexAndMethod = array (
   ),
 );
         }
+    }
+}
 
-        public function getRewrites(): array
-        {
-            throw new LogicException('Rewrites list not accessible on cache rewrite collection');
-        }
-    };
-};
+return new CachedRewriteCollection3c95e90111a6fb2a7b1c9af68547483e1cb40c675e7d0f8de48ff88b8f982949();

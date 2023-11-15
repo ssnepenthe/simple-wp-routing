@@ -10,7 +10,7 @@ use ToyWpRouting\Support\Rewrite;
 
 final class RewriteDumper
 {
-    private const TEMPLATE = 'new \\ToyWpRouting\\Dumper\\OptimizedRewrite(%s, %s, %s, %s, %s, %s)';
+    private const TEMPLATE = 'new OptimizedRewrite(%s, %s, %s, %s, %s, %s)';
 
     private Rewrite $rewrite;
 
@@ -35,6 +35,21 @@ final class RewriteDumper
             $this->handler(),
             $this->isActiveCallback()
         );
+    }
+
+    /**
+     * @return string[]
+     */
+    public function summary(): array
+    {
+        return [
+            $this->handler(),
+            $this->isActiveCallback(),
+            $this->methods(),
+            $this->query(),
+            $this->queryVariables(),
+            $this->regex(),
+        ];
     }
 
     /**

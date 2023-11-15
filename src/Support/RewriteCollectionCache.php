@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ToyWpRouting\Support;
 
-use Closure;
+use ToyWpRouting\Dumper\OptimizedRewriteCollection;
 use ToyWpRouting\Dumper\RewriteCollectionDumper;
 
 final class RewriteCollectionCache
@@ -33,15 +33,14 @@ final class RewriteCollectionCache
         return is_readable("{$this->dir}/{$this->file}");
     }
 
-    public function get(): RewriteCollection
+    public function get(): OptimizedRewriteCollection
     {
         /**
          * @psalm-suppress UnresolvableInclude
          */
-        $loader = static fn (string $dir, string $file): Closure => include "{$dir}/{$file}";
-        $factory = $loader($this->dir, $this->file);
+        $loader = static fn (string $dir, string $file): OptimizedRewriteCollection => include "{$dir}/{$file}";
 
-        return $factory();
+        return $loader($this->dir, $this->file);
     }
 
     public function put(RewriteCollection $rewriteCollection): void

@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-return function (): \ToyWpRouting\Support\RewriteCollection {
-    return new class() extends \ToyWpRouting\Support\RewriteCollection
-    {
-        protected bool $locked = true;
+use ToyWpRouting\Dumper\OptimizedRewrite;
+use ToyWpRouting\Dumper\OptimizedRewriteCollection;
 
+if (! class_exists('CachedRewriteCollectiond870e2f0a516a50e9661e34d430b2e666e47c2a2b39fe2cc18c9a4db424fbee4')) {
+    class CachedRewriteCollectiond870e2f0a516a50e9661e34d430b2e666e47c2a2b39fe2cc18c9a4db424fbee4 extends OptimizedRewriteCollection
+    {
         public function __construct()
         {
             $this->queryVariables = array (
@@ -16,7 +17,7 @@ return function (): \ToyWpRouting\Support\RewriteCollection {
   '^regex$' => 'index.php?pfx_var=val',
 );
 
-            $rewrite0 = new \ToyWpRouting\Dumper\OptimizedRewrite(array (
+            $rewrite0 = new OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
 ), '^regex$', 'index.php?pfx_var=val', array (
@@ -30,10 +31,7 @@ $this->rewritesByRegexAndMethod = array (
   ),
 );
         }
+    }
+}
 
-        public function getRewrites(): array
-        {
-            throw new LogicException('Rewrites list not accessible on cache rewrite collection');
-        }
-    };
-};
+return new CachedRewriteCollectiond870e2f0a516a50e9661e34d430b2e666e47c2a2b39fe2cc18c9a4db424fbee4();
