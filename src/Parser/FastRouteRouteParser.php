@@ -51,7 +51,7 @@ final class FastRouteRouteParser implements RouteParserInterface
         $finalQuery = [];
 
         foreach ($segments as $n => $segment) {
-            if ($segment === '' && $n !== 0) {
+            if ('' === $segment && 0 !== $n) {
                 throw new BadRouteException('Empty optional part');
             }
 

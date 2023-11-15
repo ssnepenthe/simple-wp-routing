@@ -13,6 +13,7 @@ return (new Config())
         'ordered_class_elements' => [
             'sort_algorithm' => 'alpha',
         ],
+        'yoda_style' => true,
         'no_unused_imports' => true,
         'ordered_imports' => [
             'imports_order' => ['const', 'class', 'function'],
