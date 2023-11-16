@@ -7,9 +7,7 @@ namespace SimpleWpRouting\InvocationStrategy;
 interface InvocationStrategyInterface
 {
     /**
-     * @param mixed $callable
-     *
      * @return mixed
      */
-    public function invoke($callable, array $context = []);
+    public function invoke(callable $callable, array $context = []);
 }

@@ -17,11 +17,9 @@ final class InvokerBackedInvocationStrategy implements InvocationStrategyInterfa
     }
 
     /**
-     * @param mixed $callable
-     *
      * @return mixed
      */
-    public function invoke($callable, array $context = [])
+    public function invoke(callable $callable, array $context = [])
     {
         return $this->invoker->call($callable, $context);
     }
