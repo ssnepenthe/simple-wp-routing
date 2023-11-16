@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace SimpleWpRouting\Exception;
 
 use RuntimeException;
-use Throwable;
 use SimpleWpRouting\Responder\HttpExceptionResponder;
 use SimpleWpRouting\Responder\Partial\HeadersPartial;
+use Throwable;
 
 class HttpException extends RuntimeException implements HttpExceptionInterface
 {

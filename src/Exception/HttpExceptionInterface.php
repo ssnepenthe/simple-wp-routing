@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SimpleWpRouting\Exception;
 
-use Throwable;
 use SimpleWpRouting\Responder\HttpExceptionResponder;
+use Throwable;
 
 interface HttpExceptionInterface extends Throwable
 {

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace SimpleWpRouting\Exception;
 
-use Throwable;
 use SimpleWpRouting\Responder\HttpExceptionResponder;
 use SimpleWpRouting\Responder\Partial\HeadersPartial;
 use SimpleWpRouting\Responder\Partial\ThemePartial;
 use SimpleWpRouting\Responder\Partial\WpQueryPartial;
+use Throwable;
 
 final class MethodNotAllowedHttpException extends HttpException
 {
