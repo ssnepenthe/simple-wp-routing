@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SimpleWpRouting\InvocationStrategy;
+namespace SimpleWpRouting\Invoker;
 
-class DefaultInvocationStrategy implements InvocationStrategyInterface
+class DefaultInvoker implements InvokerInterface
 {
     /**
      * @return mixed

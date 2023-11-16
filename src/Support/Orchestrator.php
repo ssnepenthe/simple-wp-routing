@@ -9,7 +9,7 @@ use SimpleWpRouting\Exception\HttpExceptionInterface;
 use SimpleWpRouting\Exception\MethodNotAllowedHttpException;
 use SimpleWpRouting\Exception\RewriteDisabledException;
 use SimpleWpRouting\Exception\RewriteInvocationExceptionInterface;
-use SimpleWpRouting\InvocationStrategy\InvocationStrategyInterface;
+use SimpleWpRouting\Invoker\InvokerInterface;
 use SimpleWpRouting\Responder\HierarchicalResponderInterface;
 use SimpleWpRouting\Responder\HttpExceptionResponder;
 use SimpleWpRouting\Responder\ResponderInterface;
@@ -18,7 +18,7 @@ final class Orchestrator
 {
     private CallableResolverInterface $callableResolver;
 
-    private InvocationStrategyInterface $invocationStrategy;
+    private InvokerInterface $invocationStrategy;
 
     private RequestContext $requestContext;
 
@@ -26,7 +26,7 @@ final class Orchestrator
 
     public function __construct(
         RewriteCollection $rewriteCollection,
-        InvocationStrategyInterface $invocationStrategy,
+        InvokerInterface $invocationStrategy,
         CallableResolverInterface $callableResolver,
         RequestContext $requestContext
     ) {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SimpleWpRouting\Tests\Unit\Support;
 
 use PHPUnit\Framework\TestCase;
-use SimpleWpRouting\InvocationStrategy\DefaultInvocationStrategy;
+use SimpleWpRouting\Invoker\DefaultInvoker;
 use SimpleWpRouting\CallableResolver\DefaultCallableResolver;
 use SimpleWpRouting\Support\Orchestrator;
 use SimpleWpRouting\Support\RequestContext;
@@ -216,7 +216,7 @@ class OrchestratorTest extends TestCase
     {
         return new Orchestrator(
             $rewrites,
-            new DefaultInvocationStrategy(),
+            new DefaultInvoker(),
             new DefaultCallableResolver(),
             new RequestContext('GET', [])
         );

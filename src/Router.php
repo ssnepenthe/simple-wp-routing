@@ -7,8 +7,8 @@ namespace SimpleWpRouting;
 use LogicException;
 use SimpleWpRouting\CallableResolver\CallableResolverInterface;
 use SimpleWpRouting\CallableResolver\DefaultCallableResolver;
-use SimpleWpRouting\InvocationStrategy\DefaultInvocationStrategy;
-use SimpleWpRouting\InvocationStrategy\InvocationStrategyInterface;
+use SimpleWpRouting\Invoker\DefaultInvoker;
+use SimpleWpRouting\Invoker\InvokerInterface;
 use SimpleWpRouting\Parser\FastRouteRouteParser;
 use SimpleWpRouting\Parser\RouteParserInterface;
 use SimpleWpRouting\Support\Orchestrator;
@@ -32,7 +32,7 @@ final class Router
 
     private bool $initialized = false;
 
-    private ?InvocationStrategyInterface $invocationStrategy = null;
+    private ?InvokerInterface $invocationStrategy = null;
 
     private string $prefix = '';
 
@@ -112,10 +112,10 @@ final class Router
         return $this->callableResolver;
     }
 
-    public function getInvocationStrategy(): InvocationStrategyInterface
+    public function getInvoker(): InvokerInterface
     {
-        if (! $this->invocationStrategy instanceof InvocationStrategyInterface) {
-            $this->invocationStrategy = new DefaultInvocationStrategy();
+        if (! $this->invocationStrategy instanceof InvokerInterface) {
+            $this->invocationStrategy = new DefaultInvoker();
         }
 
         return $this->invocationStrategy;
@@ -241,7 +241,7 @@ final class Router
         $this->callableResolver = $callableResolver;
     }
 
-    public function setInvocationStrategy(InvocationStrategyInterface $invocationStrategy): void
+    public function setInvocationStrategy(InvokerInterface $invocationStrategy): void
     {
         if ($this->initialized) {
             throw new LogicException('Invocation strategy cannot be set after router has been initialized');
@@ -308,7 +308,7 @@ final class Router
     {
         return new Orchestrator(
             $this->getRewriteCollection(),
-            $this->getInvocationStrategy(),
+            $this->getInvoker(),
             $this->getCallableResolver(),
             RequestContext::fromGlobals()
         );

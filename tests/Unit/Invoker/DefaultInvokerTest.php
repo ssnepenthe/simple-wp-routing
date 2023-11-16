@@ -5,20 +5,20 @@ declare(strict_types=1);
 namespace SimpleWpRouting\Tests\Unit\InvocationStrategy;
 
 use PHPUnit\Framework\TestCase;
-use SimpleWpRouting\InvocationStrategy\DefaultInvocationStrategy;
+use SimpleWpRouting\Invoker\DefaultInvoker;
 
-class DefaultInvocationStrategyTest extends TestCase
+class DefaultInvokerTest extends TestCase
 {
     public function testInvoke()
     {
-        $invocationStrategy = new DefaultInvocationStrategy();
+        $invocationStrategy = new DefaultInvoker();
 
         $this->assertSame('testreturnval', $invocationStrategy->invoke(fn () => 'testreturnval'));
     }
 
     public function testInvokeWithContext()
     {
-        $invocationStrategy = new DefaultInvocationStrategy();
+        $invocationStrategy = new DefaultInvoker();
 
         $this->assertSame(
             'testreturnval',
