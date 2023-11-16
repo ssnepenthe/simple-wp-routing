@@ -8,8 +8,17 @@ use SimpleWpRouting\Exception\HttpExceptionInterface;
 
 final class HttpExceptionResponder extends Responder
 {
+    private HttpExceptionInterface $exception;
+
     public function __construct(HttpExceptionInterface $exception)
     {
-        $exception->prepareResponse($this);
+        $this->exception = $exception;
+    }
+
+    public function respond(): void
+    {
+        $this->exception->prepareResponse($this);
+
+        parent::respond();
     }
 }
