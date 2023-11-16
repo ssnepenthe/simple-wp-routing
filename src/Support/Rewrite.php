@@ -64,7 +64,7 @@ class Rewrite
     /**
      * @param array<string, string> $queryVariables
      *
-     * @return array<string, string>
+     * @return array<string, string|null>
      */
     public function getConcernedQueryVariablesWithoutPrefix(array $queryVariables): array
     {
