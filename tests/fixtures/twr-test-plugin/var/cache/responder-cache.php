@@ -5,8 +5,8 @@ declare(strict_types=1);
 use SimpleWpRouting\Dumper\OptimizedRewrite;
 use SimpleWpRouting\Dumper\OptimizedRewriteCollection;
 
-if (! class_exists('CachedRewriteCollection064c69eb2f21d3306b0610ccd5b3328c7976d5ebee5fdf58858ebaf459f193d3')) {
-    class CachedRewriteCollection064c69eb2f21d3306b0610ccd5b3328c7976d5ebee5fdf58858ebaf459f193d3 extends OptimizedRewriteCollection
+if (! class_exists('CachedRewriteCollectiona045019711d09062a8f178f5b9166d750f284ad589711bfdcb47f7bc1ee6d5a0')) {
+    class CachedRewriteCollectiona045019711d09062a8f178f5b9166d750f284ad589711bfdcb47f7bc1ee6d5a0 extends OptimizedRewriteCollection
     {
         public function __construct()
         {
@@ -76,32 +76,32 @@ $rewrite5 = new OptimizedRewrite(array (
             return new \SimpleWpRouting\Responder\TemplateResponder('/var/www/html/wp-content/plugins/toy-wp-routing/tests/fixtures/twr-test-plugin' . '/templates/hello-world.php');
         }, NULL);
 $this->rewritesByRegexAndMethod = array (
-  '^(?|responders/http-exception/not-found)$' =>
+  '^(?|responders/http-exception/not-found)$' => 
   array (
     'GET' => $rewrite0,
     'HEAD' => $rewrite0,
   ),
-  '^(?|responders/http-exception/method-not-allowed)$' =>
+  '^(?|responders/http-exception/method-not-allowed)$' => 
   array (
     'GET' => $rewrite1,
     'HEAD' => $rewrite1,
   ),
-  '^(?|responders/json)$' =>
+  '^(?|responders/json)$' => 
   array (
     'GET' => $rewrite2,
     'HEAD' => $rewrite2,
   ),
-  '^(?|responders/query)$' =>
+  '^(?|responders/query)$' => 
   array (
     'GET' => $rewrite3,
     'HEAD' => $rewrite3,
   ),
-  '^(?|responders/redirect)$' =>
+  '^(?|responders/redirect)$' => 
   array (
     'GET' => $rewrite4,
     'HEAD' => $rewrite4,
   ),
-  '^(?|responders/template)$' =>
+  '^(?|responders/template)$' => 
   array (
     'GET' => $rewrite5,
     'HEAD' => $rewrite5,
@@ -111,4 +111,4 @@ $this->rewritesByRegexAndMethod = array (
     }
 }
 
-return new CachedRewriteCollection064c69eb2f21d3306b0610ccd5b3328c7976d5ebee5fdf58858ebaf459f193d3();
+return new CachedRewriteCollectiona045019711d09062a8f178f5b9166d750f284ad589711bfdcb47f7bc1ee6d5a0();

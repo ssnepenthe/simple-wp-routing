@@ -24,7 +24,7 @@ if (! class_exists('CachedRewriteCollectiond870e2f0a516a50e9661e34d430b2e666e47c
   'pfx_var' => 'var',
 ), static function () {}, static function () {});
 $this->rewritesByRegexAndMethod = array (
-  '^regex$' =>
+  '^regex$' => 
   array (
     'GET' => $rewrite0,
     'HEAD' => $rewrite0,

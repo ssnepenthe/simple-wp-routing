@@ -30,12 +30,12 @@ $rewrite1 = new OptimizedRewrite(array (
   'var' => 'var',
 ), 'secondhandler', 'secondisactivecallback');
 $this->rewritesByRegexAndMethod = array (
-  '^first$' =>
+  '^first$' => 
   array (
     'GET' => $rewrite0,
     'HEAD' => $rewrite0,
   ),
-  '^second$' =>
+  '^second$' => 
   array (
     'POST' => $rewrite1,
   ),

@@ -5,8 +5,8 @@ declare(strict_types=1);
 use SimpleWpRouting\Dumper\OptimizedRewrite;
 use SimpleWpRouting\Dumper\OptimizedRewriteCollection;
 
-if (! class_exists('CachedRewriteCollection3c95e90111a6fb2a7b1c9af68547483e1cb40c675e7d0f8de48ff88b8f982949')) {
-    class CachedRewriteCollection3c95e90111a6fb2a7b1c9af68547483e1cb40c675e7d0f8de48ff88b8f982949 extends OptimizedRewriteCollection
+if (! class_exists('CachedRewriteCollection89d869b1e3c226a0f8e2761dd9b25269f42044a5139fd1a4ca3c835857328541')) {
+    class CachedRewriteCollection89d869b1e3c226a0f8e2761dd9b25269f42044a5139fd1a4ca3c835857328541 extends OptimizedRewriteCollection
     {
         public function __construct()
         {
@@ -55,22 +55,22 @@ $rewrite3 = new OptimizedRewrite(array (
             return $responder->getPartialSet()->get(\SimpleWpRouting\Responder\Partial\HeadersPartial::class);
         }, NULL);
 $this->rewritesByRegexAndMethod = array (
-  '^(?|orchestrator/active/([^/]+))$' =>
+  '^(?|orchestrator/active/([^/]+))$' => 
   array (
     'GET' => $rewrite0,
     'HEAD' => $rewrite0,
   ),
-  '^(?|orchestrator/inactive/([^/]+))$' =>
+  '^(?|orchestrator/inactive/([^/]+))$' => 
   array (
     'GET' => $rewrite1,
     'HEAD' => $rewrite1,
   ),
-  '^(?|orchestrator/responder)$' =>
+  '^(?|orchestrator/responder)$' => 
   array (
     'GET' => $rewrite2,
     'HEAD' => $rewrite2,
   ),
-  '^(?|orchestrator/hierarchical-responder)$' =>
+  '^(?|orchestrator/hierarchical-responder)$' => 
   array (
     'GET' => $rewrite3,
     'HEAD' => $rewrite3,
@@ -80,4 +80,4 @@ $this->rewritesByRegexAndMethod = array (
     }
 }
 
-return new CachedRewriteCollection3c95e90111a6fb2a7b1c9af68547483e1cb40c675e7d0f8de48ff88b8f982949();
+return new CachedRewriteCollection89d869b1e3c226a0f8e2761dd9b25269f42044a5139fd1a4ca3c835857328541();
