@@ -74,7 +74,7 @@ class Rewrite
             if (! array_key_exists($prefixed, $queryVariables)) {
                 $missing[] = $prefixed;
             } else {
-                $return[$unprefixed] = $queryVariables[$prefixed];
+                $return[$unprefixed] = '' !== $queryVariables[$prefixed] ? $queryVariables[$prefixed] : null;
             }
         }
 
