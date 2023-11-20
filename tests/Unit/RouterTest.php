@@ -43,15 +43,26 @@ class RouterTest extends TestCase
             $router->add(['GET'], '{four}', 'threehandler');
         });
 
-        [$rewriteOne, $rewriteTwo] = $router->getRewriteCollection()->getRewrites();
+        // Multiple rewrites for route with optional segment.
+        $router->get('five[/{six}]', 'fivehandler');
 
-        $this->assertSame('^(?|one/([^/]+))$', $rewriteOne->getRegex());
+        [$rewriteOne, $rewriteTwo, $rewriteThree, $rewriteFour] = $router->getRewriteCollection()->getRewrites();
+
+        $this->assertSame('^one/([^/]+)$', $rewriteOne->getRegex());
         $this->assertSame('index.php?two=$matches[1]&__routeType=variable', $rewriteOne->getQuery());
         $this->assertSame(['two' => 'two'], $rewriteOne->getQueryVariables());
 
-        $this->assertSame('^(?|three/([^/]+))$', $rewriteTwo->getRegex());
+        $this->assertSame('^three/([^/]+)$', $rewriteTwo->getRegex());
         $this->assertSame('index.php?four=$matches[1]&__routeType=variable', $rewriteTwo->getQuery());
         $this->assertSame(['four' => 'four'], $rewriteTwo->getQueryVariables());
+
+        $this->assertSame('^five$', $rewriteThree->getRegex());
+        $this->assertSame('index.php?__routeType=static', $rewriteThree->getQuery());
+        $this->assertSame([], $rewriteThree->getQueryVariables());
+
+        $this->assertSame('^five/([^/]+)$', $rewriteFour->getRegex());
+        $this->assertSame('index.php?six=$matches[1]&__routeType=variable', $rewriteFour->getQuery());
+        $this->assertSame(['six' => 'six'], $rewriteFour->getQueryVariables());
     }
 
     public function testCreateWithPrefix()
@@ -67,15 +78,26 @@ class RouterTest extends TestCase
             $router->get('{four}', 'threehandler');
         });
 
-        [$rewriteOne, $rewriteTwo] = $router->getRewriteCollection()->getRewrites();
+        // Multiple rewrites for route with optional segment.
+        $router->get('five[/{six}]', 'fivehandler');
 
-        $this->assertSame('^(?|one/([^/]+))$', $rewriteOne->getRegex());
+        [$rewriteOne, $rewriteTwo, $rewriteThree, $rewriteFour] = $router->getRewriteCollection()->getRewrites();
+
+        $this->assertSame('^one/([^/]+)$', $rewriteOne->getRegex());
         $this->assertSame('index.php?pfx_two=$matches[1]&pfx___routeType=variable', $rewriteOne->getQuery());
         $this->assertSame(['pfx_two' => 'two'], $rewriteOne->getQueryVariables());
 
-        $this->assertSame('^(?|three/([^/]+))$', $rewriteTwo->getRegex());
+        $this->assertSame('^three/([^/]+)$', $rewriteTwo->getRegex());
         $this->assertSame('index.php?pfx_four=$matches[1]&pfx___routeType=variable', $rewriteTwo->getQuery());
         $this->assertSame(['pfx_four' => 'four'], $rewriteTwo->getQueryVariables());
+
+        $this->assertSame('^five$', $rewriteThree->getRegex());
+        $this->assertSame('index.php?pfx___routeType=static', $rewriteThree->getQuery());
+        $this->assertSame([], $rewriteThree->getQueryVariables());
+
+        $this->assertSame('^five/([^/]+)$', $rewriteFour->getRegex());
+        $this->assertSame('index.php?pfx_six=$matches[1]&pfx___routeType=variable', $rewriteFour->getQuery());
+        $this->assertSame(['pfx_six' => 'six'], $rewriteFour->getQueryVariables());
     }
 
     public function testHttpMethodShorthandMethods()
@@ -102,7 +124,7 @@ class RouterTest extends TestCase
         $this->assertSame(['PUT'], $methods[7]);
     }
 
-    public function testWithAutoSlashDisabled()
+    public function testGroupWithAutoSlashDisabled()
     {
         $router = new Router();
         $router->disableAutoSlash();
@@ -112,7 +134,7 @@ class RouterTest extends TestCase
             });
         });
 
-        $this->assertSame('^(?|onetwothree)$', $router->getRewriteCollection()->getRewrites()[0]->getRegex());
+        $this->assertSame('^onetwothree$', $router->getRewriteCollection()->getRewrites()[0]->getRegex());
     }
 
     public function testGroup()
@@ -129,9 +151,9 @@ class RouterTest extends TestCase
 
         $regexes = array_map(fn ($rewrite) => $rewrite->getRegex(), $router->getRewriteCollection()->getRewrites());
 
-        $this->assertSame('^(?|one/two)$', $regexes[0]);
-        $this->assertSame('^(?|one/three)$', $regexes[1]);
-        $this->assertSame('^(?|one/four/five)$', $regexes[2]);
+        $this->assertSame('^one/two$', $regexes[0]);
+        $this->assertSame('^one/three$', $regexes[1]);
+        $this->assertSame('^one/four/five$', $regexes[2]);
     }
 
     public function testInitializeThrowsWhenAlreadyInitialized()

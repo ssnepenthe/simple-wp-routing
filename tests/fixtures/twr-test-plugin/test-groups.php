@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace TwrTestPlugin;
 
 use LogicException;
@@ -23,17 +25,8 @@ abstract class TestGroup
             new HttpMethodsGroup(),
             new OrchestratorGroup(),
             new ResponderGroup(),
+            new OverlappingRulesGroup(),
         ];
-    }
-
-    public function refreshCache(): void
-    {
-        $router = new Router();
-        $router->setPrefix($this->getPrefix());
-        $router->enableCache($this->getCacheDirectory(), $this->getCacheFileName());
-        $router->getRewriteCollectionCache()->delete();
-        $this->registerRoutes($router);
-        $router->getRewriteCollectionCache()->put($router->getRewriteCollection());
     }
 
     public function initialize(): void
@@ -52,13 +45,25 @@ abstract class TestGroup
         $router->initialize(fn ($r) => $this->registerRoutes($r));
     }
 
+    public function refreshCache(): void
+    {
+        $router = new Router();
+        $router->setPrefix($this->getPrefix());
+        $router->enableCache($this->getCacheDirectory(), $this->getCacheFileName());
+        $router->getRewriteCollectionCache()->delete();
+        $this->registerRoutes($router);
+        $router->getRewriteCollectionCache()->put($router->getRewriteCollection());
+    }
+
     protected function getCacheDirectory(): string
     {
         return __DIR__ . '/var/cache';
     }
 
     abstract protected function getCacheFileName(): string;
+
     abstract protected function getPrefix(): string;
+
     abstract protected function registerRoutes(Router $router): void;
 }
 
@@ -169,6 +174,34 @@ class ResponderGroup extends TestGroup
         $router->get('responders/template', function () {
             // @todo body class, document title, enqueue assets, dequeue assets, custom headers, query vars, query flags
             return new TemplateResponder(__DIR__ . '/templates/hello-world.php');
+        });
+    }
+}
+
+class OverlappingRulesGroup extends TestGroup
+{
+    protected function getCacheFileName(): string
+    {
+        return 'overlapping-rules-cache.php';
+    }
+
+    protected function getPrefix(): string
+    {
+        return 'overlap_';
+    }
+
+    protected function registerRoutes(Router $router): void
+    {
+        $router->get('overlap/one', function () {
+            return new JsonResponder('GET overlap/one');
+        });
+
+        $router->post('overlap/one[/two]', function () {
+            return new JsonResponder('POST overlap/one');
+        });
+
+        $router->put('overlap/one[/three]', function () {
+            return new JsonResponder('PUT overlap/one');
         });
     }
 }

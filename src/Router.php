@@ -16,6 +16,7 @@ use SimpleWpRouting\Support\RequestContext;
 use SimpleWpRouting\Support\Rewrite;
 use SimpleWpRouting\Support\RewriteCollection;
 use SimpleWpRouting\Support\RewriteCollectionCache;
+use SimpleWpRouting\Support\Route;
 use SimpleWpRouting\Support\Support;
 
 final class Router
@@ -45,15 +46,21 @@ final class Router
     /**
      * @param mixed $handler
      */
-    public function add(array $methods, string $route, $handler): Rewrite
+    public function add(array $methods, string $route, $handler): Route
     {
-        return $this->getRewriteCollection()->add($this->create($methods, $route, $handler));
+        $routeInstance = $this->create($methods, $route, $handler);
+
+        foreach ($routeInstance->getRewrites() as $rewrite) {
+            $this->getRewriteCollection()->add($rewrite);
+        }
+
+        return $routeInstance;
     }
 
     /**
      * @param mixed $handler
      */
-    public function any(string $route, $handler): Rewrite
+    public function any(string $route, $handler): Route
     {
         return $this->add(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], $route, $handler);
     }
@@ -61,7 +68,7 @@ final class Router
     /**
      * @param mixed $handler
      */
-    public function delete(string $route, $handler): Rewrite
+    public function delete(string $route, $handler): Route
     {
         return $this->add(['DELETE'], $route, $handler);
     }
@@ -98,7 +105,7 @@ final class Router
     /**
      * @param mixed $handler
      */
-    public function get(string $route, $handler): Rewrite
+    public function get(string $route, $handler): Route
     {
         return $this->add(['GET', 'HEAD'], $route, $handler);
     }
@@ -203,7 +210,7 @@ final class Router
     /**
      * @param mixed $handler
      */
-    public function options(string $route, $handler): Rewrite
+    public function options(string $route, $handler): Route
     {
         return $this->add(['OPTIONS'], $route, $handler);
     }
@@ -211,7 +218,7 @@ final class Router
     /**
      * @param mixed $handler
      */
-    public function patch(string $route, $handler): Rewrite
+    public function patch(string $route, $handler): Route
     {
         return $this->add(['PATCH'], $route, $handler);
     }
@@ -219,7 +226,7 @@ final class Router
     /**
      * @param mixed $handler
      */
-    public function post(string $route, $handler): Rewrite
+    public function post(string $route, $handler): Route
     {
         return $this->add(['POST'], $route, $handler);
     }
@@ -227,7 +234,7 @@ final class Router
     /**
      * @param mixed $handler
      */
-    public function put(string $route, $handler): Rewrite
+    public function put(string $route, $handler): Route
     {
         return $this->add(['PUT'], $route, $handler);
     }
@@ -284,24 +291,29 @@ final class Router
     /**
      * @param mixed $handler
      */
-    private function create(array $methods, string $route, $handler): Rewrite
+    private function create(array $methods, string $route, $handler): Route
     {
         $route = $this->autoSlash($this->currentGroup, $route);
 
-        [$regex, $queryArray] = $this->getRouteParser()->parse($route);
+        $rules = $this->getRouteParser()->parse($route);
+        $rewrites = [];
 
-        $prefixedQueryArray = Support::applyPrefixToKeys($queryArray, $this->prefix);
+        foreach ($rules as $regex => $queryArray) {
+            $prefixedQueryArray = Support::applyPrefixToKeys($queryArray, $this->prefix);
 
-        $query = Support::buildQuery($prefixedQueryArray + [
-            // We add an additional __routeType variable to ensure we never have an empty query string.
-            // __routeType is not registered as a public query variable with WordPress.
-            // If a __routeType variable already exists it is not overwritten.
-            Support::applyPrefix('__routeType', $this->prefix) => ([] === $prefixedQueryArray ? 'static' : 'variable')
-        ]);
+            $query = Support::buildQuery($prefixedQueryArray + [
+                // We add an additional __routeType variable to ensure we never have an empty query string.
+                // __routeType is not registered as a public query variable with WordPress.
+                // If a __routeType variable already exists it is not overwritten.
+                Support::applyPrefix('__routeType', $this->prefix) => ([] === $prefixedQueryArray ? 'static' : 'variable')
+            ]);
 
-        $queryVariables = array_combine(array_keys($prefixedQueryArray), array_keys($queryArray));
+            $queryVariables = array_combine(array_keys($prefixedQueryArray), array_keys($queryArray));
 
-        return new Rewrite($methods, $regex, $query, $queryVariables, $handler);
+            $rewrites[] = new Rewrite($methods, $regex, $query, $queryVariables, $handler);
+        }
+
+        return new Route(...$rewrites);
     }
 
     private function createOrchestrator(): Orchestrator

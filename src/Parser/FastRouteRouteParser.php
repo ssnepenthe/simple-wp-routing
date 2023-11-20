@@ -23,7 +23,7 @@ final class FastRouteRouteParser implements RouteParserInterface
     REGEX;
 
     /**
-     * @return array{0: string, 1: array<string, string>}
+     * @return array<string, array<string, string>>
      */
     public function parse(string $route): array
     {
@@ -48,7 +48,6 @@ final class FastRouteRouteParser implements RouteParserInterface
 
         $currentRoute = '';
         $rewrites = [];
-        $finalQuery = [];
 
         foreach ($segments as $n => $segment) {
             if ('' === $segment && 0 !== $n) {
@@ -57,12 +56,12 @@ final class FastRouteRouteParser implements RouteParserInterface
 
             $currentRoute .= $segment;
 
-            [$regex, $finalQuery] = $this->parsePlaceholders($currentRoute);
+            [$regex, $queryArray] = $this->parsePlaceholders($currentRoute);
 
-            $rewrites[] = $regex;
+            $rewrites["^{$regex}$"] = $queryArray;
         }
 
-        return ['^(?|' . implode('|', $rewrites) . ')$', $finalQuery];
+        return $rewrites;
     }
 
     /**

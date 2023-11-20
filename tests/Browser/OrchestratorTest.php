@@ -87,7 +87,7 @@ class OrchestratorTest extends TestCase
             JSON_THROW_ON_ERROR
         );
 
-        $this->assertArrayHasKey('^(?|orchestrator/active/([^/]+))$', $rewrites);
-        $this->assertArrayHasKey('^(?|orchestrator/inactive/([^/]+))$', $rewrites);
+        $this->assertArrayHasKey('^orchestrator/active/([^/]+)$', $rewrites);
+        $this->assertArrayHasKey('^orchestrator/inactive/([^/]+)$', $rewrites);
     }
 }
