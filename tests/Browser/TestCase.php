@@ -32,7 +32,7 @@ class TestCase extends FrameworkTestCase
         try {
             $testData = $this->getBrowser()
                 ->request('GET', '/')
-                ->filter('.twr-test-data');
+                ->filter('.swr-test-data');
 
             if (! $testData->count()) {
                 $this->markTestSkipped('The test plugin does not appear to be active');
@@ -54,7 +54,7 @@ class TestCase extends FrameworkTestCase
     protected function testUri(string $uri, array $query = []): string
     {
         if ($this->shouldUseRewriteCache()) {
-            $query['twr_enable_cache'] = '1';
+            $query['swr_enable_cache'] = '1';
         }
 
         // @todo Some sort of output indicating that we are using cache?

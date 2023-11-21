@@ -1,7 +1,7 @@
 {
     "plugins": ["."],
     "config": {
-        "TWR_DEV": true
+        "SWR_DEV": true
     },
     "env": {
         "tests": {

@@ -50,7 +50,7 @@ class OrchestratorTest extends TestCase
         $crawler = $browser->request('GET', $this->testUri('/orchestrator/inactive/irrelevant'));
 
         $this->assertSame(404, $browser->getResponse()->getStatusCode());
-        $this->assertSame(0, $crawler->filter('.twr-orchestrator-inactive')->count());
+        $this->assertSame(0, $crawler->filter('.swr-orchestrator-inactive')->count());
     }
 
     public function testMethodNotAllowed()
@@ -66,7 +66,7 @@ class OrchestratorTest extends TestCase
         $browser = $this->getBrowser();
         $crawler = $browser->request('GET', $this->testUri('/'));
         $queryVars = json_decode(
-            $crawler->filter('.twr-query-vars')->text(),
+            $crawler->filter('.swr-query-vars')->text(),
             true,
             512,
             JSON_THROW_ON_ERROR
@@ -81,7 +81,7 @@ class OrchestratorTest extends TestCase
         $browser = $this->getBrowser();
         $crawler = $browser->request('GET', $this->testUri('/'));
         $rewrites = json_decode(
-            $crawler->filter('.twr-rewrites')->text(),
+            $crawler->filter('.swr-rewrites')->text(),
             true,
             512,
             JSON_THROW_ON_ERROR

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TwrTestPlugin;
+namespace SwrTestPlugin;
 
 use LogicException;
 use SimpleWpRouting\Exception\MethodNotAllowedHttpException;
@@ -34,7 +34,7 @@ abstract class TestGroup
         $router = new Router();
         $router->setPrefix($this->getPrefix());
 
-        if (filter_var($_REQUEST['twr_enable_cache'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
+        if (filter_var($_REQUEST['swr_enable_cache'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
             $router->enableCache($this->getCacheDirectory(), $this->getCacheFileName());
 
             if (! $router->getRewriteCollectionCache()->exists()) {
@@ -108,8 +108,8 @@ class OrchestratorGroup extends TestGroup
         $router->get('orchestrator/active/{activeVar}', function () {});
 
         $router->get('orchestrator/inactive/{inactiveVar}', function () {
-            add_action('twr_test_data', function () {
-                echo '<span class="twr-orchestrator-inactive"></span>';
+            add_action('swr_test_data', function () {
+                echo '<span class="swr-orchestrator-inactive"></span>';
             });
         })->setIsActiveCallback('__return_false');
 
@@ -157,7 +157,7 @@ class ResponderGroup extends TestGroup
 
         $router->get('responders/query', function () {
             // @todo overwrite query variables
-            add_action('twr_test_data', function () {
+            add_action('swr_test_data', function () {
                 global $wp;
 
                 printf('<span class="query-responder-dump">%s</span>', json_encode($wp->query_vars));

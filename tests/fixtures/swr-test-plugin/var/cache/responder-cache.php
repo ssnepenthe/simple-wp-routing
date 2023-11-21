@@ -5,8 +5,8 @@ declare(strict_types=1);
 use SimpleWpRouting\Dumper\OptimizedRewrite;
 use SimpleWpRouting\Dumper\OptimizedRewriteCollection;
 
-if (! class_exists('CachedRewriteCollectionedd3b977149bef651d25ca68b50a559752869bacb3a326190bef90dfba85ffd2')) {
-    class CachedRewriteCollectionedd3b977149bef651d25ca68b50a559752869bacb3a326190bef90dfba85ffd2 extends OptimizedRewriteCollection
+if (! class_exists('CachedRewriteCollectiona713a6cf0be128cc2e08101499b3a232e5a75cc54a94dd874431d14602f3693e')) {
+    class CachedRewriteCollectiona713a6cf0be128cc2e08101499b3a232e5a75cc54a94dd874431d14602f3693e extends OptimizedRewriteCollection
     {
         public function __construct()
         {
@@ -51,7 +51,7 @@ $rewrite3 = new OptimizedRewrite(array (
 ), '^responders/query$', 'index.php?responders___routeType=static', array (
 ), static function () {
             // @todo overwrite query variables
-            add_action('twr_test_data', function () {
+            add_action('swr_test_data', function () {
                 global $wp;
 
                 printf('<span class="query-responder-dump">%s</span>', json_encode($wp->query_vars));
@@ -73,7 +73,7 @@ $rewrite5 = new OptimizedRewrite(array (
 ), '^responders/template$', 'index.php?responders___routeType=static', array (
 ), static function () {
             // @todo body class, document title, enqueue assets, dequeue assets, custom headers, query vars, query flags
-            return new \SimpleWpRouting\Responder\TemplateResponder('/var/www/html/wp-content/plugins/toy-wp-routing/tests/fixtures/twr-test-plugin' . '/templates/hello-world.php');
+            return new \SimpleWpRouting\Responder\TemplateResponder('/var/www/html/wp-content/plugins/simple-wp-routing/tests/fixtures/swr-test-plugin' . '/templates/hello-world.php');
         }, NULL);
 $this->rewritesByRegexAndMethod = array (
   '^responders/http-exception/not-found$' => 
@@ -111,4 +111,4 @@ $this->rewritesByRegexAndMethod = array (
     }
 }
 
-return new CachedRewriteCollectionedd3b977149bef651d25ca68b50a559752869bacb3a326190bef90dfba85ffd2();
+return new CachedRewriteCollectiona713a6cf0be128cc2e08101499b3a232e5a75cc54a94dd874431d14602f3693e();

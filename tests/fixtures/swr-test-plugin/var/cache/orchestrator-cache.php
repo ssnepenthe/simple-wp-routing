@@ -5,8 +5,8 @@ declare(strict_types=1);
 use SimpleWpRouting\Dumper\OptimizedRewrite;
 use SimpleWpRouting\Dumper\OptimizedRewriteCollection;
 
-if (! class_exists('CachedRewriteCollectionbc622047ff51b93542064e4cc8ebe8f9bec6a7305c6d8694ebc3138b7d5bccf1')) {
-    class CachedRewriteCollectionbc622047ff51b93542064e4cc8ebe8f9bec6a7305c6d8694ebc3138b7d5bccf1 extends OptimizedRewriteCollection
+if (! class_exists('CachedRewriteCollection4c537073ed5a737409a9bc2dfbc7cb9e0be30cc74fb8c49406abebfb5399b604')) {
+    class CachedRewriteCollection4c537073ed5a737409a9bc2dfbc7cb9e0be30cc74fb8c49406abebfb5399b604 extends OptimizedRewriteCollection
     {
         public function __construct()
         {
@@ -33,8 +33,8 @@ $rewrite1 = new OptimizedRewrite(array (
 ), '^orchestrator/inactive/([^/]+)$', 'index.php?orchestrator_inactiveVar=$matches[1]&orchestrator___routeType=variable', array (
   'orchestrator_inactiveVar' => 'inactiveVar',
 ), static function () {
-            add_action('twr_test_data', function () {
-                echo '<span class="twr-orchestrator-inactive"></span>';
+            add_action('swr_test_data', function () {
+                echo '<span class="swr-orchestrator-inactive"></span>';
             });
         }, '__return_false');
 $rewrite2 = new OptimizedRewrite(array (
@@ -80,4 +80,4 @@ $this->rewritesByRegexAndMethod = array (
     }
 }
 
-return new CachedRewriteCollectionbc622047ff51b93542064e4cc8ebe8f9bec6a7305c6d8694ebc3138b7d5bccf1();
+return new CachedRewriteCollection4c537073ed5a737409a9bc2dfbc7cb9e0be30cc74fb8c49406abebfb5399b604();

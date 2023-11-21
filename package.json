@@ -1,5 +1,5 @@
 {
-  "name": "toy-wp-routing",
+  "name": "simple-wp-routing",
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ssnepenthe/toy-wp-routing.git"
+    "url": "git+https://github.com/ssnepenthe/simple-wp-routing.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ssnepenthe/toy-wp-routing/issues"
+    "url": "https://github.com/ssnepenthe/simple-wp-routing/issues"
   },
-  "homepage": "https://github.com/ssnepenthe/toy-wp-routing#readme",
+  "homepage": "https://github.com/ssnepenthe/simple-wp-routing#readme",
   "devDependencies": {
     "@wordpress/env": "^5.10.0"
   }

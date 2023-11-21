@@ -30,9 +30,9 @@ $rewriteCollectionCache->put($rewriteCollection);
 
 // Cached rewrite collections for browser tests.
 
-use TwrTestPlugin\TestGroup;
+use SwrTestPlugin\TestGroup;
 
-require_once __DIR__ . '/../tests/fixtures/twr-test-plugin/test-groups.php';
+require_once __DIR__ . '/../tests/fixtures/swr-test-plugin/test-groups.php';
 
 foreach (TestGroup::createTestGroups() as $testGroup) {
     $testGroup->refreshCache();
