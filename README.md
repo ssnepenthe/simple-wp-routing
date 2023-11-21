@@ -88,7 +88,7 @@ Route handlers are automatically called within the `'parse_request'` hook when t
 
 Allowed types for handlers are defined by the callable resolver. With the default config, handlers must be a PHP callable. If using the PSR container callable resolver, handlers may also be a string identifier that resolves a callable from your container or a callable shaped array where index 0 is a string identifier that resolves an object from your container and index 1 is a callable method on that object.
 
-The function signature is defined by the configured invoker. By default invoker provides an array containing all matched route variables keyed by variable name. The PHP-DI invoker provides matched route variables directly by name.
+The function signature is defined by the configured invoker. The default invoker provides an array containing all matched route variables keyed by variable name. The PHP-DI invoker provides matched route variables directly by name.
 
 HTTP exceptions can be used as a convenient escape hatch from handlers.
 
