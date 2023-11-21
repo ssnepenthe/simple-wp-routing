@@ -1,0 +1,25 @@
+$rewrite0 = new OptimizedRewrite(array (
+  0 => 'GET',
+  1 => 'HEAD',
+), '^getregex$', 'index.php?pfx_var=get', array (
+  'pfx_var' => 'var',
+), static function () {
+        }, static function () {
+        });
+$rewrite1 = new OptimizedRewrite(array (
+  0 => 'POST',
+), '^postregex$', 'index.php?pfx_var=post', array (
+  'pfx_var' => 'var',
+), static function () {
+        }, NULL);
+$this->rewritesByRegexAndMethod = array (
+  '^getregex$' => 
+  array (
+    'GET' => $rewrite0,
+    'HEAD' => $rewrite0,
+  ),
+  '^postregex$' => 
+  array (
+    'POST' => $rewrite1,
+  ),
+);

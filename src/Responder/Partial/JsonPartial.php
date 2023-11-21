@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder\Partial;
+namespace SimpleWpRouting\Responder\Partial;
 
 use InvalidArgumentException;
 
@@ -14,13 +14,18 @@ final class JsonPartial implements PartialInterface, RegistersConflictsInterface
      * @var mixed
      */
     private $data;
+
     private bool $envelopeResponse = true;
+
     private bool $hasData = false;
+
     private int $options = 0;
+
     /**
      * @var ?callable(mixed,int,int):never
      */
     private $responseFunction = null;
+
     private int $statusCode = 200;
 
     public function dontEnvelopeResponse(): self
@@ -103,7 +108,7 @@ final class JsonPartial implements PartialInterface, RegistersConflictsInterface
     }
 
     /**
-     * @psalm-param callable(mixed,int,int):never $responseFunction
+     * @param callable(mixed,int,int):never $responseFunction
      */
     public function setResponseFunction(?callable $responseFunction): self
     {

@@ -1,19 +1,19 @@
 {
-    "name": "ssnepenthe/toy-wp-routing",
-    "description": "Provides a more modern routing syntax to interact with the WP Rewrite API",
+    "name": "ssnepenthe/simple-wp-routing",
+    "description": "Syntactic sugar over the WP_Rewrite API so we can pretend that WordPress has a modern router.",
     "license": "MIT",
     "type": "library",
     "require": {
         "php": "^7.4 || ^8.0"
     },
     "require-dev": {
-        "brain/monkey": "^2.6",
+        "brain/monkey": "^2.6.1",
         "laravel/serializable-closure": "^1.2",
         "mikey179/vfsstream": "^1.6.7",
-        "nikic/fast-route": "^1.3",
         "php-di/invoker": "^2.3",
         "php-stubs/wordpress-stubs": "^6.0",
         "phpunit/phpunit": "^9.5",
+        "psr/container": "^1.0 || ^2.0",
         "spatie/phpunit-snapshot-assertions": "^4.2",
         "ssnepenthe/wp-dump-zone": "^0.1.0",
         "symfony/browser-kit": "^5.4 || ^6.0",
@@ -24,17 +24,16 @@
     },
     "suggest": {
         "laravel/serializable-closure": "Required to dump rewrites to a file when using closures for handlers",
-        "nikic/fast-route": "Required to use default route syntax",
         "php-di/invoker": "Required to use the InvokerBackedInvocationStrategy"
     },
     "autoload": {
         "psr-4": {
-            "ToyWpRouting\\": "src/"
+            "SimpleWpRouting\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "ToyWpRouting\\Tests\\": "tests/"
+            "SimpleWpRouting\\Tests\\": "tests/"
         }
     },
     "config": {

@@ -2,12 +2,15 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder;
+namespace SimpleWpRouting\Responder;
 
-use ToyWpRouting\Responder\Partial\WpPartial;
+use SimpleWpRouting\Responder\Partial\WpPartial;
 
-class QueryResponder extends Responder
+final class QueryResponder extends Responder
 {
+    /**
+     * @param array<string, string> $queryVariables
+     */
     public function __construct(array $queryVariables, bool $overwriteExisting = false)
     {
         $wp = $this->getPartialSet()->get(WpPartial::class);

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder\Partial;
+namespace SimpleWpRouting\Responder\Partial;
 
 use InvalidArgumentException;
 use WP_Query;
@@ -42,9 +42,13 @@ final class WpQueryPartial implements PartialInterface
         'is_posts_page' => false,
         'is_post_type_archive' => false,
     ];
+
     private array $flags = [];
+
     private bool $overwriteQueryVariables = false;
+
     private array $queryVariables = [];
+
     private bool $resetFlags = false;
 
     public function addFlag(string $flag, bool $value): self

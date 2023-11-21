@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Tests\Browser;
+namespace SimpleWpRouting\Tests\Browser;
 
 class OrchestratorTest extends TestCase
 {
@@ -61,21 +61,6 @@ class OrchestratorTest extends TestCase
         $this->assertSame(405, $browser->getResponse()->getStatusCode());
     }
 
-    public function testMissingRequiredQueryVariables()
-    {
-        // In the event that a user bypasses "pretty permalinks" and uses query string directly
-        // we want to return a 400 response if any required query variables are missing.
-        $browser = $this->getBrowser();
-
-        // Matches the orchestrator/active/{activeVar} route, missing activeVar query variable.
-        $browser->request(
-            'GET',
-            $this->testUri('/', ['orchestrator_matchedRule' => '5cc12d9280457964a1502740d21f1321'])
-        );
-
-        $this->assertSame(400, $browser->getResponse()->getStatusCode());
-    }
-
     public function testQueryVariablesAreMerged()
     {
         $browser = $this->getBrowser();
@@ -88,7 +73,6 @@ class OrchestratorTest extends TestCase
         );
 
         $this->assertContains('orchestrator_activeVar', $queryVars);
-        $this->assertContains('orchestrator_matchedRule', $queryVars);
         $this->assertContains('orchestrator_inactiveVar', $queryVars);
     }
 

@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+use SimpleWpRouting\Dumper\OptimizedRewrite;
+use SimpleWpRouting\Dumper\OptimizedRewriteCollection;
+
+if (! class_exists('CachedRewriteCollection4f83d40597bd5f6b2bf93bf6fb45d092b9b5ac8599f3a07323a6d621259b1dec')) {
+    class CachedRewriteCollection4f83d40597bd5f6b2bf93bf6fb45d092b9b5ac8599f3a07323a6d621259b1dec extends OptimizedRewriteCollection
+    {
+        public function __construct()
+        {
+            $this->queryVariables = array (
+  'some' => 'some',
+);
+            $this->rewriteRules = array (
+  '^regex$' => 'index.php?some=var',
+);
+
+            $rewrite0 = new OptimizedRewrite(array (
+  0 => 'POST',
+), '^regex$', 'index.php?some=var', array (
+  'some' => 'some',
+), static function () {
+        }, NULL);
+$this->rewritesByRegexAndMethod = array (
+  '^regex$' => 
+  array (
+    'POST' => $rewrite0,
+  ),
+);
+        }
+    }
+}
+
+return new CachedRewriteCollection4f83d40597bd5f6b2bf93bf6fb45d092b9b5ac8599f3a07323a6d621259b1dec();

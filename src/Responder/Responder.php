@@ -2,10 +2,15 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder;
+namespace SimpleWpRouting\Responder;
+
+use SimpleWpRouting\Responder\Partial\PartialInterface;
 
 class Responder extends ComposableResponder
 {
+    /**
+     * @return PartialInterface[]
+     */
     protected function createPartials(): array
     {
         return [

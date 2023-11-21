@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder\Partial;
+namespace SimpleWpRouting\Responder\Partial;
 
 use InvalidArgumentException;
 use RuntimeException;
@@ -12,8 +12,11 @@ final class HeadersPartial implements PartialInterface, RegistersConflictsInterf
     use PartialTrait;
 
     private array $headers = [];
+
     private bool $includeNocacheHeaders = false;
+
     private ?int $statusCode = null;
+
     private ?string $statusDescription = null;
 
     /**

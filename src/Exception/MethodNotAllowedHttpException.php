@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Exception;
+namespace SimpleWpRouting\Exception;
 
+use SimpleWpRouting\Responder\HttpExceptionResponder;
+use SimpleWpRouting\Responder\Partial\HeadersPartial;
+use SimpleWpRouting\Responder\Partial\ThemePartial;
+use SimpleWpRouting\Responder\Partial\WpQueryPartial;
 use Throwable;
-use ToyWpRouting\Responder\HttpExceptionResponder;
-use ToyWpRouting\Responder\Partial\HeadersPartial;
-use ToyWpRouting\Responder\Partial\ThemePartial;
-use ToyWpRouting\Responder\Partial\WpQueryPartial;
 
-class MethodNotAllowedHttpException extends HttpException
+final class MethodNotAllowedHttpException extends HttpException
 {
     public function __construct(
         array $allowedMethods,

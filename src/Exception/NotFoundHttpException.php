@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Exception;
+namespace SimpleWpRouting\Exception;
 
+use SimpleWpRouting\Responder\HttpExceptionResponder;
+use SimpleWpRouting\Responder\Partial\HeadersPartial;
 use Throwable;
-use ToyWpRouting\Responder\HttpExceptionResponder;
-use ToyWpRouting\Responder\Partial\HeadersPartial;
 use WP_Query;
 
-class NotFoundHttpException extends HttpException
+final class NotFoundHttpException extends HttpException
 {
     public function __construct(
         string $message = '',

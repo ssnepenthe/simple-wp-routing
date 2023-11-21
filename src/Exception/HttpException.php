@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Exception;
+namespace SimpleWpRouting\Exception;
 
 use RuntimeException;
+use SimpleWpRouting\Responder\HttpExceptionResponder;
+use SimpleWpRouting\Responder\Partial\HeadersPartial;
 use Throwable;
-use ToyWpRouting\Responder\HttpExceptionResponder;
-use ToyWpRouting\Responder\Partial\HeadersPartial;
 
 class HttpException extends RuntimeException implements HttpExceptionInterface
 {
     protected array $headers;
+
     protected int $statusCode;
 
     public function __construct(

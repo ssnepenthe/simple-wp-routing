@@ -2,29 +2,27 @@
 
 declare(strict_types=1);
 
-return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy = null): \ToyWpRouting\RewriteCollection {
-    return new class($invocationStrategy) extends \ToyWpRouting\RewriteCollection
+use SimpleWpRouting\Dumper\OptimizedRewrite;
+use SimpleWpRouting\Dumper\OptimizedRewriteCollection;
+
+if (! class_exists('CachedRewriteCollection5060946aa6ba3a9bcfc0bf07bb830c0ec0c9bf0226c73542cbcd741812bbd633')) {
+    class CachedRewriteCollection5060946aa6ba3a9bcfc0bf07bb830c0ec0c9bf0226c73542cbcd741812bbd633 extends OptimizedRewriteCollection
     {
-        protected bool $locked = true;
-
-        public function __construct(?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy = null)
+        public function __construct()
         {
-            parent::__construct('httpmethod_', $invocationStrategy);
-
             $this->queryVariables = array (
-  'httpmethod_matchedRule' => 'matchedRule',
 );
             $this->rewriteRules = array (
-  '^http-method/any$' => 'index.php?httpmethod_matchedRule=3cbc29585c68496bd468da8d63561c39',
-  '^http-method/delete$' => 'index.php?httpmethod_matchedRule=37d6cdf198a707bba145b00613058ef8',
-  '^http-method/get$' => 'index.php?httpmethod_matchedRule=3d22b4271ebf8126f05ed77ad3479b4a',
-  '^http-method/options$' => 'index.php?httpmethod_matchedRule=5d3e9032053234bfe214358c1290d72b',
-  '^http-method/patch$' => 'index.php?httpmethod_matchedRule=9a9447688dc3400decb5201e18ba832a',
-  '^http-method/post$' => 'index.php?httpmethod_matchedRule=0dee99f4ec0583503eb54f1c0a1f4af0',
-  '^http-method/put$' => 'index.php?httpmethod_matchedRule=4121c49c7eeb10e3449db33ed47d011e',
+  '^http-method/any$' => 'index.php?httpmethod___routeType=static',
+  '^http-method/delete$' => 'index.php?httpmethod___routeType=static',
+  '^http-method/get$' => 'index.php?httpmethod___routeType=static',
+  '^http-method/options$' => 'index.php?httpmethod___routeType=static',
+  '^http-method/patch$' => 'index.php?httpmethod___routeType=static',
+  '^http-method/post$' => 'index.php?httpmethod___routeType=static',
+  '^http-method/put$' => 'index.php?httpmethod___routeType=static',
 );
 
-            $rewrite0 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+            $rewrite0 = new OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
   2 => 'POST',
@@ -32,63 +30,35 @@ return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy 
   4 => 'PATCH',
   5 => 'DELETE',
   6 => 'OPTIONS',
-), array (
-  'httpmethod_matchedRule' => 'matchedRule',
-), array (
-  0 => 'httpmethod_matchedRule',
-), $this->invocationStrategy, static function () {}, NULL);
-$rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+), '^http-method/any$', 'index.php?httpmethod___routeType=static', array (
+), static function () {}, NULL);
+$rewrite1 = new OptimizedRewrite(array (
   0 => 'DELETE',
-), array (
-  'httpmethod_matchedRule' => 'matchedRule',
-), array (
-  0 => 'httpmethod_matchedRule',
-), $this->invocationStrategy, static function () {}, NULL);
-$rewrite2 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+), '^http-method/delete$', 'index.php?httpmethod___routeType=static', array (
+), static function () {}, NULL);
+$rewrite2 = new OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
-), array (
-  'httpmethod_matchedRule' => 'matchedRule',
-), array (
-  0 => 'httpmethod_matchedRule',
-), $this->invocationStrategy, static function () {}, NULL);
-$rewrite3 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+), '^http-method/get$', 'index.php?httpmethod___routeType=static', array (
+), static function () {}, NULL);
+$rewrite3 = new OptimizedRewrite(array (
   0 => 'OPTIONS',
-), array (
-  'httpmethod_matchedRule' => 'matchedRule',
-), array (
-  0 => 'httpmethod_matchedRule',
-), $this->invocationStrategy, static function () {}, NULL);
-$rewrite4 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+), '^http-method/options$', 'index.php?httpmethod___routeType=static', array (
+), static function () {}, NULL);
+$rewrite4 = new OptimizedRewrite(array (
   0 => 'PATCH',
-), array (
-  'httpmethod_matchedRule' => 'matchedRule',
-), array (
-  0 => 'httpmethod_matchedRule',
-), $this->invocationStrategy, static function () {}, NULL);
-$rewrite5 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+), '^http-method/patch$', 'index.php?httpmethod___routeType=static', array (
+), static function () {}, NULL);
+$rewrite5 = new OptimizedRewrite(array (
   0 => 'POST',
-), array (
-  'httpmethod_matchedRule' => 'matchedRule',
-), array (
-  0 => 'httpmethod_matchedRule',
-), $this->invocationStrategy, static function () {}, NULL);
-$rewrite6 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+), '^http-method/post$', 'index.php?httpmethod___routeType=static', array (
+), static function () {}, NULL);
+$rewrite6 = new OptimizedRewrite(array (
   0 => 'PUT',
-), array (
-  'httpmethod_matchedRule' => 'matchedRule',
-), array (
-  0 => 'httpmethod_matchedRule',
-), $this->invocationStrategy, static function () {}, NULL);
-$this->rewrites->attach($rewrite0);
-$this->rewrites->attach($rewrite1);
-$this->rewrites->attach($rewrite2);
-$this->rewrites->attach($rewrite3);
-$this->rewrites->attach($rewrite4);
-$this->rewrites->attach($rewrite5);
-$this->rewrites->attach($rewrite6);
-$this->rewritesByHashAndMethod = array (
-  '3cbc29585c68496bd468da8d63561c39' => 
+), '^http-method/put$', 'index.php?httpmethod___routeType=static', array (
+), static function () {}, NULL);
+$this->rewritesByRegexAndMethod = array (
+  '^http-method/any$' => 
   array (
     'GET' => $rewrite0,
     'HEAD' => $rewrite0,
@@ -98,32 +68,34 @@ $this->rewritesByHashAndMethod = array (
     'DELETE' => $rewrite0,
     'OPTIONS' => $rewrite0,
   ),
-  '37d6cdf198a707bba145b00613058ef8' => 
+  '^http-method/delete$' => 
   array (
     'DELETE' => $rewrite1,
   ),
-  '3d22b4271ebf8126f05ed77ad3479b4a' => 
+  '^http-method/get$' => 
   array (
     'GET' => $rewrite2,
     'HEAD' => $rewrite2,
   ),
-  '5d3e9032053234bfe214358c1290d72b' => 
+  '^http-method/options$' => 
   array (
     'OPTIONS' => $rewrite3,
   ),
-  '9a9447688dc3400decb5201e18ba832a' => 
+  '^http-method/patch$' => 
   array (
     'PATCH' => $rewrite4,
   ),
-  '0dee99f4ec0583503eb54f1c0a1f4af0' => 
+  '^http-method/post$' => 
   array (
     'POST' => $rewrite5,
   ),
-  '4121c49c7eeb10e3449db33ed47d011e' => 
+  '^http-method/put$' => 
   array (
     'PUT' => $rewrite6,
   ),
 );
         }
-    };
-};
+    }
+}
+
+return new CachedRewriteCollection5060946aa6ba3a9bcfc0bf07bb830c0ec0c9bf0226c73542cbcd741812bbd633();

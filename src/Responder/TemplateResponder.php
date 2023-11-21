@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder;
+namespace SimpleWpRouting\Responder;
 
-use ToyWpRouting\Responder\Partial\TemplatePartial;
+use SimpleWpRouting\Responder\Partial\TemplatePartial;
 
-class TemplateResponder extends Responder
+final class TemplateResponder extends Responder
 {
     public function __construct(string $templatePath)
     {

@@ -2,12 +2,15 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder;
+namespace SimpleWpRouting\Responder;
 
-use ToyWpRouting\Responder\Partial\RedirectPartial;
+use SimpleWpRouting\Responder\Partial\RedirectPartial;
 
-class RedirectResponder extends Responder
+final class RedirectResponder extends Responder
 {
+    /**
+     * @param int<300, 399> $statusCode
+     */
     public function __construct(
         string $location,
         int $statusCode = 302,

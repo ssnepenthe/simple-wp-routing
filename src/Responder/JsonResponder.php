@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder;
+namespace SimpleWpRouting\Responder;
 
-use ToyWpRouting\Responder\Partial\JsonPartial;
+use SimpleWpRouting\Responder\Partial\JsonPartial;
 
-class JsonResponder extends Responder
+final class JsonResponder extends Responder
 {
     /**
      * @param mixed $data
+     * @param int<200, 299>|int<400, 599> $statusCode
      */
     public function __construct($data, int $statusCode = 200, int $options = 0)
     {

@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder\Partial;
+namespace SimpleWpRouting\Responder\Partial;
 
 final class ThemePartial implements PartialInterface, RegistersConflictsInterface
 {
     use PartialTrait;
 
     private array $bodyClasses = [];
+
     private string $title = '';
 
     public function addBodyClass(string $class): self

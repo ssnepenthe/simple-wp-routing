@@ -1,0 +1,12 @@
+new OptimizedRewrite(array (
+  0 => 'GET',
+  1 => 'POST',
+), '^regex$', 'index.php?pfx_var=value', array (
+  'pfx_var' => 'var',
+), array (
+  0 => 'handlerclass',
+  1 => 'handlermethod',
+), array (
+  0 => 'isactiveclass',
+  1 => 'isactivemethod',
+))

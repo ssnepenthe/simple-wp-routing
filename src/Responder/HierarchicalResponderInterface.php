@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder;
+namespace SimpleWpRouting\Responder;
 
 interface HierarchicalResponderInterface extends ResponderInterface
 {

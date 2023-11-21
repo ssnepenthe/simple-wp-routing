@@ -1,20 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace TwrTestPlugin;
 
-use RuntimeException;
-use ToyWpRouting\Exception\MethodNotAllowedHttpException;
-use ToyWpRouting\Exception\NotFoundHttpException;
-use ToyWpRouting\Orchestrator;
-use ToyWpRouting\Responder\JsonResponder;
-use ToyWpRouting\Responder\Partial\HeadersPartial;
-use ToyWpRouting\Responder\QueryResponder;
-use ToyWpRouting\Responder\RedirectResponder;
-use ToyWpRouting\Responder\TemplateResponder;
-use ToyWpRouting\RewriteCollection;
-use ToyWpRouting\RewriteCollectionCache;
-use ToyWpRouting\RouteCollection;
-use ToyWpRouting\RouteConverter;
+use LogicException;
+use SimpleWpRouting\Exception\MethodNotAllowedHttpException;
+use SimpleWpRouting\Exception\NotFoundHttpException;
+use SimpleWpRouting\Responder\JsonResponder;
+use SimpleWpRouting\Responder\Partial\HeadersPartial;
+use SimpleWpRouting\Responder\QueryResponder;
+use SimpleWpRouting\Responder\RedirectResponder;
+use SimpleWpRouting\Responder\TemplateResponder;
+use SimpleWpRouting\Router;
 
 abstract class TestGroup
 {
@@ -27,120 +25,137 @@ abstract class TestGroup
             new HttpMethodsGroup(),
             new OrchestratorGroup(),
             new ResponderGroup(),
+            new OverlappingRulesGroup(),
         ];
     }
 
     public function initialize(): void
     {
+        $router = new Router();
+        $router->setPrefix($this->getPrefix());
+
         if (filter_var($_REQUEST['twr_enable_cache'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
-            $cache = $this->createCache();
+            $router->enableCache($this->getCacheDirectory(), $this->getCacheFileName());
 
-            if (! $cache->exists()) {
-                throw new RuntimeException();
+            if (! $router->getRewriteCollectionCache()->exists()) {
+                throw new LogicException('Test plugin cache does not exist - run the bin/regenerate-test-fixtures.php script');
             }
-
-            $rewrites = $cache->get();
-        } else {
-            $converter = new RouteConverter();
-            $rewrites = $converter->convertCollection($this->createRoutes());
         }
 
-        (new Orchestrator($rewrites))->initialize();
+        $router->initialize(fn ($r) => $this->registerRoutes($r));
     }
 
-    public function createCache(): RewriteCollectionCache
+    public function refreshCache(): void
     {
-        return new RewriteCollectionCache(__DIR__ . '/var/cache', $this->getCacheFileName());
+        $router = new Router();
+        $router->setPrefix($this->getPrefix());
+        $router->enableCache($this->getCacheDirectory(), $this->getCacheFileName());
+        $router->getRewriteCollectionCache()->delete();
+        $this->registerRoutes($router);
+        $router->getRewriteCollectionCache()->put($router->getRewriteCollection());
     }
 
-    public function createRewrites(): RewriteCollection
+    protected function getCacheDirectory(): string
     {
-        return (new RouteConverter())->convertCollection($this->createRoutes());
+        return __DIR__ . '/var/cache';
     }
 
-    abstract protected function createRoutes(): RouteCollection;
     abstract protected function getCacheFileName(): string;
+
+    abstract protected function getPrefix(): string;
+
+    abstract protected function registerRoutes(Router $router): void;
 }
 
 class HttpMethodsGroup extends TestGroup
 {
-    protected function createRoutes(): RouteCollection
-    {
-        $routes = new RouteCollection('httpmethod_');
-
-        $routes->any('http-method/any', function () {});
-        $routes->delete('http-method/delete', function () {});
-        $routes->get('http-method/get', function () {});
-        $routes->options('http-method/options', function () {});
-        $routes->patch('http-method/patch', function () {});
-        $routes->post('http-method/post', function () {});
-        $routes->put('http-method/put', function () {});
-
-        return $routes;
-    }
-
     protected function getCacheFileName(): string
     {
         return 'http-method-cache.php';
+    }
+
+    protected function getPrefix(): string
+    {
+        return 'httpmethod_';
+    }
+
+    protected function registerRoutes(Router $router): void
+    {
+        $router->any('http-method/any', function () {});
+        $router->delete('http-method/delete', function () {});
+        $router->get('http-method/get', function () {});
+        $router->options('http-method/options', function () {});
+        $router->patch('http-method/patch', function () {});
+        $router->post('http-method/post', function () {});
+        $router->put('http-method/put', function () {});
     }
 }
 
 class OrchestratorGroup extends TestGroup
 {
-    protected function createRoutes(): RouteCollection
+    protected function getCacheFileName(): string
     {
-        $routes = new RouteCollection('orchestrator_');
+        return 'orchestrator-cache.php';
+    }
 
-        $routes->get('orchestrator/active/{activeVar}', function () {});
+    protected function getPrefix(): string
+    {
+        return 'orchestrator_';
+    }
 
-        $routes->get('orchestrator/inactive/{inactiveVar}', function () {
+    protected function registerRoutes(Router $router): void
+    {
+        $router->get('orchestrator/active/{activeVar}', function () {});
+
+        $router->get('orchestrator/inactive/{inactiveVar}', function () {
             add_action('twr_test_data', function () {
                 echo '<span class="twr-orchestrator-inactive"></span>';
             });
-        })->when('__return_false');
+        })->setIsActiveCallback('__return_false');
 
-        $routes->get('orchestrator/responder', function () {
+        $router->get('orchestrator/responder', function () {
             return new JsonResponder('hello from the orchestrator responder route');
         });
 
-        $routes->get('orchestrator/hierarchical-responder', function () {
+        $router->get('orchestrator/hierarchical-responder', function () {
             $responder = new JsonResponder('hello from the orchestrator hierarchical responder route');
 
             // We return the headers partial - expectation is that orchestrator traverses back up to the JsonResponder.
             return $responder->getPartialSet()->get(HeadersPartial::class);
         });
-
-        return $routes;
-    }
-
-    protected function getCacheFileName(): string
-    {
-        return 'orchestrator-cache.php';
     }
 }
 
 class ResponderGroup extends TestGroup
 {
-    protected function createRoutes(): RouteCollection
+    protected function getCacheFileName(): string
     {
-        $routes = new RouteCollection('responders_');
+        return 'responder-cache.php';
+    }
 
-        $routes->get('responders/http-exception/not-found', function () {
+    protected function getPrefix(): string
+    {
+        return 'responders_';
+    }
+
+    protected function registerRoutes(Router $router): void
+    {
+        $router->get('responders/http-exception/not-found', function () {
             // @todo custom additional headers
             throw new NotFoundHttpException();
         });
 
-        $routes->get('responders/http-exception/method-not-allowed', function () {
+        $router->get('responders/http-exception/method-not-allowed', function () {
             // @todo custom additional headers, custom theme template (body class and title), ensure query flags are reset
             throw new MethodNotAllowedHttpException(['POST', 'PUT']);
         });
 
-        $routes->get('responders/json', function () {
+        $router->get('responders/json', function () {
             // @todo custom status codes, error vs success status codes, json options, non-enveloped response, custom additional headers
             return new JsonResponder('hello from the json responder route');
         });
 
-        $routes->get('responders/query', function () {
+        $router->get('responders/query', function () {
             // @todo overwrite query variables
             add_action('twr_test_data', function () {
                 global $wp;
@@ -151,21 +166,42 @@ class ResponderGroup extends TestGroup
             return new QueryResponder(['custom-query-variable' => 'from-the-query-route']);
         });
 
-        $routes->get('responders/redirect', function () {
+        $router->get('responders/redirect', function () {
             // @todo custom status code, custom redirect-by, external (unsafe) redirect both allowed and not, custom headers
             return new RedirectResponder('/responders/query/');
         });
 
-        $routes->get('responders/template', function () {
+        $router->get('responders/template', function () {
             // @todo body class, document title, enqueue assets, dequeue assets, custom headers, query vars, query flags
             return new TemplateResponder(__DIR__ . '/templates/hello-world.php');
         });
-
-        return $routes;
     }
+}
 
+class OverlappingRulesGroup extends TestGroup
+{
     protected function getCacheFileName(): string
     {
-        return 'responder-cache.php';
+        return 'overlapping-rules-cache.php';
+    }
+
+    protected function getPrefix(): string
+    {
+        return 'overlap_';
+    }
+
+    protected function registerRoutes(Router $router): void
+    {
+        $router->get('overlap/one', function () {
+            return new JsonResponder('GET overlap/one');
+        });
+
+        $router->post('overlap/one[/two]', function () {
+            return new JsonResponder('POST overlap/one');
+        });
+
+        $router->put('overlap/one[/three]', function () {
+            return new JsonResponder('PUT overlap/one');
+        });
     }
 }

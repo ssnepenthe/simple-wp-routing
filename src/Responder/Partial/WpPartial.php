@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder\Partial;
+namespace SimpleWpRouting\Responder\Partial;
 
 use WP;
 
@@ -11,6 +11,7 @@ final class WpPartial implements PartialInterface
     use PartialTrait;
 
     private bool $overwriteQueryVariables = false;
+
     private array $queryVariables = [];
 
     public function dontOverwriteQueryVariables(): self

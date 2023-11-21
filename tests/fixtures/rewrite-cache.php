@@ -2,56 +2,46 @@
 
 declare(strict_types=1);
 
-return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy = null): \ToyWpRouting\RewriteCollection {
-    return new class($invocationStrategy) extends \ToyWpRouting\RewriteCollection
+use SimpleWpRouting\Dumper\OptimizedRewrite;
+use SimpleWpRouting\Dumper\OptimizedRewriteCollection;
+
+if (! class_exists('CachedRewriteCollectionf767d562c1ab18b24e14886de398917e213c07bbc06638ecbfb52961499c9490')) {
+    class CachedRewriteCollectionf767d562c1ab18b24e14886de398917e213c07bbc06638ecbfb52961499c9490 extends OptimizedRewriteCollection
     {
-        protected bool $locked = true;
-
-        public function __construct(?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy = null)
+        public function __construct()
         {
-            parent::__construct('', $invocationStrategy);
-
             $this->queryVariables = array (
   'var' => 'var',
-  'matchedRule' => 'matchedRule',
 );
             $this->rewriteRules = array (
-  '^first$' => 'index.php?var=first&matchedRule=9f79cebcf1735d5eaefeee8dbc7316dd',
-  '^second$' => 'index.php?var=second&matchedRule=3cf5d427e03a68a3881d2d68a86b64f1',
+  '^first$' => 'index.php?var=first',
+  '^second$' => 'index.php?var=second',
 );
 
-            $rewrite0 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+            $rewrite0 = new OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
-), array (
+), '^first$', 'index.php?var=first', array (
   'var' => 'var',
-  'matchedRule' => 'matchedRule',
-), array (
-  0 => 'var',
-  1 => 'matchedRule',
-), $this->invocationStrategy, 'firsthandler', NULL);
-$rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+), 'firsthandler', NULL);
+$rewrite1 = new OptimizedRewrite(array (
   0 => 'POST',
-), array (
+), '^second$', 'index.php?var=second', array (
   'var' => 'var',
-  'matchedRule' => 'matchedRule',
-), array (
-  0 => 'var',
-  1 => 'matchedRule',
-), $this->invocationStrategy, 'secondhandler', 'secondisactivecallback');
-$this->rewrites->attach($rewrite0);
-$this->rewrites->attach($rewrite1);
-$this->rewritesByHashAndMethod = array (
-  '9f79cebcf1735d5eaefeee8dbc7316dd' => 
+), 'secondhandler', 'secondisactivecallback');
+$this->rewritesByRegexAndMethod = array (
+  '^first$' => 
   array (
     'GET' => $rewrite0,
     'HEAD' => $rewrite0,
   ),
-  '3cf5d427e03a68a3881d2d68a86b64f1' => 
+  '^second$' => 
   array (
     'POST' => $rewrite1,
   ),
 );
         }
-    };
-};
+    }
+}
+
+return new CachedRewriteCollectionf767d562c1ab18b24e14886de398917e213c07bbc06638ecbfb52961499c9490();

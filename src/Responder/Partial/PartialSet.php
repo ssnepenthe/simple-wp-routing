@@ -2,22 +2,24 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder\Partial;
+namespace SimpleWpRouting\Responder\Partial;
 
 use ArrayIterator;
 use InvalidArgumentException;
 use IteratorAggregate;
-use ToyWpRouting\Responder\HierarchicalResponderInterface;
-use ToyWpRouting\Responder\ResponderInterface;
+use SimpleWpRouting\Responder\HierarchicalResponderInterface;
+use SimpleWpRouting\Responder\ResponderInterface;
 use Traversable;
 
 final class PartialSet implements HierarchicalResponderInterface, IteratorAggregate
 {
     private Conflicts $conflicts;
+
     /**
      * @var array<class-string<PartialInterface>, PartialInterface>
      */
     private array $partials = [];
+
     private ?ResponderInterface $responder;
 
     public function __construct(?ResponderInterface $responder = null)
@@ -47,9 +49,9 @@ final class PartialSet implements HierarchicalResponderInterface, IteratorAggreg
     /**
      * @template T of PartialInterface
      *
-     * @psalm-param class-string<T> $class
+     * @param class-string<T> $class
      *
-     * @psalm-return T
+     * @return T
      */
     public function get(string $class): PartialInterface
     {
@@ -74,7 +76,7 @@ final class PartialSet implements HierarchicalResponderInterface, IteratorAggreg
     }
 
     /**
-     * @psalm-param class-string $class
+     * @param class-string $class
      */
     public function has(string $class): bool
     {

@@ -1,20 +1,9 @@
 <?php
 
-/**
- * Plugin Name: TWR Test Plugin
- * Plugin URI: https://github.com/ssnepenthe/toy-wp-routing
- * Description: The plugin used for testing the toy-wp-routing package.
- * Author: ssnepenthe
- * Version: 1.0.0
- */
+// Not a real standalone plugin - must be loaded from the root plugin.php.
 
 namespace TwrTestPlugin;
 
-if (! file_exists(__DIR__ . '/vendor/autoload.php')) {
-    return;
-}
-
-require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/test-groups.php';
 
 add_action('wp_footer', function () {

@@ -2,100 +2,82 @@
 
 declare(strict_types=1);
 
-return function (?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy = null): \ToyWpRouting\RewriteCollection {
-    return new class($invocationStrategy) extends \ToyWpRouting\RewriteCollection
+use SimpleWpRouting\Dumper\OptimizedRewrite;
+use SimpleWpRouting\Dumper\OptimizedRewriteCollection;
+
+if (! class_exists('CachedRewriteCollectionbc622047ff51b93542064e4cc8ebe8f9bec6a7305c6d8694ebc3138b7d5bccf1')) {
+    class CachedRewriteCollectionbc622047ff51b93542064e4cc8ebe8f9bec6a7305c6d8694ebc3138b7d5bccf1 extends OptimizedRewriteCollection
     {
-        protected bool $locked = true;
-
-        public function __construct(?\ToyWpRouting\InvocationStrategyInterface $invocationStrategy = null)
+        public function __construct()
         {
-            parent::__construct('orchestrator_', $invocationStrategy);
-
             $this->queryVariables = array (
   'orchestrator_activeVar' => 'activeVar',
-  'orchestrator_matchedRule' => 'matchedRule',
   'orchestrator_inactiveVar' => 'inactiveVar',
 );
             $this->rewriteRules = array (
-  '^orchestrator/active/([^/]+)$' => 'index.php?orchestrator_activeVar=$matches[1]&orchestrator_matchedRule=5cc12d9280457964a1502740d21f1321',
-  '^orchestrator/inactive/([^/]+)$' => 'index.php?orchestrator_inactiveVar=$matches[1]&orchestrator_matchedRule=ebfd581dad33307b76e52c6c6b23eb54',
-  '^orchestrator/responder$' => 'index.php?orchestrator_matchedRule=29647899a9f4d0d2f996a1a22788cdbc',
-  '^orchestrator/hierarchical-responder$' => 'index.php?orchestrator_matchedRule=fbf5e1e28ad12d9417cf86d7c4ec2bff',
+  '^orchestrator/active/([^/]+)$' => 'index.php?orchestrator_activeVar=$matches[1]&orchestrator___routeType=variable',
+  '^orchestrator/inactive/([^/]+)$' => 'index.php?orchestrator_inactiveVar=$matches[1]&orchestrator___routeType=variable',
+  '^orchestrator/responder$' => 'index.php?orchestrator___routeType=static',
+  '^orchestrator/hierarchical-responder$' => 'index.php?orchestrator___routeType=static',
 );
 
-            $rewrite0 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+            $rewrite0 = new OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
-), array (
+), '^orchestrator/active/([^/]+)$', 'index.php?orchestrator_activeVar=$matches[1]&orchestrator___routeType=variable', array (
   'orchestrator_activeVar' => 'activeVar',
-  'orchestrator_matchedRule' => 'matchedRule',
-), array (
-  0 => 'orchestrator_activeVar',
-  1 => 'orchestrator_matchedRule',
-), $this->invocationStrategy, static function () {}, NULL);
-$rewrite1 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+), static function () {}, NULL);
+$rewrite1 = new OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
-), array (
+), '^orchestrator/inactive/([^/]+)$', 'index.php?orchestrator_inactiveVar=$matches[1]&orchestrator___routeType=variable', array (
   'orchestrator_inactiveVar' => 'inactiveVar',
-  'orchestrator_matchedRule' => 'matchedRule',
-), array (
-  0 => 'orchestrator_inactiveVar',
-  1 => 'orchestrator_matchedRule',
-), $this->invocationStrategy, static function () {
+), static function () {
             add_action('twr_test_data', function () {
                 echo '<span class="twr-orchestrator-inactive"></span>';
             });
         }, '__return_false');
-$rewrite2 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+$rewrite2 = new OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
-), array (
-  'orchestrator_matchedRule' => 'matchedRule',
-), array (
-  0 => 'orchestrator_matchedRule',
-), $this->invocationStrategy, static function () {
-            return new \ToyWpRouting\Responder\JsonResponder('hello from the orchestrator responder route');
+), '^orchestrator/responder$', 'index.php?orchestrator___routeType=static', array (
+), static function () {
+            return new \SimpleWpRouting\Responder\JsonResponder('hello from the orchestrator responder route');
         }, NULL);
-$rewrite3 = new \ToyWpRouting\Compiler\OptimizedRewrite(array (
+$rewrite3 = new OptimizedRewrite(array (
   0 => 'GET',
   1 => 'HEAD',
-), array (
-  'orchestrator_matchedRule' => 'matchedRule',
-), array (
-  0 => 'orchestrator_matchedRule',
-), $this->invocationStrategy, static function () {
-            $responder = new \ToyWpRouting\Responder\JsonResponder('hello from the orchestrator hierarchical responder route');
+), '^orchestrator/hierarchical-responder$', 'index.php?orchestrator___routeType=static', array (
+), static function () {
+            $responder = new \SimpleWpRouting\Responder\JsonResponder('hello from the orchestrator hierarchical responder route');
 
             // We return the headers partial - expectation is that orchestrator traverses back up to the JsonResponder.
-            return $responder->headers();
+            return $responder->getPartialSet()->get(\SimpleWpRouting\Responder\Partial\HeadersPartial::class);
         }, NULL);
-$this->rewrites->attach($rewrite0);
-$this->rewrites->attach($rewrite1);
-$this->rewrites->attach($rewrite2);
-$this->rewrites->attach($rewrite3);
-$this->rewritesByHashAndMethod = array (
-  '5cc12d9280457964a1502740d21f1321' => 
+$this->rewritesByRegexAndMethod = array (
+  '^orchestrator/active/([^/]+)$' => 
   array (
     'GET' => $rewrite0,
     'HEAD' => $rewrite0,
   ),
-  'ebfd581dad33307b76e52c6c6b23eb54' => 
+  '^orchestrator/inactive/([^/]+)$' => 
   array (
     'GET' => $rewrite1,
     'HEAD' => $rewrite1,
   ),
-  '29647899a9f4d0d2f996a1a22788cdbc' => 
+  '^orchestrator/responder$' => 
   array (
     'GET' => $rewrite2,
     'HEAD' => $rewrite2,
   ),
-  'fbf5e1e28ad12d9417cf86d7c4ec2bff' => 
+  '^orchestrator/hierarchical-responder$' => 
   array (
     'GET' => $rewrite3,
     'HEAD' => $rewrite3,
   ),
 );
         }
-    };
-};
+    }
+}
+
+return new CachedRewriteCollectionbc622047ff51b93542064e4cc8ebe8f9bec6a7305c6d8694ebc3138b7d5bccf1();

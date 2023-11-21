@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ToyWpRouting\Responder\Partial;
+namespace SimpleWpRouting\Responder\Partial;
 
 use InvalidArgumentException;
 
@@ -11,12 +11,16 @@ final class RedirectPartial implements PartialInterface, RegistersConflictsInter
     use PartialTrait;
 
     private string $initiator = 'WordPress';
+
     private ?string $location = null;
+
     /**
      * @var ?callable(string,int,string):bool
      */
     private $responseFunction = null;
+
     private bool $safe = true;
+
     private int $statusCode = 302;
 
     public function allowUnsafeRedirects(): self
