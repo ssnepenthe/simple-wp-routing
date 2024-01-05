@@ -99,18 +99,4 @@ class Support
             ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
         ));
     }
-
-    /**
-     * @return array<string, string>
-     */
-    public static function parseQuery(string $query): array
-    {
-        if ('index.php?' === substr($query, 0, 10)) {
-            $query = substr($query, 10);
-        }
-
-        parse_str($query, $result);
-
-        return $result;
-    }
 }

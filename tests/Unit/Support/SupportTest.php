@@ -118,26 +118,4 @@ class SupportTest extends TestCase
         // False for subset of list with additional.
         $this->assertFalse(Support::isValidMethodsList(['GET', 'POST', 'PUT', 'IRRELEVANT']));
     }
-
-    public function testParseQuery()
-    {
-        $query = 'index.php?one=two&three=four&five=six';
-
-        $this->assertSame([
-            'one' => 'two',
-            'three' => 'four',
-            'five' => 'six',
-        ], Support::parseQuery($query));
-    }
-
-    public function testParseQueryWithoutLeadingIndexPhp()
-    {
-        $query = 'one=two&three=four&five=six';
-
-        $this->assertSame([
-            'one' => 'two',
-            'three' => 'four',
-            'five' => 'six',
-        ], Support::parseQuery($query));
-    }
 }
