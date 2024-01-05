@@ -24,7 +24,7 @@
     },
     "suggest": {
         "laravel/serializable-closure": "Required to dump rewrites to a file when using closures for handlers",
-        "php-di/invoker": "Required to use the InvokerBackedInvocationStrategy"
+        "php-di/invoker": "Required to use the PhpDiInvoker"
     },
     "autoload": {
         "psr-4": {
