@@ -37,6 +37,8 @@ final class Router
 
     private string $prefix = '';
 
+    private ?RequestContext $requestContext = null;
+
     private ?RewriteCollection $rewriteCollection = null;
 
     private ?RewriteCollectionCache $rewriteCollectionCache = null;
@@ -126,6 +128,15 @@ final class Router
         }
 
         return $this->invocationStrategy;
+    }
+
+    public function getRequestContext(): RequestContext
+    {
+        if (! $this->requestContext instanceof RequestContext) {
+            $this->requestContext = RequestContext::fromGlobals();
+        }
+
+        return $this->requestContext;
     }
 
     public function getRewriteCollection(): RewriteCollection
@@ -266,6 +277,15 @@ final class Router
         $this->prefix = $prefix;
     }
 
+    public function setRequestContext(RequestContext $requestContext): void
+    {
+        if ($this->initialized) {
+            throw new LogicException('Request context cannot be set after router has been initialized');
+        }
+
+        $this->requestContext = $requestContext;
+    }
+
     public function setRouteParser(RouteParserInterface $routeParser): void
     {
         if ($this->routesHaveBeenAdded()) {
@@ -322,7 +342,7 @@ final class Router
             $this->getRewriteCollection(),
             $this->getInvoker(),
             $this->getCallableResolver(),
-            RequestContext::fromGlobals()
+            $this->getRequestContext()
         );
     }
 

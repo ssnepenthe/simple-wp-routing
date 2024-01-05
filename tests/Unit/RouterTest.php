@@ -11,9 +11,9 @@ use LogicException;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
 use SimpleWpRouting\Dumper\OptimizedRewriteCollection;
 use SimpleWpRouting\Router;
+use SimpleWpRouting\Support\RequestContext;
 
 class RouterTest extends TestCase
 {
@@ -33,7 +33,7 @@ class RouterTest extends TestCase
 
     public function testCreate()
     {
-        $router = new Router();
+        $router = $this->makeRouter();
 
         // Indirectly via add.
         $router->add(['GET'], 'one/{two}', 'onehandler');
@@ -67,7 +67,7 @@ class RouterTest extends TestCase
 
     public function testCreateWithPrefix()
     {
-        $router = new Router();
+        $router = $this->makeRouter();
         $router->setPrefix('pfx_');
 
         // Indirectly via get.
@@ -102,7 +102,7 @@ class RouterTest extends TestCase
 
     public function testHttpMethodShorthandMethods()
     {
-        $router = new Router();
+        $router = $this->makeRouter();
         $router->add(['GET', 'POST'], 'customroute', 'handler');
         $router->any('anyroute', 'handler');
         $router->delete('deleteroute', 'handler');
@@ -126,7 +126,7 @@ class RouterTest extends TestCase
 
     public function testGroupWithAutoSlashDisabled()
     {
-        $router = new Router();
+        $router = $this->makeRouter();
         $router->disableAutoSlash();
         $router->group('one', function ($router) {
             $router->group('two', function ($router) {
@@ -139,7 +139,7 @@ class RouterTest extends TestCase
 
     public function testGroup()
     {
-        $router = new Router();
+        $router = $this->makeRouter();
         $router->group('one', function ($router) {
             $router->get('two', 'handler');
             $router->get('three', 'handler');
@@ -161,7 +161,7 @@ class RouterTest extends TestCase
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage('already initialized');
 
-        $router = new Router();
+        $router = $this->makeRouter();
 
         $router->get('irrelevant', 'handler');
 
@@ -176,7 +176,7 @@ class RouterTest extends TestCase
 
         $root = vfsStream::setup();
 
-        $router = new Router();
+        $router = $this->makeRouter();
         $router->enableCache($root->url());
 
         $router->initialize();
@@ -187,14 +187,14 @@ class RouterTest extends TestCase
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage('routes must be registered before');
 
-        $router = new Router();
+        $router = $this->makeRouter();
 
         $router->initialize();
     }
 
     public function testInitializeWithoutCallback()
     {
-        $router = new Router();
+        $router = $this->makeRouter();
 
         $router->get('irrelevant', 'handler');
 
@@ -210,7 +210,7 @@ class RouterTest extends TestCase
 
         $root = vfsStream::setup();
 
-        $router = new Router();
+        $router = $this->makeRouter();
         $router->enableCache($root->url());
 
         $router->get('irrelevant', 'handler');
@@ -224,7 +224,7 @@ class RouterTest extends TestCase
 
         $root = vfsStream::setup();
 
-        $router = new Router();
+        $router = $this->makeRouter();
         $router->enableCache($root->url());
 
         $router->initialize(function ($router) {
@@ -236,7 +236,7 @@ class RouterTest extends TestCase
         // Sanity.
         $this->assertTrue($root->hasChild('rewrite-cache.php'));
 
-        $router = new Router();
+        $router = $this->makeRouter();
         $router->enableCache($root->url());
 
         $test = 0;
@@ -258,7 +258,7 @@ class RouterTest extends TestCase
 
         $root = vfsStream::setup();
 
-        $router = new Router();
+        $router = $this->makeRouter();
         $router->enableCache($root->url());
 
         // Sanity.
@@ -281,7 +281,7 @@ class RouterTest extends TestCase
     {
         $this->expectOrchestratorInitializeMethodToBeCalled();
 
-        $router = new Router();
+        $router = $this->makeRouter();
 
         // Allowed to register routes before as long as cache is not enabled.
         $router->get('irrelevant', 'handler');
@@ -301,5 +301,13 @@ class RouterTest extends TestCase
         Filters\expectAdded('rewrite_rules_array');
         Filters\expectAdded('pre_update_option_rewrite_rules');
         Filters\expectAdded('query_vars');
+    }
+
+    private function makeRouter(): Router
+    {
+        $router = new Router();
+        $router->setRequestContext(new RequestContext('GET', []));
+
+        return $router;
     }
 }
